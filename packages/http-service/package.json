@@ -1,0 +1,28 @@
+{
+    "name": "@resourge/http-service",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "private": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist"
+    ],
+    "author": "resourge",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/resourge/fetch.git"
+    },
+    "peerDependencies": {
+        "react": ">=16.8.0"
+    },
+    "keywords": [
+        "javascript",
+        "fetch",
+        "api",
+		"throttle"
+    ],
+    "homepage": "https:/github.com/resourge/fetch/tree/master/src/lib/react-fetch/README.md"
+}

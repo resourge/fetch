@@ -1,0 +1,16 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"declaration": true,
+		"outDir": "../packages/http-service/dist",
+		"noEmit": false,
+		"emitDeclarationOnly": true,
+		"downlevelIteration": true,
+	},
+	"include": [
+		"../packages/http-service/src/**/*"
+	],
+	"exclude": [
+		"**/dist/*"
+	]
+}
