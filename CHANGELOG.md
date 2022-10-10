@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/resourge/fetch/compare/v1.0.3...v1.0.4) (2022-10-10)
+
+
+### Bug Fixes
+
+* **rollup.config:** fix building ([b92207b](https://github.com/resourge/fetch/commit/b92207bd31ece81b65b08f712b809c59d5cf467b))
+
 ## [1.0.3](https://github.com/resourge/fetch/compare/v1.0.2...v1.0.3) (2022-10-10)
 
 
