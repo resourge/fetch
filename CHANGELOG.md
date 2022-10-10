@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/resourge/fetch/compare/v1.0.2...v1.0.3) (2022-10-10)
+
+
+### Bug Fixes
+
+* **mergetypes:** fix index.d.ts removing necessary types ([9c903b9](https://github.com/resourge/fetch/commit/9c903b9cbffa3bb0856abcdbb27fbfe4ba08d209))
+
 ## [1.0.2](https://github.com/resourge/fetch/compare/v1.0.1...v1.0.2) (2022-10-10)
 
 
