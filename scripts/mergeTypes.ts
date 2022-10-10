@@ -1,6 +1,6 @@
 import fs from 'fs';
-import mergeDirs from 'merge-dirs'
 import path from 'path';
+import mergeDirs from 'recursive-copy'
 
 async function getFiles(dir: string): Promise<string[]> {
 	const dirFiles = await fs.promises.readdir(dir, {
@@ -32,9 +32,13 @@ async function getFiles(dir: string): Promise<string[]> {
 	// Write the joined results to destination
 	await fs.promises.writeFile('packages/react-fetch/dist/react-fetch/src/index.d.ts', results.join('\n'));
 	
-	mergeDirs.default('packages/react-fetch/dist/http-service/src', 'packages/react-fetch/dist/react-fetch/src');
+	await mergeDirs('packages/react-fetch/dist/http-service/src', 'packages/react-fetch/dist/react-fetch/src', {
+		overwrite: true 
+	});
 	
-	mergeDirs.default('packages/react-fetch/dist/react-fetch/src', 'packages/react-fetch/dist', 'overwrite');
+	await mergeDirs('packages/react-fetch/dist/react-fetch/src', 'packages/react-fetch/dist', {
+		overwrite: true 
+	});
 	
 	fs.rmSync('packages/react-fetch/dist/react-fetch', {
 		recursive: true,
