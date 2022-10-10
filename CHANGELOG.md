@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/resourge/fetch/compare/v1.0.1...v1.0.2) (2022-10-10)
+
+
+### Bug Fixes
+
+* **scripts/mergetypes:** switch from merge-dirs to recursive-copy ([fa2edb5](https://github.com/resourge/fetch/commit/fa2edb5b0dac1de9fd6276f3b4f2689a649a4393))
+
 ## [1.0.1](https://github.com/resourge/fetch/compare/v1.0.0...v1.0.1) (2022-10-10)
 
 
