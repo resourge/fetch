@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 
-import HttpService, { HttpServiceClass, setDefaultHttpService } from 'packages/http-service/src/services/HttpService';
+import HttpService, { HttpServiceClass, setDefaultHttpService } from '../../../http-service/src/services/HttpService';
 import {
 	InterceptorOnRequest,
 	InterceptorOnRequestError,
 	InterceptorOnResponse,
 	InterceptorOnResponseError
-} from 'packages/http-service/src/utils/Interceptors'
-import { isBrowser } from 'packages/http-service/src/utils/utils';
+} from '../../../http-service/src/utils/Interceptors'
+import { isBrowser } from '../../../http-service/src/utils/utils';
 
 import {
 	FetchContext,
