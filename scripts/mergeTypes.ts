@@ -14,6 +14,7 @@ async function getFiles(dir: string): Promise<string[]> {
 }
 
 (async () => {
+	console.log('Merging index.d.ts')
 	let results: string[] = await Promise.all([
 		fs.promises.readFile('packages/react-fetch/dist/http-service/src/index.d.ts', 'utf-8'),
 		fs.promises.readFile('packages/react-fetch/dist/react-fetch/src/index.d.ts', 'utf-8')
@@ -32,23 +33,32 @@ async function getFiles(dir: string): Promise<string[]> {
 	// Write the joined results to destination
 	await fs.promises.writeFile('packages/react-fetch/dist/react-fetch/src/index.d.ts', results.join('\n'));
 	
+	console.log('Merging dist/http-service into dist/react-fetch')
 	await mergeDirs('packages/react-fetch/dist/http-service/src', 'packages/react-fetch/dist/react-fetch/src', {
-		overwrite: true 
+		overwrite: true,
+		filter(path) {
+			return path !== 'index.d.ts'
+		}
 	});
 	
+	console.log('Merging dist/react-fetch into dist')
 	await mergeDirs('packages/react-fetch/dist/react-fetch/src', 'packages/react-fetch/dist', {
-		overwrite: true 
+		overwrite: true
+		
 	});
 	
+	console.log('Removing dist/react-fetch')
 	fs.rmSync('packages/react-fetch/dist/react-fetch', {
 		recursive: true,
 		force: true 
 	});
+	console.log('Removing dist/http-service')
 	fs.rmSync('packages/react-fetch/dist/http-service', {
 		recursive: true,
 		force: true 
 	});
 
+	console.log('Fixing packages/http-service')
 	const dir = 'packages/react-fetch/dist';
 
 	const declarationFiles = await getFiles(dir);
