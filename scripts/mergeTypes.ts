@@ -1,9 +1,11 @@
-import mergeDirs from 'merge-dirs'
 import fs from 'fs';
+import mergeDirs from 'merge-dirs'
 import path from 'path';
 
 async function getFiles(dir: string): Promise<string[]> {
-	const dirFiles = await fs.promises.readdir(dir, { withFileTypes: true });
+	const dirFiles = await fs.promises.readdir(dir, {
+		withFileTypes: true 
+	});
 	const files = await Promise.all(dirFiles.map((dirent) => {
 		const res = path.resolve(dir, dirent.name);
 		return dirent.isDirectory() ? getFiles(res) : res;
@@ -27,19 +29,25 @@ async function getFiles(dir: string): Promise<string[]> {
 		return arr.findIndex((arrRes) => res === arrRes) === index
 	})
 
-	//Write the joined results to destination
-	await fs.promises.writeFile('packages/react-fetch/dist/react-fetch/src/index.d.ts', results.join("\n"));
+	// Write the joined results to destination
+	await fs.promises.writeFile('packages/react-fetch/dist/react-fetch/src/index.d.ts', results.join('\n'));
 	
 	mergeDirs.default('packages/react-fetch/dist/http-service/src', 'packages/react-fetch/dist/react-fetch/src');
 	
 	mergeDirs.default('packages/react-fetch/dist/react-fetch/src', 'packages/react-fetch/dist', 'overwrite');
 	
-	fs.rmSync('packages/react-fetch/dist/react-fetch', { recursive: true, force: true });
-	fs.rmSync('packages/react-fetch/dist/http-service', { recursive: true, force: true });
+	fs.rmSync('packages/react-fetch/dist/react-fetch', {
+		recursive: true,
+		force: true 
+	});
+	fs.rmSync('packages/react-fetch/dist/http-service', {
+		recursive: true,
+		force: true 
+	});
 
 	const dir = 'packages/react-fetch/dist';
 
-	let declarationFiles = await getFiles(dir);
+	const declarationFiles = await getFiles(dir);
 
 	await Promise.all(
 		declarationFiles.map(async (_fileName) => {
@@ -49,7 +57,9 @@ async function getFiles(dir: string): Promise<string[]> {
 			const fileName = path.resolve(dir, _fileName)
 
 			mat.forEach((val) => {
-				const a = val.replace("';", '').replace("'", '').replace("'", '').split('src/')[1];
+				const a = val.replace("';", '').replace("'", '')
+				.replace("'", '')
+				.split('src/')[1];
 				const p = path.resolve(dir, a);
 
 				const relArray = path.relative(fileName, p).split('/');
@@ -63,5 +73,3 @@ async function getFiles(dir: string): Promise<string[]> {
 		})
 	)
 })();
-
-
