@@ -1,4 +1,4 @@
 export * from './components';
 export * from './context';
 export * from './hooks';
-export * from '../../http-service/src/index';
+export * from '../../http-service/src';

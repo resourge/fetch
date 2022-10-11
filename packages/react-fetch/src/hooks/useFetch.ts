@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
-import { FetchError, FetchResponseError } from '../../../http-service/src/errors/FetchError';
-import LoadingService from '../../../http-service/src/services/LoadingService';
-
+import { LoadingService, FetchError, FetchResponseError } from '../../../http-service/src';
 import { useFetchContext } from '../context/FetchContext';
 import NotificationService from '../services/NotificationService';
 import { useId } from '../utils/useIdShim';

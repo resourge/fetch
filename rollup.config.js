@@ -3,10 +3,22 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fg from 'fast-glob'
 import fs from 'fs'
 import path from 'path'
+import mergeDirs from 'recursive-copy'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
 import { author, license } from './package.json'
+
+async function getFiles(dir) {
+	const dirFiles = await fs.promises.readdir(dir, {
+		withFileTypes: true 
+	});
+	const files = await Promise.all(dirFiles.map((dirent) => {
+		const res = path.resolve(dir, dirent.name);
+		return dirent.isDirectory() ? getFiles(res) : res;
+	}));
+	return Array.prototype.concat(...files);
+}
 
 const external = [
 	'react',
@@ -14,7 +26,8 @@ const external = [
 	'use-sync-external-store',
 	'use-sync-external-store/shim',
 	'use-sync-external-store/shim/with-selector',
-	'react-native'
+	'react-native',
+	'@resourge/http-service'
 ];
 
 const babelPlugins = [
@@ -79,27 +92,22 @@ const getProjectNameAndBanner = (
 	}
 }
 
-const getPackage = (
+const BUILD_FOLDER = './build';
+
+const getPackage = async (
 	BASE_OUTPUT_DIR,
 	SOURCE_FOLDER,
-	PACKAGE_NAME
+	PACKAGE_NAME,
+	merge
 ) => {
 	const OUTPUT_DIR = `${BASE_OUTPUT_DIR}dist`
-	const SOURCE_INDEX_FILE = `${SOURCE_FOLDER}/index.ts`
+	let SOURCE_INDEX_FILE = `${SOURCE_FOLDER}/index.ts`
 	const { banner } = getProjectNameAndBanner(PACKAGE_NAME);
 
 	/**
 	 * Options
 	 */
 	const sourcemap = true;
-
-	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`);
-
-	const fixFileName = (fileName) => {
-		return fileName.includes('src/') 
-			? fileName.split('src/')[1] 
-			: fileName
-	}
 
 	const getDefault = (input) => ({
 		output: {
@@ -112,57 +120,6 @@ const getPackage = (
 		},
 		external,
 		plugins: [
-			{
-				generateBundle(options, bundle) {
-					fs.writeFileSync(path.resolve(__dirname, 'Test.json'), JSON.stringify(bundle, null, 2), {
-						encoding: 'utf-8' 
-					})
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					bundle = Object.entries(bundle)
-					.reduce((obj, [key, value]) => {
-						value.fileName = fixFileName(value.fileName)
-
-						if ( value.code ) {
-							const mat = value.code.match(/'.*http-service\/.*';/g) ?? [];
-
-							mat.map((fileName) => fileName.replace("'", '').replace("';", ''))
-							.forEach((fileName) => {
-								const [_base] = fileName.split('src');
-								const base = `${_base}src/${value.fileName}`
-
-								const newFilename = path.relative(base, fileName).split('/');
-
-								newFilename.shift();
-
-								value.code = value.code.replace(
-									fileName,
-									newFilename.join('/')
-								)
-							})
-						}
-
-						if ( value.importedBindings ) {
-							value.importedBindings = Object.entries(value.importedBindings)
-							.reduce((obj, [key, value]) => {
-								obj[fixFileName(key)] = value;
-								return obj
-							}, {})
-						}
-
-						if ( value.imports ) {
-							value.imports = value.imports
-							.map((value) => fixFileName(value))
-						}
-
-						obj[fixFileName(key)] = value;
-						return obj;
-					}, {})
-					fs.writeFileSync(path.resolve(__dirname, 'Test2.json'), JSON.stringify(bundle, null, 2), {
-						encoding: 'utf-8' 
-					})
-					return null;
-				}
-			},
 			...defaultExtPlugin,
 			babel({
 				comments: false,
@@ -178,62 +135,102 @@ const getPackage = (
 				],
 				plugins: babelPlugins,
 				extensions: ['.ts', '.tsx']
+			}),
+			execute({ 
+				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`], 
+				sync: true,
+				hook: 'buildEnd' 
 			})
 		],
 		...input
 	})
 
-	// JS modules for bundlers
-	const modules = [
+	if ( merge ) {
+		// #region Create build and change http-services for the package version
+		await mergeDirs(SOURCE_FOLDER, BUILD_FOLDER, {
+			overwrite: true
+		})
+
+		const files = await getFiles(BUILD_FOLDER);
+
+		await Promise.all(
+			files.map(async (fileName) => {
+				let code = await fs.promises.readFile(fileName, {
+					encoding: 'utf-8' 
+				})
+
+				const mat = code.match(/'.*http-service\/.*'/g) ?? [];
+
+				mat
+				.map((fileName) => fileName.replace("'", '').replace("'", ''))
+				.forEach((fileName) => {
+					code = code.replace(
+						fileName,
+						'@resourge/http-service'
+					)
+				})
+
+				return await fs.promises.writeFile(fileName, code, {
+					encoding: 'utf-8' 
+				})
+			})
+		);
+		// #endregion Create build and change http-services for the package version
+
+		// #region Update package json dependency
+		const packageJson = JSON.parse(fs.readFileSync(`${BASE_OUTPUT_DIR}/package.json`, 'utf-8'));
+
+		Object.keys(packageJson.dependencies)
+		.filter((key) => key.includes('@resourge'))
+		.forEach((key) => {
+			packageJson.dependencies[key] = VERSION ?? '1.0.0'
+		})
+
+		fs.writeFileSync(`${BASE_OUTPUT_DIR}/package.json`, JSON.stringify(packageJson, null, 2), 'utf-8')
+		// #endregion Update package json dependency
+
+		SOURCE_INDEX_FILE = `${BUILD_FOLDER}/index.ts`;
+
+		SOURCE_FOLDER = BUILD_FOLDER;
+	}
+
+	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`)
+	.filter((fileName) => fileName.includes('.native.'));
+
+	return [
 		getDefault({
 			input: [SOURCE_INDEX_FILE, ...nativeFiles]
 		})
 	];
-
-	return modules;
 }
 
-const executeCommandToCreateAndFixTypes = (packageNames) => {
-	const commands = packageNames.map(({ packageName, folderName }) => {
-		const { banner } = getProjectNameAndBanner(packageName);
-		// Generates types for each project
-		return `tsc --project ./scripts/tsconfig.${packageName}.json && npm run injectBannerIntoDeclarations -- --folder "./packages/${folderName}/dist" --text "${banner}"`
-	});
-
-	// Fix react-fetch types
-	commands.push('npm run merge-types')
-
-	return execute({ 
-		commands: [commands.join(' && ')], 
-		hook: 'buildStart' 
-	})
-}
-
-export default function rollup() {
-	return [
-		...getPackage(
+export default async function rollup() {
+	const modules = await Promise.all([
+		getPackage(
 			'./packages/http-service/',
 			'./packages/http-service/src',
 			'http-service'
 		),
-		...getPackage(
+		getPackage(
 			'./packages/react-fetch/',
 			'./packages/react-fetch/src',
-			'react-fetch'
-		),
+			'react-fetch',
+			true
+		)
+	])
+
+	return [
+		...modules.flat(),
 		{
 			input: './empty.js',
 			plugins: [
-				executeCommandToCreateAndFixTypes([
-					{
-						packageName: 'http-service',
-						folderName: 'http-service'
-					},
-					{
-						packageName: 'react-fetch',
-						folderName: 'react-fetch'
+				{
+					buildStart() {
+						fs.rmSync(BUILD_FOLDER, {
+							recursive: true 
+						});
 					}
-				])
+				}
 			]
 		}
 	];

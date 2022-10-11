@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import LoadingService from '../../../http-service/src/services/LoadingService';
+import { LoadingService } from '../../../http-service/src';
 
 import { globalLoading } from './globalLoader/constants';
 

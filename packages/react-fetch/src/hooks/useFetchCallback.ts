@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useEffect, useRef } from 'react';
 
-import HttpService from '../../../http-service/src/services/HttpService';
-import { RequestConfig } from '../../../http-service/src/types/RequestConfig';
-
+import { HttpService, RequestConfig } from '../../../http-service/src';
 import { FetchTrigger, useFetchContext } from '../context/FetchContext';
 import { TriggerWithoutHttpProviderError } from '../errors/TriggerWithoutHttpProviderError';
 import { useId } from '../utils/useIdShim';

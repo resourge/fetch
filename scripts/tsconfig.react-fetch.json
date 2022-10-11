@@ -5,11 +5,10 @@
 		"outDir": "../packages/react-fetch/dist",
 		"noEmit": false,
 		"emitDeclarationOnly": true,
-		"downlevelIteration": true
+		"isolatedModules": false
 	},
 	"include": [
-		"../packages/http-service/src/**/*",
-		"../packages/react-fetch/src/**/*"
+		"../build/**/*"
 	],
 	"exclude": [
 		"**/dist/*"
