@@ -165,10 +165,10 @@ export function useFetch<T = any>(
 				}
 				if ( onError ) {
 					const error = onError(e);
-					if ( error !== undefined ) {
-						currentData.current.error = error;
+					if ( error === undefined ) {
 						return;
 					}
+					currentData.current.error = error;
 				}
 				currentData.current.error = e;
 			}
