@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/resourge/fetch/compare/v1.0.5...v1.0.6) (2022-10-11)
+
+
+### Bug Fixes
+
+* **usefetch:** fix onError when returning undefined was not working as intended ([397c4f4](https://github.com/resourge/fetch/commit/397c4f41bff450cd9d7bd469d410866d3a17050f))
+
 ## [1.0.5](https://github.com/resourge/fetch/compare/v1.0.4...v1.0.5) (2022-10-11)
 
 
