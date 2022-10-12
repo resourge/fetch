@@ -23,4 +23,6 @@ export let globalLoading: React.ReactNode = <GlobalLoading color={globalColor} /
 
 export function setGlobalLoading(_globalLoading: React.ReactNode) {
 	globalLoading = _globalLoading
+
+	return globalLoading;
 }

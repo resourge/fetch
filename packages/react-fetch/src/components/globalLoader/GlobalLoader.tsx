@@ -3,12 +3,7 @@ import React from 'react';
 import Loader from '../Loader';
 
 import { GlobalLoading } from './GlobalLoading';
-import {
-	BaseGlobalLoaderProps,
-	globalColor,
-	globalLoading,
-	setGlobalLoading
-} from './constants'
+import { BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
 
 export type GlobalLoaderProps = BaseGlobalLoaderProps<React.CSSProperties>
 
@@ -21,7 +16,7 @@ export type GlobalLoaderProps = BaseGlobalLoaderProps<React.CSSProperties>
 const GlobalLoader: React.FC<GlobalLoaderProps> = ({
 	loaderId, style, children, color = globalColor
 }) => {
-	setGlobalLoading(children ?? <GlobalLoading color={color} />)
+	const globalLoading = setGlobalLoading(children ?? <GlobalLoading color={color} />)
 
 	return (
 		<Loader 
