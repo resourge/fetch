@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/resourge/fetch/compare/v1.0.6...v1.0.7) (2022-10-12)
+
+
+### Bug Fixes
+
+* **globalloader:** fix globalLoading ([587f82e](https://github.com/resourge/fetch/commit/587f82eb1f3222ea8f1f6d5d00f44c3ccd106049))
+
 ## [1.0.6](https://github.com/resourge/fetch/compare/v1.0.5...v1.0.6) (2022-10-11)
 
 
