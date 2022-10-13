@@ -7,12 +7,14 @@ import { useId } from '../utils/useIdShim';
 import { useFetchCallback, UseFetchCallbackConfig, UseFetchCallbackValue } from './useFetchCallback';
 import { useOnFocusFetch } from './useOnFocusFetch';
 
-type UseFetchValue<T = any> = UseFetchCallbackValue<undefined[], T>;
+type UseFetchValue<T = any> = Omit<UseFetchCallbackValue<undefined[], T>, 'fetch'> & {
+	fetch: () => Promise<void>
+};
 
 export type UseFetchResult<T = any> = UseFetchValue<T> 
 & [
 	UseFetchValue<T>['data'],
-	UseFetchValue<T>['fetch'],
+	() => Promise<void>,
 	UseFetchValue<T>['isLoading'],
 	UseFetchValue<T>['error']
 ]
@@ -126,7 +128,7 @@ export function useFetch<T = any>(
 
 	_result[3] = error
 	_result[2] = isLoading
-	_result[1] = fetch
+	_result[1] = fetch as () => Promise<void>
 	_result[0] = data
 
 	return _result
