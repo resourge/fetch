@@ -153,7 +153,7 @@ export function useFetchCallback<T extends any[], Result = any>(
 				}
 				currentData.current.error = e;
 			}
-			return await Promise.reject(exports);
+			return await Promise.reject(e);
 		}
 	}, {
 		fetchId: config?.fetchId,
