@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/resourge/fetch/compare/v1.2.0...v1.2.1) (2022-10-13)
+
+
+### Bug Fixes
+
+* **usefetch:** fix useFetch return fetch type ([9a11cce](https://github.com/resourge/fetch/commit/9a11cce07db426ed4dde255b36ce25221453ff49))
+
 # [1.2.0](https://github.com/resourge/fetch/compare/v1.1.0...v1.2.0) (2022-10-13)
 
 
