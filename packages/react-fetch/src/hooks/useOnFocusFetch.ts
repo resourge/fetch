@@ -1,49 +1,32 @@
-import { MutableRefObject, useRef } from 'react';
+import { useRef } from 'react';
 
 import { throttleMethod } from '../utils/throttleMethod';
 
-import { FetchCallbackResult } from './useFetchCallback';
 import { useOnFocus } from './useOnFocus/useOnFocus';
 
 /**
  * Triggers on window's focus, after blur.
  */
-export const useOnFocusFetch = <T extends any[]>(
+export const useOnFocusFetch = (
 	fetch: () => Promise<void>,
-	isFetching: FetchCallbackResult<T>['isFetching'],
-	shouldLoadingRef: MutableRefObject<boolean>,
 	onWindowFocus?: boolean
 ) => {
-	const fetchRef = useRef<{
-		fetch: () => Promise<void>
-		isFetching: FetchCallbackResult<T>['isFetching']
-	}>({
-				fetch,
-				isFetching
-			});
+	const fetchRef = useRef<() => Promise<void>>(fetch);
 
-	fetchRef.current = {
-		fetch,
-		isFetching
-	};
+	fetchRef.current = fetch;
 
 	useOnFocus(
 		() => {
 			let dateNow = Date.now();
 			const fetchOnWindowFocus = throttleMethod(() => {
-				shouldLoadingRef.current = false;
-				fetchRef.current.fetch()
+				fetchRef.current()
 				.finally(() => {
-					shouldLoadingRef.current = true;
-				});
+					dateNow = Date.now()
+				})
 			}, 1000);
 
 			const focus = () => {
 				const now = Date.now();
-
-				if ( fetchRef.current.isFetching() ) {
-					dateNow = Date.now();
-				}
 
 				if (now - dateNow <= 10000 ) {
 					return;

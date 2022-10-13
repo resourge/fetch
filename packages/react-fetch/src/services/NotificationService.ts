@@ -14,6 +14,7 @@ class NotificationService {
 		this.notifications.set(id, notification);
 
 		return () => {
+			this.finishRequest(id);
 			this.notifications.delete(id);
 		}
 	}

@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
+import { ControlledFetchConfig } from '../hooks/useControlledFetch';
 import { UseFetchConfig } from '../hooks/useFetch';
-import { FetchCallbackConfig } from '../hooks/useFetchCallback';
 
 export type FetchTriggerValues = Array<string | { loaderId: string, params: any[] }>
 
@@ -16,7 +16,7 @@ export type FetchTrigger = {
 	before?: FetchTriggerValues
 }
 
-export type FetchContextConfig = Omit<UseFetchConfig, 'initialState' | 'deps' | 'scrollRestoration' | keyof FetchCallbackConfig>
+export type FetchContextConfig = Omit<UseFetchConfig, 'initialState' | 'deps' | 'scrollRestoration' | keyof ControlledFetchConfig>
 
 export type FetchContextType = {
 	request: Map<string, {

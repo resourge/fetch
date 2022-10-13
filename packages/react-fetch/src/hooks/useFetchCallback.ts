@@ -1,120 +1,228 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
-import { HttpService, RequestConfig } from '../../../http-service/src';
-import { FetchTrigger, useFetchContext } from '../context/FetchContext';
-import { TriggerWithoutHttpProviderError } from '../errors/TriggerWithoutHttpProviderError';
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
+
+import { LoadingService, FetchError, FetchResponseError } from '../../../http-service/src';
+import { useFetchContext } from '../context/FetchContext';
+import NotificationService from '../services/NotificationService';
 import { useId } from '../utils/useIdShim';
-import { triggerFetch } from '../utils/utils';
-import { validateTrigger } from '../utils/validateIfTriggerDoesCreateInfiniteLoop';
 
-type RequestOnFunction = (this: { id: string }, config: RequestConfig) => RequestConfig
+import { ControlledFetchConfig, useControlledFetch } from './useControlledFetch';
 
-export interface FetchCallbackResult<T extends any[]> {
-	(...args: T): Promise<void>
-	isFetching: () => boolean
+export interface UseFetchCallbackValue<T extends any[], Result = any> {
+	(...args: T): Promise<Result>
+	data: Result
+	error: FetchResponseError | FetchError | Error
+	/**
+	 * Fetch Method with loading
+	 */
+	fetch: (...args: T) => Promise<Result>
+	isLoading: boolean
+	/**
+	 * Fetch Method without loading
+	 */
+	noLoadingFetch: (...args: T) => Promise<Result>
 }
 
-export type FetchCallbackConfig = {
+export type UseFetchCallbackResult<T extends any[], Result = any> = UseFetchCallbackValue<T, Result> 
+& [
+	(...args: T) => Promise<Result>,
+	boolean,
+	FetchResponseError | FetchError | Error,
+	Result,
+]
+
+export type UseFetchCallbackConfig<T> = ControlledFetchConfig & {	
 	/**
-	 * Serves as an uniqueId to be able to trigger in other fetch calls
+	* Default data values.
+	*/
+	initialState?: T
+	
+	/**
+	 * Errors will trigger this method.
+	 * * Note: If return is undefined, it will not update error state.
 	 */
-	fetchId?: string
+	onError?: (e: null | Error | FetchError | any) => undefined | null | Error | FetchError | any
 
 	/**
-	 * To trigger other useFetchCallback/useFetch.
-	 * * Note: In the case of useFetchCallback having params, its necessary to set
-	 * * trigger after/before with name and params instead of a string
+	 * Doesn't trigger any Loading
+	 * @default false
 	 */
-	trigger?: FetchTrigger
+	silent?: boolean
+
+	/**
+	 * Instead of triggering a local loading, this make it so LoadingService does it.
+	 * When:
+	 * 	[true] - Will trigger GlobalLoading loading;
+	 *  [string] - Will trigger loaderId Loading ("<Loader loaderId="">") 
+	 *  [string[]] - Will trigger all loaderId Loading ("<Loader loaderId="">") 
+	 * @default undefined
+	 */
+	useLoadingService?: boolean | string | string[]
+}
+
+type State<T> = {
+	data: T | undefined
+	error: null | Error | FetchError | any
+	isLoading: boolean
 }
 
 /**
- * Hook to fetch and set data.
- * It will manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
- * @param method - promise
- * @param config {@link FetchCallbackConfig} - fetch callback config's. They override default HttpProvider config's.
+ * Hook to fetch and control loading.
+ * It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
+ * * Note: It will not trigger on useEffect, for that use `useFetch`.
+ * @param method - method to set fetch data
+ * @param config {@link UseFetchCallbackConfig} - fetch config's. They override default HttpProvider config's.
+ * @example
+ * ```Typescript
+  const getUrl = useFetchCallback(
+    async () => {
+      return HttpService.get("url")
+    }
+  );
+```
  */
-export const useFetchCallback = <T extends any[]>(
-	method: (...args: T) => Promise<void>,
-	config?: FetchCallbackConfig
-): FetchCallbackResult<T> => {
-	const functionId = useId();
-	const context = useFetchContext();
-	if ( __DEV__ ) {
-		if ( config?.trigger && !context ) {
-			throw new TriggerWithoutHttpProviderError();
-		}
+export function useFetchCallback<T extends any[], Result = any>(
+	method: (...args: T) => Promise<Result>,
+	{
+		initialState: defaultData, 
+		useLoadingService: _useLoadingService,
+		silent: _silent,
+		onError: _onError,
+		...fetchConfig 
+	}: UseFetchCallbackConfig<Result>
+): UseFetchCallbackResult<T, Result> {
+	const httpContext = useFetchContext();
 
-		validateTrigger(context, config?.trigger, config?.fetchId);
-	}
+	const useLoadingService = _useLoadingService ?? httpContext?.config?.useLoadingService;
+	const silent = _silent ?? httpContext?.config?.silent ?? false;
+	const onError = _onError ?? httpContext?.config?.onError; 
 
-	const isFetchingRef = useRef<boolean>(false);
-	const controllersRef = useRef<AbortController[]>([]);
+	const currentData = useRef<State<Result>>({
+		data: defaultData,
+		isLoading: true,
+		error: null
+	});
 
-	useEffect(() => {
-		return () => {
-			if ( controllersRef.current.length ) {
-				controllersRef.current.forEach((controller) => {
-					controller.abort();
-				})
-			}
-		}
-	}, [])
+	const id = useId();
 
-	const request: FetchCallbackResult<T> = async (...args: T) => {
-		isFetchingRef.current = true;
-		await triggerFetch(context, config?.trigger?.before);
-
-		const requestOn: RequestOnFunction = function (config: RequestConfig) {
-			if ( this.id === functionId ) {
-				if ( !config.signal ) {
-					const controller = new AbortController();
-					const signal = controller.signal;
-
-					controllersRef.current.push(controller);
+	const setLoading = (isLoading: boolean) => { 
+		if ( useLoadingService ) {
+			if ( !silent ) {
+				if ( Array.isArray(useLoadingService) ) {
+					useLoadingService.forEach((name) => {
+						// @ts-expect-error Its protected because I don't want it to be visible to others
+						LoadingService.setLoading(name, isLoading);
+					})
 	
-					return {
-						...config,
-						signal
-					}
+					return;
 				}
+				// @ts-expect-error Its protected because I don't want it to be visible to others
+				LoadingService.setLoading(typeof useLoadingService === 'string' ? useLoadingService : '', isLoading)
 			}
-			return config;
+			if ( !isLoading ) {
+				NotificationService.notifyAll();
+			}
 		}
-
-		const removeInterceptor = HttpService.interceptors.request.use(
-			requestOn.bind({
-				id: functionId 
-			}),
-			(error) => error
-		)
-
-		await method(...args);
-
-		controllersRef.current = [];
-		removeInterceptor();
-
-		await triggerFetch(context, config?.trigger?.after);
-		isFetchingRef.current = false;
+		else {
+			if ( !silent ) {
+				currentData.current = {
+					...currentData.current,
+					isLoading
+				}
+				NotificationService.notifyAll();
+			}
+		}
 	}
 
-	request.isFetching = () => {
-		return isFetchingRef.current;
-	};
-
-	useEffect(() => {
-		if ( config?.fetchId && context ) {
-			context.request.set(config?.fetchId, {
-				request: request as unknown as (...args: any[]) => Promise<void>,
-				trigger: config.trigger
-			});
-
-			return () => {
-				context.request.delete(config.fetchId!)
+	const noLoadingFetch = useControlledFetch<T, Result>(async (...args: T): Promise<Result> => {
+		try {
+			const data = await method(...args);
+			currentData.current = {
+				...currentData.current,
+				data
 			}
-		}
-	})
 
-	return request;
+			return data;
+		}
+		catch (e) {
+			if ( !(e instanceof DOMException && e.name === 'AbortError') ) {
+				currentData.current = {
+					...currentData.current
+				}
+				if ( onError ) {
+					const error = onError(e);
+					if ( error === undefined ) {
+						return await Promise.reject(error);
+					}
+					currentData.current.error = error;
+				}
+				currentData.current.error = e;
+			}
+			return await Promise.reject(exports);
+		}
+	}, fetchConfig);
+
+	const fetch = async (...args: T) => {
+		setLoading(true);
+		NotificationService.startRequest(id);
+		try {
+			return await noLoadingFetch(...args);
+		}
+		finally {
+			NotificationService.finishRequest(id);
+			setLoading(false);
+		}
+	}
+
+	useSyncExternalStoreWithSelector(
+		useCallback((a) => NotificationService.subscribe(id, a), [id]),
+		() => currentData.current,
+		() => currentData.current,
+		(selection) => selection,
+		(previousState, newState) => {
+			return (
+				`${String(previousState.isLoading)}` === `${String(newState.isLoading)}` &&
+				previousState.data === newState.data &&
+				previousState.error === newState.error
+			)
+		}
+	);
+
+	const _isLoading = useLoadingService ? false : currentData.current.isLoading;
+
+	const result: any = fetch;
+
+	result[Symbol.iterator] = function () {
+		let i = 0;
+		return {
+			next() {
+				const value = result[i++]
+				if (value === undefined) {
+					return {
+						done: true,
+						value 
+					};
+				}
+				return {
+					done: false,
+					value 
+				};
+			}
+		};
+	}
+
+	result[0] = fetch;
+	result[1] = _isLoading;
+	result[2] = currentData.current.error;
+	result[3] = currentData.current.data;
+
+	result.isLoading = useLoadingService ? false : currentData.current.isLoading;
+	result.error = currentData.current.error;
+	result.fetch = fetch;
+	result.data = currentData.current.data;
+
+	result.noLoadingFetch = noLoadingFetch;
+
+	return result
 }

@@ -1,46 +1,34 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
-import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
-
-import { LoadingService, FetchError, FetchResponseError } from '../../../http-service/src';
 import { useFetchContext } from '../context/FetchContext';
 import NotificationService from '../services/NotificationService';
 import { useId } from '../utils/useIdShim';
 
-import { FetchCallbackConfig, useFetchCallback } from './useFetchCallback';
+import { useFetchCallback, UseFetchCallbackConfig, UseFetchCallbackValue } from './useFetchCallback';
 import { useOnFocusFetch } from './useOnFocusFetch';
 
-export type UseFetchResult<Data = any> = [
-	data: Data, 
-	fetch: () => Promise<void>,
-	error: FetchResponseError | FetchError | Error,
-	isLoading: boolean
-] & {
-	data: Data
-	error: FetchResponseError | FetchError | Error
-	fetch: () => Promise<void>
-	isLoading: boolean
-}
+type UseFetchValue<T = any> = UseFetchCallbackValue<undefined[], T>;
 
-export type UseFetchConfig<T = any> = FetchCallbackConfig & {
+export type UseFetchResult<T = any> = UseFetchValue<T> 
+& [
+	UseFetchValue<T>['data'],
+	UseFetchValue<T>['fetch'],
+	UseFetchValue<T>['isLoading'],
+	UseFetchValue<T>['error']
+]
+
+export type UseFetchConfig<T = any> = Omit<UseFetchCallbackConfig<T>, 'initialState'> & {
 	/**
-	 * Default data values.
-	 */
+	* Default data values.
+	*/
 	initialState: T
-
 	/**
 	 * useEffect dependencies.
 	 * Basically works on useEffect dependencies
 	 * @default []
 	 */
 	deps?: React.DependencyList
-	
-	/**
-	 * Errors will trigger this method.
-	 * * Note: If return is undefined, it will not update error state.
-	 */
-	onError?: (e: null | Error | FetchError | any) => undefined | null | Error | FetchError | any
-	
+
 	/**
 	 * Fetch on window focus
 	 * @default true
@@ -69,12 +57,6 @@ export type UseFetchConfig<T = any> = FetchCallbackConfig & {
 	useLoadingService?: boolean | string | string[]
 }
 
-type State<T = any> = {
-	data: T
-	error: null | Error | FetchError | any
-	isLoading: boolean
-}
-
 /**
  * Hook to fetch and set data.
  * It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
@@ -95,127 +77,30 @@ type State<T = any> = {
 export function useFetch<T = any>(
 	method: () => Promise<T>,
 	{
-		initialState: defaultData, 
 		deps = [], 
-		useLoadingService: _useLoadingService,
-		silent: _silent,
 		onWindowFocus: _onWindowFocus,
-		onError: _onError,
 		scrollRestoration,
 		...fetchConfig 
-	}: UseFetchConfig
+	}: UseFetchConfig<T>
 ): UseFetchResult<T> {
 	const httpContext = useFetchContext();
 
-	const useLoadingService = _useLoadingService ?? httpContext?.config?.useLoadingService;
-	const silent = _silent ?? httpContext?.config?.silent ?? false;
-	const onWindowFocus = _onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
-	const onError = _onError ?? httpContext?.config?.onError; 
-
-	const shouldLoadingRef = useRef<boolean>(true);
-	const currentData = useRef<State<T>>({
-		isLoading: true,
-		data: defaultData,
-		error: null
-	});
-
 	const id = useId();
 
-	const setLoading = useLoadingService 
-		? (isLoading: boolean) => {
-			if ( !silent && shouldLoadingRef.current ) {
-				if ( Array.isArray(useLoadingService) ) {
-					useLoadingService.forEach((name) => {
-						// @ts-expect-error Its protected because I don't want it to be visible to others
-						LoadingService.setLoading(name, isLoading);
-					})
-	
-					return;
-				}
-				// @ts-expect-error Its protected because I don't want it to be visible to others
-				LoadingService.setLoading(typeof useLoadingService === 'string' ? useLoadingService : '', isLoading)
-			}
-			if ( !isLoading ) {
-				NotificationService.notifyAll();
-			}
-		}
-		: (isLoading: boolean) => {
-			if ( !silent && shouldLoadingRef.current ) {
-				currentData.current = {
-					...currentData.current,
-					isLoading
-				}
-				NotificationService.notifyAll();
-			}
-		}
+	const onWindowFocus = _onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
 
-	const fetchMethod = useFetchCallback(async () => {
-		try {
-			const data = await method();
-			
-			currentData.current = {
-				...currentData.current,
-				data
-			}
-		}
-		catch (e) {
-			if ( !(e instanceof DOMException && e.name === 'AbortError') ) {
-				currentData.current = {
-					...currentData.current
-				}
-				if ( onError ) {
-					const error = onError(e);
-					if ( error === undefined ) {
-						return;
-					}
-					currentData.current.error = error;
-				}
-				currentData.current.error = e;
-			}
-		}
-		finally {
-			shouldLoadingRef.current = true;
-		}
-	}, fetchConfig);
-
-	const fetch = async () => {
-		setLoading(true);
-		NotificationService.startRequest(id);
-		try {
-			await fetchMethod()
-		}
-		finally {
-			NotificationService.finishRequest(id);
-			setLoading(false);
-		}
-	}
-
-	useSyncExternalStoreWithSelector(
-		useCallback((a) => NotificationService.subscribe(id, a), [id]),
-		() => currentData.current,
-		() => currentData.current,
-		(selection) => selection,
-		(previousState, newState) => {
-			return (
-				`${String(previousState.isLoading)}` === `${String(newState.isLoading)}` &&
-				previousState.data === newState.data &&
-				previousState.error === newState.error
-			)
-		}
-	);
+	const result = useFetchCallback<undefined[], T>(method, fetchConfig)
 
 	useOnFocusFetch(
 		async () => {
-			await fetchMethod();
+			await result.noLoadingFetch();
 			NotificationService.notify(id);
 		},
-		fetchMethod.isFetching,
-		shouldLoadingRef,
 		onWindowFocus
 	);
 
 	useEffect(() => {
-		fetch()
+		result()
 		.finally(() => {
 			if ( scrollRestoration ) {
 				if ( Array.isArray(scrollRestoration) ) {
@@ -228,19 +113,17 @@ export function useFetch<T = any>(
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, deps)
 
-	const _isLoading = useLoadingService ? false : currentData.current.isLoading;
+	const data = result[3];
+	const error = result[2];
+	const isLoading = result[1];
+	const fetch = result[0];
 
-	const result: any = [
-		currentData.current.data,
-		fetch,
-		currentData.current.error,
-		_isLoading
-	] as UseFetchResult<T>;
+	const _result: UseFetchResult<T> = result as unknown as UseFetchResult<T>;
 
-	result.isLoading = useLoadingService ? false : currentData.current.isLoading;
-	result.data = currentData.current.data;
-	result.error = currentData.current.error;
-	result.fetch = fetch;
+	_result[3] = error
+	_result[2] = isLoading
+	_result[1] = fetch
+	_result[0] = data
 
-	return result
+	return _result
 }
