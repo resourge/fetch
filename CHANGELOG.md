@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/resourge/fetch/compare/v1.1.0...v1.2.0) (2022-10-13)
+
+
+### Features
+
+* **usecontrolledfetch:** add abort optional to useFetchCallback ([17265d7](https://github.com/resourge/fetch/commit/17265d79823f8ad77ab7ec32b9e85352d065265f))
+
 # [1.1.0](https://github.com/resourge/fetch/compare/v1.0.7...v1.1.0) (2022-10-13)
 
 
