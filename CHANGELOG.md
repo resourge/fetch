@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/resourge/fetch/compare/v1.0.7...v1.1.0) (2022-10-13)
+
+
+### Features
+
+* **usefetchcallback:** change useFetchcallback to also do loading ([8917806](https://github.com/resourge/fetch/commit/89178064a4327b751203a63216bd2e94bcf51dc7))
+
 ## [1.0.7](https://github.com/resourge/fetch/compare/v1.0.6...v1.0.7) (2022-10-12)
 
 
