@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/resourge/fetch/compare/v1.2.1...v1.2.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* **usefetchcallback:** fix typo ([2173eb0](https://github.com/resourge/fetch/commit/2173eb0c066e41376428678b11989bcf344a869b))
+
 ## [1.2.1](https://github.com/resourge/fetch/compare/v1.2.0...v1.2.1) (2022-10-13)
 
 
