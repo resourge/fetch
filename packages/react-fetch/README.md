@@ -133,6 +133,7 @@ const [data, fetch, error, isLoading] = useFetch(
 | **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
 | **fetchId** | `string` | false | Serves as an uniqueId to be able to trigger in other fetch calls |
 | **trigger** | `object` | false | To trigger other useFetchCallback/useFetch. <br /> _Note: In the case of useFetchCallback having params, its necessary to set trigger after/before with name and params instead of a string_ [see more](#trigger) |
+| **abort** | `boolean` | false | To abort on component unmount. |
 
 #### scrollRestoration
 
@@ -205,12 +206,13 @@ const fetchMethod = useFetchCallBack(() => {
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| **initialState** | `any` | false | Default data values. |
+| **initialState** | `boolean` | false | Default data values. |
 | **onError** | `method` | false | Errors will trigger this method. If return is undefined, it will not update error state. |
 | **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
 | **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
 | **fetchId** | `string` | false | Serves as an uniqueId to be able to trigger in other fetch calls |
 | **trigger** | `object` | false | To trigger other useFetchCallback/useFetch.  <br />_Note: In the case of useFetchCallback having params, its necessary to set trigger after/before with name and params instead of a string_ [see more](#trigger) |
+| **abort** | `boolean` | false | To abort on component unmount. |
 
 ## FetchProvider
 

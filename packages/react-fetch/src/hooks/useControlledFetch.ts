@@ -14,6 +14,11 @@ export type ControlledFetchResult<T extends any[], Result = any> = (...args: T) 
 
 export type ControlledFetchConfig = {
 	/**
+	 * To abort on component unmount.
+	 */
+	abort?: boolean
+
+	/**
 	 * Serves as an uniqueId to be able to trigger in other fetch calls
 	 */
 	fetchId?: string
@@ -49,13 +54,16 @@ export const useControlledFetch = <T extends any[], Result = any>(
 	const controllersRef = useRef<AbortController[]>([]);
 
 	useEffect(() => {
-		return () => {
-			if ( controllersRef.current.length ) {
-				controllersRef.current.forEach((controller) => {
-					controller.abort();
-				})
+		if ( config?.abort ) {
+			return () => {
+				if ( controllersRef.current.length ) {
+					controllersRef.current.forEach((controller) => {
+						controller.abort();
+					})
+				}
 			}
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	const request: ControlledFetchResult<T, Result> = async (...args: T) => {

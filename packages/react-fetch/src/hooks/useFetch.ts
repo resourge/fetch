@@ -87,9 +87,13 @@ export function useFetch<T = any>(
 
 	const id = useId();
 
+	const abort = fetchConfig?.abort ?? true;
 	const onWindowFocus = _onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
 
-	const result = useFetchCallback<undefined[], T>(method, fetchConfig)
+	const result = useFetchCallback<undefined[], T>(method, {
+		...fetchConfig,
+		abort 
+	})
 
 	useOnFocusFetch(
 		async () => {

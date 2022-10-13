@@ -84,22 +84,16 @@ type State<T> = {
  */
 export function useFetchCallback<T extends any[], Result = any>(
 	method: (...args: T) => Promise<Result>,
-	{
-		initialState: defaultData, 
-		useLoadingService: _useLoadingService,
-		silent: _silent,
-		onError: _onError,
-		...fetchConfig 
-	}: UseFetchCallbackConfig<Result>
+	config?: UseFetchCallbackConfig<Result>
 ): UseFetchCallbackResult<T, Result> {
 	const httpContext = useFetchContext();
 
-	const useLoadingService = _useLoadingService ?? httpContext?.config?.useLoadingService;
-	const silent = _silent ?? httpContext?.config?.silent ?? false;
-	const onError = _onError ?? httpContext?.config?.onError; 
+	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
+	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
+	const onError = config?.onError ?? httpContext?.config?.onError; 
 
 	const currentData = useRef<State<Result>>({
-		data: defaultData,
+		data: config?.initialState,
 		isLoading: true,
 		error: null
 	});
@@ -161,7 +155,11 @@ export function useFetchCallback<T extends any[], Result = any>(
 			}
 			return await Promise.reject(exports);
 		}
-	}, fetchConfig);
+	}, {
+		fetchId: config?.fetchId,
+		trigger: config?.trigger,
+		abort: config?.abort
+	});
 
 	const fetch = async (...args: T) => {
 		setLoading(true);
