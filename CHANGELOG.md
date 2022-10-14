@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/resourge/fetch/compare/v1.2.2...v1.2.3) (2022-10-14)
+
+
+### Bug Fixes
+
+* **notificationservice:** add if in case notify doesnt exist ([9d8dacd](https://github.com/resourge/fetch/commit/9d8dacde8c12f398504937f2422192a75c799d03))
+
 ## [1.2.2](https://github.com/resourge/fetch/compare/v1.2.1...v1.2.2) (2022-10-13)
 
 
