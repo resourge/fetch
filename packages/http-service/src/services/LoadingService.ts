@@ -11,6 +11,10 @@ type LoadingServiceEvent = {
 class LoadingService {
 	private readonly events: Map<string, LoadingServiceEvent> = new Map();
 
+	constructor() {
+		this.events = new Map();
+	}
+
 	public getLoading(loaderId: string = ''): boolean {
 		const event = this.events.get(loaderId);
 		if ( event ) {
@@ -69,28 +73,18 @@ class LoadingService {
 		this.setLoading(loaderId, false)
 	}
 
-	protected emit(loaderId: string, isLoading: boolean, nFetch: number, emits: Array<() => void>) {
-		this.events.set(
-			loaderId, 
-			{
-				isLoading,
-				nFetch,
-				emits 
-			}
-		);
-
-		if ( nFetch <= 0 ) {
-			if ( emits && emits.length ) {
-				emits
-				.forEach((emit) => {
-					emit();
-				})
-			}
+	protected emit(emits: Array<() => void>) {
+		if ( emits && emits.length ) {
+			emits
+			.forEach((emit) => {
+				emit();
+			})
 		}
 	}
 
 	protected setLoading(loaderId: string = '', isLoading: boolean) {
-		const event = this.events.get(loaderId);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const event = this.events.get(loaderId)!;
 		if ( __DEV__ ) {
 			if ( !event ) {
 				throw new LoadingError(loaderId)
@@ -100,18 +94,33 @@ class LoadingService {
 		let {
 			nFetch, emits
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		} = event!;
+		} = event;
 
 		if ( isLoading ) {
-			this.emit(loaderId, isLoading, nFetch, emits);
+			if ( nFetch <= 0 ) {
+				event.isLoading = isLoading;
+				this.emit(emits);
+			}
 			nFetch++;
 		}
 		else {
 			if ( nFetch > 0 ) {
 				nFetch--;
 			}
-			this.emit(loaderId, isLoading, nFetch, emits);
+			if ( nFetch <= 0 ) {
+				event.isLoading = isLoading;
+				this.emit(emits);
+			}
 		}
+		
+		this.events.set(
+			loaderId, 
+			{
+				isLoading: event?.isLoading ?? false,
+				nFetch,
+				emits 
+			}
+		);
 	}
 }
 export default new LoadingService();
