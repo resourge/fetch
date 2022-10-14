@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/resourge/fetch/compare/v1.2.3...v1.2.4) (2022-10-14)
+
+
+### Bug Fixes
+
+* **loadingservice:** fix loadingservice not working as intended ([1b9829c](https://github.com/resourge/fetch/commit/1b9829c16534e515487220dfc57d8eaf5445fef5))
+
 ## [1.2.3](https://github.com/resourge/fetch/compare/v1.2.2...v1.2.3) (2022-10-14)
 
 
