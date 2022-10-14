@@ -21,8 +21,9 @@ class NotificationService {
 
 	public notify(id: string) {
 		const notify = this.notifications.get(id);
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		notify!();
+		if ( notify ) {
+			notify();
+		}
 	}
 
 	public notifyAll() {
