@@ -4,6 +4,8 @@ import { throttleMethod } from '../utils/throttleMethod';
 
 import { useOnFocus } from './useOnFocus/useOnFocus';
 
+const threshold = 10 * 60 * 1000;
+
 /**
  * Triggers on window's focus, after blur.
  */
@@ -28,7 +30,7 @@ export const useOnFocusFetch = (
 			const focus = () => {
 				const now = Date.now();
 
-				if (now - dateNow <= 10000 ) {
+				if (now - dateNow <= threshold ) {
 					return;
 				}
 
