@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/resourge/fetch/compare/v1.2.4...v1.3.0) (2022-10-14)
+
+
+### Features
+
+* **useonfocusfetch:** change refresh on focus to 10minutes ([7dd360f](https://github.com/resourge/fetch/commit/7dd360ff4b718119e54be8d5e3b15c6ddff4cb29))
+
 ## [1.2.4](https://github.com/resourge/fetch/compare/v1.2.3...v1.2.4) (2022-10-14)
 
 
