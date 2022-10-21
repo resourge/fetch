@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/resourge/fetch/compare/v1.3.0...v1.4.0) (2022-10-21)
+
+
+### Features
+
+* **loadingservice:** make setLoading not mandatory L ([202e196](https://github.com/resourge/fetch/commit/202e1967bf67501d7f9852c0feb05e119f966791))
+
 # [1.3.0](https://github.com/resourge/fetch/compare/v1.2.4...v1.3.0) (2022-10-14)
 
 
