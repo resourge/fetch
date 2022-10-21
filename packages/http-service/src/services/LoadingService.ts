@@ -83,44 +83,39 @@ class LoadingService {
 	}
 
 	protected setLoading(loaderId: string = '', isLoading: boolean) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const event = this.events.get(loaderId)!;
-		if ( __DEV__ ) {
-			if ( !event ) {
-				throw new LoadingError(loaderId)
-			}
-		}
-
-		let {
-			nFetch, emits
+		const event = this.events.get(loaderId);
+		if ( event ) {
+			let {
+				nFetch, emits
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		} = event;
+			} = event;
 
-		if ( isLoading ) {
-			if ( nFetch <= 0 ) {
-				event.isLoading = isLoading;
-				this.emit(emits);
+			if ( isLoading ) {
+				if ( nFetch <= 0 ) {
+					event.isLoading = isLoading;
+					this.emit(emits);
+				}
+				nFetch++;
 			}
-			nFetch++;
-		}
-		else {
-			if ( nFetch > 0 ) {
-				nFetch--;
+			else {
+				if ( nFetch > 0 ) {
+					nFetch--;
+				}
+				if ( nFetch <= 0 ) {
+					event.isLoading = isLoading;
+					this.emit(emits);
+				}
 			}
-			if ( nFetch <= 0 ) {
-				event.isLoading = isLoading;
-				this.emit(emits);
-			}
-		}
 		
-		this.events.set(
-			loaderId, 
-			{
-				isLoading: event?.isLoading ?? false,
-				nFetch,
-				emits 
-			}
-		);
+			this.events.set(
+				loaderId, 
+				{
+					isLoading: event?.isLoading ?? false,
+					nFetch,
+					emits 
+				}
+			);
+		}
 	}
 }
 export default new LoadingService();
