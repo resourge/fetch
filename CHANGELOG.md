@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/resourge/fetch/compare/v1.4.0...v1.5.0) (2022-10-27)
+
+
+### Features
+
+* **usefetch:** usefetch add a way to manually set data ([ef1bc1c](https://github.com/resourge/fetch/commit/ef1bc1ce53a2c6ea485f7f719d7fbd78b63182f0))
+
 # [1.4.0](https://github.com/resourge/fetch/compare/v1.3.0...v1.4.0) (2022-10-21)
 
 
