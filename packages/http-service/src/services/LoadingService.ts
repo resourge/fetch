@@ -1,5 +1,3 @@
-import { LoadingError } from '../errors/LoadingError';
-
 type LoadingServiceEvent = {
 	emits: Array<() => void>
 	isLoading: boolean

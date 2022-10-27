@@ -22,6 +22,10 @@ export interface UseFetchCallbackValue<T extends any[], Result = any> {
 	 * Fetch Method without loading
 	 */
 	noLoadingFetch: (...args: T) => Promise<Result>
+	/**
+	 * Sets Data Manually
+	 */
+	setData: (data: Result) => void
 }
 
 export type UseFetchCallbackResult<T extends any[], Result = any> = UseFetchCallbackValue<T, Result> 
@@ -30,6 +34,7 @@ export type UseFetchCallbackResult<T extends any[], Result = any> = UseFetchCall
 	boolean,
 	FetchResponseError | FetchError | Error,
 	Result,
+	(data: Result) => void
 ]
 
 export type UseFetchCallbackConfig<T> = ControlledFetchConfig & {	
@@ -129,6 +134,15 @@ export function useFetchCallback<T extends any[], Result = any>(
 		}
 	}
 
+	const setData = (data: Result) => {
+		currentData.current = {
+			...currentData.current,
+			data
+		}
+
+		NotificationService.notify(id);
+	}
+
 	const noLoadingFetch = useControlledFetch<T, Result>(async (...args: T): Promise<Result> => {
 		try {
 			const data = await method(...args);
@@ -214,11 +228,13 @@ export function useFetchCallback<T extends any[], Result = any>(
 	result[1] = _isLoading;
 	result[2] = currentData.current.error;
 	result[3] = currentData.current.data;
+	result[4] = setData;
 
 	result.isLoading = useLoadingService ? false : currentData.current.isLoading;
 	result.error = currentData.current.error;
 	result.fetch = fetch;
 	result.data = currentData.current.data;
+	result.setData = setData;
 
 	result.noLoadingFetch = noLoadingFetch;
 

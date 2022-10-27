@@ -16,7 +16,8 @@ export type UseFetchResult<T = any> = UseFetchValue<T>
 	UseFetchValue<T>['data'],
 	() => Promise<void>,
 	UseFetchValue<T>['isLoading'],
-	UseFetchValue<T>['error']
+	UseFetchValue<T>['error'],
+	UseFetchValue<T>['setData']
 ]
 
 export type UseFetchConfig<T = any> = Omit<UseFetchCallbackConfig<T>, 'initialState'> & {
@@ -119,6 +120,7 @@ export function useFetch<T = any>(
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, deps)
 
+	const setData = result[4];
 	const data = result[3];
 	const error = result[2];
 	const isLoading = result[1];
@@ -126,6 +128,7 @@ export function useFetch<T = any>(
 
 	const _result: UseFetchResult<T> = result as unknown as UseFetchResult<T>;
 
+	_result[4] = setData
 	_result[3] = error
 	_result[2] = isLoading
 	_result[1] = fetch as () => Promise<void>
