@@ -34,6 +34,9 @@ export const normalizeHeaders = (config: RequestConfig) => {
 	if ( !_config.headers || !_config.headers.Accept ) {
 		_config.headers.Accept = 'application/json, text/plain, */*'
 	}
+	if ( !_config.headers || !_config.headers['Content-Type'] ) {
+		_config.headers['Content-Type'] = 'application/json'
+	}
 
 	_config.cache = _config.cache ?? 'default';
 

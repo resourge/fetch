@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
-import { LoadingService, FetchError, FetchResponseError } from '../../../http-service/src';
+import { LoadingService, FetchError, HttpResponseError } from '../../../http-service/src'
 import { useFetchContext } from '../context/FetchContext';
 import NotificationService from '../services/NotificationService';
 import { useId } from '../utils/useIdShim';
@@ -12,7 +12,7 @@ import { ControlledFetchConfig, useControlledFetch } from './useControlledFetch'
 export interface UseFetchCallbackValue<T extends any[], Result = any> {
 	(...args: T): Promise<Result>
 	data: Result
-	error: FetchResponseError | FetchError | Error
+	error: HttpResponseError | FetchError | Error
 	/**
 	 * Fetch Method with loading
 	 */
@@ -32,7 +32,7 @@ export type UseFetchCallbackResult<T extends any[], Result = any> = UseFetchCall
 & [
 	(...args: T) => Promise<Result>,
 	boolean,
-	FetchResponseError | FetchError | Error,
+	HttpResponseError | FetchError | Error,
 	Result,
 	(data: Result) => void
 ]

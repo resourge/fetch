@@ -1,3 +1,4 @@
+import { HttpResponse, HttpResponseError } from './HttpResponse'
 import type {
 	InterceptorOnRequest,
 	InterceptorOnRequestError,
@@ -12,5 +13,7 @@ export {
 	InterceptorOnResponse,
 	InterceptorOnResponseError,
 
-	isBrowser
+	isBrowser,
+	HttpResponse,
+	HttpResponseError
 }

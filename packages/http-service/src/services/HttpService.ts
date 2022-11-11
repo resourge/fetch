@@ -1,5 +1,5 @@
-import { FetchResponseError } from '../errors/FetchError';
 import { RequestConfig } from '../types/RequestConfig';
+import { HttpResponse, HttpResponseError } from '../utils/HttpResponse';
 import { Interceptor, ResponseConfig } from '../utils/Interceptors';
 import { formatToFormData } from '../utils/formatToFormData';
 import { getCacheKey } from '../utils/getCacheKey';
@@ -41,39 +41,54 @@ export class HttpServiceClass {
 		return throttlePromise(cacheKey, cb, threshold)
 	}
 
-	public request<T = any, R = ResponseConfig<T>>(config: RequestConfig): Promise<R> {
+	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
 		if ( typeof config.url === 'string' ) {
 			config.url = new URL(config.url, this.baseUrl)
 		}
 
-		if ( config.url.searchParams.sort ) {
-			config.url.searchParams.sort();
-		}
+		config.url.searchParams.sort();
 
-		const _config: RequestConfig = normalizeRequest(
+		const _config = normalizeRequest(
 			config as NormalizeRequestConfig,
 			this.interceptors
 		);
 
 		let request = (async () => {
-			const _response = await fetch(_config.url, _config);
+			const request = new Request(_config.url, _config);
+			let _response: Response
+			try {
+				_response = await fetch(request);
+			}
+			catch ( e ) {
+				return await Promise.reject(
+					new HttpResponseError(
+						'Network Error',
+						request,
+						e
+					)
+				)
+			}
 			const response = _response.clone();
 
 			if ( _response.ok ) {
 				const data = await (config.transform ? config.transform(_response.clone(), config) : response.json());
-				return Object.assign(response, {
+				return new HttpResponse(
+					response.status,
+					response.statusText,
+					request,
+					response,
 					data
-				})
+				);
 			}
 
 			return await Promise.reject(
-				Object.assign(response, {
-					data: new FetchResponseError(
-						_response,
-						config,
-						await _response.text()
-					)
-				})
+				new HttpResponseError(
+					response.statusText,
+					request,
+					await response.text(),
+					response.status,
+					response
+				)
 			);
 		})();
 
@@ -87,9 +102,9 @@ export class HttpServiceClass {
 	public async get<T = any, R = ResponseConfig<T>>(url: string): Promise<R>;
 	public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
 	public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
-	public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params: K): Promise<R>;
-	public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params: K, config: GetMethodConfig): Promise<R>;
-	public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
+	public async get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K): Promise<R>;
+	public async get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
+	public async get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
 		const _url = new URL(url, this.baseUrl);
 
 		if ( params ) {
@@ -118,7 +133,7 @@ export class HttpServiceClass {
 		);
 	}
 
-	public post<T = any, R = ResponseConfig<T>, K = any>(
+	public post<T = any, K = any, R = ResponseConfig<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -133,7 +148,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public put<T = any, R = ResponseConfig<T>, K = any>(
+	public put<T = any, K = any, R = ResponseConfig<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -148,7 +163,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public delete<T = any, R = ResponseConfig<T>, K = any>(
+	public delete<T = any, K = any, R = ResponseConfig<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -163,7 +178,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public patch<T = any, R = ResponseConfig<T>, K = any>(
+	public patch<T = any, K = any, R = ResponseConfig<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -178,7 +193,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public upload<T = any, R = ResponseConfig<T>, K = any>(
+	public upload<T = any, K = any, R = ResponseConfig<T>>(
 		method: 'POST' | 'PUT',
 		url: string,
 		files: File[],

@@ -1,5 +1,7 @@
-import { FetchResponseError, FetchError } from '../errors/FetchError'
+import { FetchError } from '../errors/FetchError'
 import { RequestConfig } from '../types/RequestConfig'
+
+import { HttpResponse, HttpResponseError } from './HttpResponse'
 
 export type Interceptors<Config, Error = any> = {
 	error: (error: Error) => Promise<Error>
@@ -24,8 +26,8 @@ type InterceptorRequest = {
 	}>
 }
 
-export type InterceptorOnResponse = (data: ResponseConfig) => any
-export type InterceptorOnResponseError = <E extends FetchResponseError>(config: ResponseConfig<E>) => Promise<E>
+export type InterceptorOnResponse = <D>(data: HttpResponse<D>) => any
+export type InterceptorOnResponseError = <E = any>(config: HttpResponseError<E>) => Promise<HttpResponseError<E>>
 
 type InterceptorResponse = {
 	use: (
