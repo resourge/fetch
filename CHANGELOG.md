@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/resourge/fetch/compare/v1.5.1...v1.5.2) (2022-11-11)
+
+
+### Bug Fixes
+
+* **httpservice:** simplify response process and httpResponseError for fetch errors ([00dcf0c](https://github.com/resourge/fetch/commit/00dcf0c29a5805ee652aa323759663963b0e66a4))
+
 ## [1.5.1](https://github.com/resourge/fetch/compare/v1.5.0...v1.5.1) (2022-11-11)
 
 
