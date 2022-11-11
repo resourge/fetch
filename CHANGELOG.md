@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/resourge/fetch/compare/v1.5.2...v1.5.3) (2022-11-11)
+
+
+### Bug Fixes
+
+* **httpservice:** improve request handling ([caa0308](https://github.com/resourge/fetch/commit/caa0308c1a6623246224d845cb4c341307d08263))
+
 ## [1.5.2](https://github.com/resourge/fetch/compare/v1.5.1...v1.5.2) (2022-11-11)
 
 
