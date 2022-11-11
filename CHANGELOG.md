@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/resourge/fetch/compare/v1.5.0...v1.5.1) (2022-11-11)
+
+
+### Bug Fixes
+
+* **httpservice:** fix small bugs ([264dea7](https://github.com/resourge/fetch/commit/264dea7fa18aa43fe19b2b1d478742f933cbec23))
+
 # [1.5.0](https://github.com/resourge/fetch/compare/v1.4.0...v1.5.0) (2022-10-27)
 
 
