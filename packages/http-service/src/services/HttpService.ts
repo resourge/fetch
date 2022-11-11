@@ -1,6 +1,6 @@
 import { RequestConfig } from '../types/RequestConfig';
 import { HttpResponse, HttpResponseError } from '../utils/HttpResponse';
-import { Interceptor, ResponseConfig } from '../utils/Interceptors';
+import { Interceptor } from '../utils/Interceptors';
 import { formatToFormData } from '../utils/formatToFormData';
 import { getCacheKey } from '../utils/getCacheKey';
 import { normalizeRequest, NormalizeRequestConfig } from '../utils/normalizeHeaders';
@@ -102,12 +102,12 @@ export class HttpServiceClass {
 		return requestPromise as Promise<R>;
 	}
 
-	public get<T = any, R = ResponseConfig<T>>(url: string): Promise<R>;
-	public get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
-	public get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
-	public get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K): Promise<R>;
-	public get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
-	public get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
+	public get<T = any, R = HttpResponse<T>>(url: string): Promise<R>;
+	public get<T = any, R = HttpResponse<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
+	public get<T = any, R = HttpResponse<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
+	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K): Promise<R>;
+	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
+	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
 		const _url = new URL(url, this.baseUrl);
 
 		if ( params ) {
@@ -136,7 +136,7 @@ export class HttpServiceClass {
 		);
 	}
 
-	public post<T = any, K = any, R = ResponseConfig<T>>(
+	public post<T = any, K = any, R = HttpResponse<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -151,7 +151,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public put<T = any, K = any, R = ResponseConfig<T>>(
+	public put<T = any, K = any, R = HttpResponse<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -166,7 +166,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public delete<T = any, K = any, R = ResponseConfig<T>>(
+	public delete<T = any, K = any, R = HttpResponse<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -181,7 +181,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public patch<T = any, K = any, R = ResponseConfig<T>>(
+	public patch<T = any, K = any, R = HttpResponse<T>>(
 		url: string,
 		data?: K,
 		config?: MethodConfig
@@ -196,7 +196,7 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 
-	public upload<T = any, K = any, R = ResponseConfig<T>>(
+	public upload<T = any, K = any, R = HttpResponse<T>>(
 		method: 'POST' | 'PUT',
 		url: string,
 		files: File[],

@@ -8,10 +8,6 @@ export type Interceptors<Config, Error = any> = {
 	on: (config: Config) => Config
 }
 
-export type ResponseConfig<T = any> = Response & {
-	data: T
-}
-
 export type InterceptorOnRequest = (config: RequestConfig) => RequestConfig;
 export type InterceptorOnRequestError = (error: FetchError) => any;
 
