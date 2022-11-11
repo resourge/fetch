@@ -1,3 +1,10 @@
+## [1.5.4](https://github.com/resourge/fetch/compare/v1.5.3...v1.5.4) (2022-11-11)
+
+
+### Bug Fixes
+
+* **httpservice:** fix types ([68cf2d1](https://github.com/resourge/fetch/commit/68cf2d18c31fe908f6599b918d0963fc36b386c9))
+
 ## [1.5.3](https://github.com/resourge/fetch/compare/v1.5.2...v1.5.3) (2022-11-11)
 
 
