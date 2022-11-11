@@ -85,6 +85,16 @@ export const normalizeRequest = (
 		let _config: RequestConfig = normalizeHeaders(config)
 
 		_config.method = _config.method.toUpperCase();
+
+		if (
+			config.url.protocol && !['http:', 'https:', 'file:'].includes(config.url.protocol)
+		) {
+			throw new FetchError('Unsupported protocol ' + config.url.protocol);
+		}
+
+		for (const { onRequest } of interceptors.request.values) {
+			_config = onRequest(_config);
+		}
 		
 		if ( _config.data ) {
 			if ( 
@@ -105,20 +115,13 @@ export const normalizeRequest = (
 				) {
 					(_config as RequestConfig & { body: RequestInit['body'] }).body = _config.data 
 				}
+				else {
+					(_config as RequestConfig & { body: RequestInit['body'] }).body = JSON.stringify(_config.data)
+				}
 			}
 			else {
 				(_config as RequestConfig & { body: RequestInit['body'] }).body = JSON.stringify(_config.data)
 			}
-		}
-
-		if (
-			config.url.protocol && !['http:', 'https:', 'file:'].includes(config.url.protocol)
-		) {
-			throw new FetchError('Unsupported protocol ' + config.url.protocol);
-		}
-
-		for (const { onRequest } of interceptors.request.values) {
-			_config = onRequest(_config);
 		}
 
 		return _config;

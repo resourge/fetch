@@ -25,7 +25,7 @@ type InterceptorRequest = {
 }
 
 export type InterceptorOnResponse = (data: ResponseConfig) => any
-export type InterceptorOnResponseError = <E extends FetchResponseError>(config: E) => Promise<E>
+export type InterceptorOnResponseError = <E extends FetchResponseError>(config: ResponseConfig<E>) => Promise<E>
 
 type InterceptorResponse = {
 	use: (

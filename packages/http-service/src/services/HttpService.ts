@@ -17,6 +17,10 @@ export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 	 * Throttle threshold
 	 */
 	threshold?: number
+	/**
+	 * Throttle key
+	 */
+	throttleKey?: string
 }
 
 /**
@@ -41,7 +45,10 @@ export class HttpServiceClass {
 		if ( typeof config.url === 'string' ) {
 			config.url = new URL(config.url, this.baseUrl)
 		}
-		config.url.searchParams.sort();
+
+		if ( config.url.searchParams.sort ) {
+			config.url.searchParams.sort();
+		}
 
 		const _config: RequestConfig = normalizeRequest(
 			config as NormalizeRequestConfig,
@@ -60,10 +67,13 @@ export class HttpServiceClass {
 			}
 
 			return await Promise.reject(
-				new FetchResponseError(
-					_response,
-					await _response.text()
-				)
+				Object.assign(response, {
+					data: new FetchResponseError(
+						_response,
+						config,
+						await _response.text()
+					)
+				})
 			);
 		})();
 
@@ -76,6 +86,7 @@ export class HttpServiceClass {
 
 	public async get<T = any, R = ResponseConfig<T>>(url: string): Promise<R>;
 	public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
+	public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
 	public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params: K): Promise<R>;
 	public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params: K, config: GetMethodConfig): Promise<R>;
 	public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
@@ -98,14 +109,12 @@ export class HttpServiceClass {
 		}
 
 		// Get throttle cache key
-		const cacheKey = getCacheKey(_config);
+		const cacheKey = config?.throttleKey ?? getCacheKey(_config);
 
 		return await this.throttleRequest(
 			cacheKey,
 			threshold,
-			() => {
-				return this.request(_config);
-			}
+			() => this.request(_config)
 		);
 	}
 
