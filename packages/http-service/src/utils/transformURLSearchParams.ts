@@ -56,5 +56,5 @@ const convertValue = (key: string, value: any): any[] => {
  * Method to transform params into QueryStrings
  */
 export const convertParamsToQueryString = <K extends object | any[]>(params: K) => {
-	return new URLSearchParams(convertValue('', params))
+	return new URLSearchParams(convertValue('', params).filter((v) => v.length))
 }

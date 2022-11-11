@@ -75,6 +75,8 @@ export const normalizeBody = (
 
 export type NormalizeRequestConfig = Omit<RequestConfig, 'url'> & { url: URL }
 
+const permittedProtocols = ['http:', 'https:', 'file:'];
+
 /**
  * Normalize request, by injecting headers, and transform data into body.
  * @param config 
@@ -87,10 +89,8 @@ export const normalizeRequest = (
 	try {
 		let _config: RequestConfig = normalizeHeaders(config)
 
-		_config.method = _config.method.toUpperCase();
-
 		if (
-			config.url.protocol && !['http:', 'https:', 'file:'].includes(config.url.protocol)
+			config.url.protocol && !permittedProtocols.includes(config.url.protocol)
 		) {
 			throw new FetchError('Unsupported protocol ' + config.url.protocol);
 		}
@@ -132,7 +132,9 @@ export const normalizeRequest = (
 	catch (e) {
 		if ( e instanceof Error ) {
 			for (const { onRequestError } of interceptors.request.values) {
-				onRequestError(FetchError.setFromError(e));
+				if ( onRequestError ) {
+					onRequestError(FetchError.setFromError(e));
+				}
 			}
 		}
 		throw e;

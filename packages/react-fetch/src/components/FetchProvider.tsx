@@ -68,10 +68,10 @@ const FetchProvider: React.FC<Props> = ({
 	httpService: fetchService,
 	config,
 	baseUrl,
-	onRequest = (config) => config, 
-	onRequestError = (config) => config,
-	onResponse = (config) => config, 
-	onResponseError = (error) => Promise.reject(error) 
+	onRequest = (config) => config,
+	onRequestError,
+	onResponse = (data) => data,
+	onResponseError
 }) => {
 	if ( __DEV__ ) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -88,10 +88,10 @@ const FetchProvider: React.FC<Props> = ({
 
 	const onRequestRef = useRef<{
 		onRequest: InterceptorOnRequest
-		onRequestError: InterceptorOnRequestError
-		
 		onResponse: InterceptorOnResponse
-		onResponseError: InterceptorOnResponseError
+		
+		onRequestError?: InterceptorOnRequestError
+		onResponseError?: InterceptorOnResponseError
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	}>(null!);
 
@@ -110,21 +110,24 @@ const FetchProvider: React.FC<Props> = ({
 			newHttpService.baseUrl = baseUrl ?? newHttpService.baseUrl;
 			setDefaultHttpService(newHttpService)
 		}
+
 		const removeRequest = HttpService.interceptors.request.use(
 			(config) => {
 				return onRequestRef.current.onRequest(config);
 			},
-			(error) => {
-				return onRequestRef.current.onRequestError(error);
-			}
+			onRequestRef.current.onRequestError ? (error) => {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				return onRequestRef.current.onRequestError!(error);
+			} : undefined
 		)
 		const removeResponse = HttpService.interceptors.response.use(
 			(data) => {
 				return onRequestRef.current.onResponse(data);
 			},
-			(error) => {
-				return onRequestRef.current.onResponseError(error);
-			}
+			onRequestRef.current.onResponseError ? (error) => {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				return onRequestRef.current.onResponseError!(error);
+			} : undefined
 		)
 
 		return () => {

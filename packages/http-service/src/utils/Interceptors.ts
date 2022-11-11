@@ -18,11 +18,11 @@ export type InterceptorOnRequestError = (error: FetchError) => any;
 type InterceptorRequest = {
 	use: (
 		onRequest: InterceptorOnRequest,
-		onRequestError: InterceptorOnRequestError
+		onRequestError?: InterceptorOnRequestError
 	) => () => void
 	values: Set<{
 		onRequest: InterceptorOnRequest
-		onRequestError: InterceptorOnRequestError
+		onRequestError?: InterceptorOnRequestError
 	}>
 }
 
@@ -32,11 +32,11 @@ export type InterceptorOnResponseError = <E = any>(config: HttpResponseError<E>)
 type InterceptorResponse = {
 	use: (
 		onResponse: InterceptorOnResponse,
-		onResponseError: InterceptorOnResponseError
+		onResponseError?: InterceptorOnResponseError
 	) => () => void
 	values: Set<{
 		onResponse: InterceptorOnResponse
-		onResponseError: InterceptorOnResponseError
+		onResponseError?: InterceptorOnResponseError
 	}>
 }
 
@@ -66,7 +66,7 @@ export class Interceptor {
 			values: new Set(),
 			use: (
 				onRequest: InterceptorOnRequest,
-				onRequestError: InterceptorOnRequestError
+				onRequestError?: InterceptorOnRequestError
 			) => {
 				const obj = {
 					onRequest,
@@ -83,7 +83,7 @@ export class Interceptor {
 			values: new Set(),
 			use: (
 				onResponse: InterceptorOnResponse,
-				onResponseError: InterceptorOnResponseError
+				onResponseError?: InterceptorOnResponseError
 			) => {
 				const obj = {
 					onResponse,

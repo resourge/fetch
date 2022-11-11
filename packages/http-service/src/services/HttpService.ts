@@ -41,6 +41,44 @@ export class HttpServiceClass {
 		return throttlePromise(cacheKey, cb, threshold)
 	}
 
+	private async generatePromise(request: Request, config: RequestConfig) {
+		let _response: Response
+		try {
+			_response = await fetch(request);
+		}
+		catch ( e ) {
+			return await Promise.reject(
+				new HttpResponseError(
+					'Network Error',
+					request,
+					e
+				)
+			)
+		}
+		const response = _response.clone();
+
+		if ( _response.ok ) {
+			const data = await (config.transform ? config.transform(_response.clone(), config) : response.json());
+			return new HttpResponse(
+				response.status,
+				response.statusText,
+				request,
+				response,
+				data
+			);
+		}
+
+		return await Promise.reject(
+			new HttpResponseError(
+				response.statusText,
+				request,
+				await response.text(),
+				response.status,
+				response
+			)
+		);
+	}
+
 	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
 		if ( typeof config.url === 'string' ) {
 			config.url = new URL(config.url, this.baseUrl)
@@ -53,58 +91,23 @@ export class HttpServiceClass {
 			this.interceptors
 		);
 
-		let request = (async () => {
-			const request = new Request(_config.url, _config);
-			let _response: Response
-			try {
-				_response = await fetch(request);
-			}
-			catch ( e ) {
-				return await Promise.reject(
-					new HttpResponseError(
-						'Network Error',
-						request,
-						e
-					)
-				)
-			}
-			const response = _response.clone();
+		const request = new Request(_config.url, _config);
 
-			if ( _response.ok ) {
-				const data = await (config.transform ? config.transform(_response.clone(), config) : response.json());
-				return new HttpResponse(
-					response.status,
-					response.statusText,
-					request,
-					response,
-					data
-				);
-			}
-
-			return await Promise.reject(
-				new HttpResponseError(
-					response.statusText,
-					request,
-					await response.text(),
-					response.status,
-					response
-				)
-			);
-		})();
+		let requestPromise = this.generatePromise(request, config);
 
 		this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
-			request = request.then(onResponse, onResponseError)
+			requestPromise = requestPromise.then(onResponse, onResponseError)
 		})
 
-		return request as Promise<R>;
+		return requestPromise as Promise<R>;
 	}
 
-	public async get<T = any, R = ResponseConfig<T>>(url: string): Promise<R>;
-	public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
-	public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
-	public async get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K): Promise<R>;
-	public async get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
-	public async get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
+	public get<T = any, R = ResponseConfig<T>>(url: string): Promise<R>;
+	public get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
+	public get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
+	public get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K): Promise<R>;
+	public get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
+	public get<T = any, K extends object | any[] = any, R = ResponseConfig<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
 		const _url = new URL(url, this.baseUrl);
 
 		if ( params ) {
@@ -126,7 +129,7 @@ export class HttpServiceClass {
 		// Get throttle cache key
 		const cacheKey = config?.throttleKey ?? getCacheKey(_config);
 
-		return await this.throttleRequest(
+		return this.throttleRequest(
 			cacheKey,
 			threshold,
 			() => this.request(_config)
