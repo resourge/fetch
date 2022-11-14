@@ -1,3 +1,10 @@
+## [1.5.6](https://github.com/resourge/fetch/compare/v1.5.5...v1.5.6) (2022-11-14)
+
+
+### Bug Fixes
+
+* **useonfocus.native:** make previous fix also work on native ([6d85240](https://github.com/resourge/fetch/commit/6d852406e2c6e913a3d347b82b9d72855ec1e205))
+
 ## [1.5.5](https://github.com/resourge/fetch/compare/v1.5.4...v1.5.5) (2022-11-14)
 
 
