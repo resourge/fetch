@@ -1,3 +1,10 @@
+## [1.5.5](https://github.com/resourge/fetch/compare/v1.5.4...v1.5.5) (2022-11-14)
+
+
+### Bug Fixes
+
+* **throttlemethod:** clear method when component is cleared ([ab9e072](https://github.com/resourge/fetch/commit/ab9e0721c0d946324054d05df8f915f36beeb1de))
+
 ## [1.5.4](https://github.com/resourge/fetch/compare/v1.5.3...v1.5.4) (2022-11-11)
 
 
