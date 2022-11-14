@@ -7,7 +7,7 @@ export const throttleMethod = <T extends any[]>(
 	const cacheKey = String(Date.now());
 	cacheMethod.set(cacheKey, Date.now());
 
-	return (...args: T) => {
+	const _throttleMethod = (...args: T) => {
 		const now = Date.now();
 
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -20,4 +20,13 @@ export const throttleMethod = <T extends any[]>(
 		method(...args);
 		cacheMethod.set(cacheKey, now);
 	};
+
+	/**
+	 * Clear's throttleMethod
+	 */
+	_throttleMethod.clear = () => {
+		cacheMethod.delete(cacheKey);
+	}
+
+	return _throttleMethod;
 }

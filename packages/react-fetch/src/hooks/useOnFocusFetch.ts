@@ -42,7 +42,8 @@ export const useOnFocusFetch = (
 
 			return {
 				focus,
-				blur
+				blur,
+				clear: fetchOnWindowFocus.clear
 			}
 		},
 		onWindowFocus

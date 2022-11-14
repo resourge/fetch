@@ -3,13 +3,16 @@ import { useEffect } from 'react';
 export const useOnFocus = (
 	cb: () => {
 		blur: () => void
+		clear: () => void
 		focus: () => void
 	},
 	onWindowFocus?: boolean
 ) => {
 	useEffect(() => {
 		if ( onWindowFocus ) {
-			const { focus, blur } = cb();
+			const {
+				focus, blur, clear 
+			} = cb();
 
 			const visibilitychange = () => {
 				if ( document.visibilityState === 'visible' ) {
@@ -25,6 +28,7 @@ export const useOnFocus = (
 			window.addEventListener('visibilitychange', visibilitychange);
 
 			return () => {
+				clear();
 				window.removeEventListener('focus', focus); 
 				window.removeEventListener('blur', blur);
 				window.removeEventListener('visibilitychange', visibilitychange);

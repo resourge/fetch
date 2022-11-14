@@ -201,11 +201,11 @@ export class HttpServiceClass {
 		url: string,
 		files: File[],
 		data?: K,
-		config?: MethodConfig
+		config?: Omit<MethodConfig, 'method'>
 	): Promise<R> {
 		const _config: RequestConfig = {
 			...config,
-			method: config?.method ?? method,
+			method,
 			url,
 			headers: {
 				'Content-Type': 'multipart/form-data'
