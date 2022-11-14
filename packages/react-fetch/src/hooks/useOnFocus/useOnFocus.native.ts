@@ -4,13 +4,16 @@ import { AppState, AppStateStatus, Platform } from 'react-native';
 export const useOnFocus = (
 	cb: () => {
 		blur: () => void
+		clear: () => void
 		focus: () => void
 	},
 	onWindowFocus?: boolean
 ) => {
 	useEffect(() => {
 		if ( onWindowFocus ) {
-			const { focus, blur } = cb();
+			const {
+				focus, blur, clear 
+			} = cb();
 
 			const onAppStateChange = (status: AppStateStatus) => {
 				if (Platform.OS !== 'web') {
@@ -25,6 +28,7 @@ export const useOnFocus = (
 			const subscription = AppState.addEventListener('change', onAppStateChange)
 
 			return () => {
+				clear();
 				subscription.remove()
 			}
 		}
