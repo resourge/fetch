@@ -1,3 +1,10 @@
+## [1.5.7](https://github.com/resourge/fetch/compare/v1.5.6...v1.5.7) (2022-11-15)
+
+
+### Bug Fixes
+
+* **throttlepromise:** fix throttleTimestamp being removed after request is done ([30b7de4](https://github.com/resourge/fetch/commit/30b7de4de55b9d55382c31e844fd245aa5316e55))
+
 ## [1.5.6](https://github.com/resourge/fetch/compare/v1.5.5...v1.5.6) (2022-11-14)
 
 
