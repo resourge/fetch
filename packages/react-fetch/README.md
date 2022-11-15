@@ -126,7 +126,7 @@ const [data, fetch, error, isLoading] = useFetch(
 | ---- | ---- | -------- | ----------- |
 | **initialState** | `any` | true | Default data values. |
 | **deps** | `React.DependencyList` | false | useEffect dependencies. Basically works on useEffect dependencies |
-| **onError** | `method` | false | Errors will trigger this method. If return is undefined, it will not update error state. |
+| **noEmitError** | `boolean` | false | When false makes it so no error is emitted.  |
 | **onWindowFocus** | `boolean` | false | Fetch on window focus (default: true) |
 | **scrollRestoration** | `method or array of method` | false | Serves to restore scroll position. [see how its done](#scrollRestoration) |
 | **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
@@ -207,7 +207,7 @@ const fetchMethod = useFetchCallBack(() => {
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
 | **initialState** | `boolean` | false | Default data values. |
-| **onError** | `method` | false | Errors will trigger this method. If return is undefined, it will not update error state. |
+| **noEmitError** | `boolean` | false | When false makes it so no error is emitted.  |
 | **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
 | **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
 | **fetchId** | `string` | false | Serves as an uniqueId to be able to trigger in other fetch calls |

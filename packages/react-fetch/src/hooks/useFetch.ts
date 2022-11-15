@@ -42,22 +42,6 @@ export type UseFetchConfig<T = any> = Omit<UseFetchCallbackConfig<T>, 'initialSt
 	 * Serves to restore scroll position
 	 */
 	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
-
-	/**
-	 * Doesn't trigger any Loading
-	 * @default false
-	 */
-	silent?: boolean
-
-	/**
-	 * Instead of triggering a local loading, this make it so LoadingService does it.
-	 * When:
-	 * 	[true] - Will trigger GlobalLoading loading;
-	 *  [string] - Will trigger loaderId Loading ("<Loader loaderId="">") 
-	 *  [string[]] - Will trigger all loaderId Loading ("<Loader loaderId="">") 
-	 * @default undefined
-	 */
-	useLoadingService?: boolean | string | string[]
 }
 
 /**

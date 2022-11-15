@@ -42,12 +42,12 @@ export type UseFetchCallbackConfig<T> = ControlledFetchConfig & {
 	* Default data values.
 	*/
 	initialState?: T
-	
+
 	/**
-	 * Errors will trigger this method.
-	 * * Note: If return is undefined, it will not update error state.
+	 * When false makes it so no error is emitted
+	 * @default false
 	 */
-	onError?: (e: null | Error | FetchError | any) => undefined | null | Error | FetchError | any
+	noEmitError?: boolean
 
 	/**
 	 * Doesn't trigger any Loading
@@ -95,7 +95,7 @@ export function useFetchCallback<T extends any[], Result = any>(
 
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
-	const onError = config?.onError ?? httpContext?.config?.onError; 
+	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
 
 	const currentData = useRef<State<Result>>({
 		data: config?.initialState,
@@ -158,14 +158,9 @@ export function useFetchCallback<T extends any[], Result = any>(
 				currentData.current = {
 					...currentData.current
 				}
-				if ( onError ) {
-					const error = onError(e);
-					if ( error === undefined ) {
-						return await Promise.reject(error);
-					}
-					currentData.current.error = error;
+				if ( !noEmitError ) {
+					currentData.current.error = e;
 				}
-				currentData.current.error = e;
 			}
 			return await Promise.reject(e);
 		}
