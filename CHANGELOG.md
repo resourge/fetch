@@ -1,3 +1,10 @@
+## [1.5.8](https://github.com/resourge/fetch/compare/v1.5.7...v1.5.8) (2022-11-15)
+
+
+### Bug Fixes
+
+* **throttlepromise:** fix timestamp not being updated after creation ([bd35873](https://github.com/resourge/fetch/commit/bd35873c5ab4c71d7b84e96f7200206956ff70f1))
+
 ## [1.5.7](https://github.com/resourge/fetch/compare/v1.5.6...v1.5.7) (2022-11-15)
 
 
