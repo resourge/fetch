@@ -1,4 +1,18 @@
 const cache: Map<string, { timestamp: number, value?: Promise<any> }> = new Map();
+const maxCacheItems = 10;
+
+const add = (key: string, value: { timestamp: number, value?: Promise<any> }) => {
+	if ( cache.size > maxCacheItems ) {
+		const [firstKey] = cache.keys();
+
+		cache.delete(firstKey);
+	}
+	cache.set(key, value);
+}
+
+const get = (key: string, defaultValue: { timestamp: number, value?: Promise<any> }) => {
+	return cache.get(key) ?? defaultValue
+}
 
 /**
  * Method to throttle promises. Makes the same request, when executed multiple times, 
@@ -11,9 +25,9 @@ export const throttlePromise = (
 ) => {
 	const now = Date.now();
 
-	const cachedRecord = cache.get(cacheKey) ?? {
+	const cachedRecord = get(cacheKey, {
 		timestamp: now 
-	};
+	});
 
 	if (now - cachedRecord.timestamp <= threshold) {
 		const responsePromise = cachedRecord.value;
@@ -22,11 +36,9 @@ export const throttlePromise = (
 		}
 	}
 	
-	cachedRecord.value = cb().finally(() => {
-		cache.delete(cacheKey);
-	});
+	cachedRecord.value = cb();
 	
-	cache.set(cacheKey, cachedRecord);
+	add(cacheKey, cachedRecord);
 
 	return cachedRecord.value;
 }
