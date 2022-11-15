@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/resourge/fetch/compare/v1.6.0...v1.7.0) (2022-11-15)
+
+
+### Features
+
+* **usefetch/usefetchcallback:** add noEmitError to not trigger an state update on error ([7668907](https://github.com/resourge/fetch/commit/76689072fb4a3e404bbd0ae5d5cc7a12699a526d))
+
 # [1.6.0](https://github.com/resourge/fetch/compare/v1.5.8...v1.6.0) (2022-11-15)
 
 
