@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/resourge/fetch/compare/v1.7.0...v1.7.1) (2022-11-15)
+
+
+### Bug Fixes
+
+* **httpservice:** fix upload not working as intended ([b96e897](https://github.com/resourge/fetch/commit/b96e8973accaa79025acce4bb57e0647743a7ab3))
+
 # [1.7.0](https://github.com/resourge/fetch/compare/v1.6.0...v1.7.0) (2022-11-15)
 
 
