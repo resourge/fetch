@@ -23,6 +23,13 @@ export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 	throttleKey?: string
 }
 
+export type HttpServiceDefaultConfig = {
+	/**
+	 * Default threshold for get request @default 3500 milliseconds
+	 */
+	threshold: number
+}
+
 /**
  * Main service to make the requests to the server
  * It's a simple wrapper on Fetch api, adding throttle to get's
@@ -30,6 +37,13 @@ export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
  */
 export class HttpServiceClass {
 	public baseUrl: string = window.location.origin;
+
+	/**
+	 * Default config of HttpService
+	 */
+	public defaultConfig: HttpServiceDefaultConfig = {
+		threshold: 3500
+	}
 
 	public interceptors = new Interceptor()
 
@@ -118,7 +132,7 @@ export class HttpServiceClass {
 			_url.search = urlSearchParams.toString();
 		}
 
-		const threshold = config?.threshold ?? 1000;
+		const threshold = config?.threshold ?? this.defaultConfig.threshold;
 		
 		const _config: NormalizeRequestConfig = {
 			...config,
