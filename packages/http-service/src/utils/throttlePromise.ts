@@ -37,6 +37,7 @@ export const throttlePromise = (
 	}
 	
 	cachedRecord.value = cb();
+	cachedRecord.timestamp = now;
 	
 	add(cacheKey, cachedRecord);
 
