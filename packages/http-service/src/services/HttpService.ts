@@ -221,9 +221,6 @@ export class HttpServiceClass {
 			...config,
 			method,
 			url,
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			},
 			data: formatToFormData(files, data)
 		}
 

@@ -31,13 +31,10 @@ export const normalizeHeaders = (config: RequestConfig) => {
 		_config.headers = {};
 	}
 
-	if ( !_config.headers || !_config.headers.Accept ) {
-		_config.headers.Accept = 'application/json, text/plain, */*'
+	if ( !_config.headers || !_config.headers.accept ) {
+		_config.headers.accept = 'application/json, text/plain, */*'
 	}
-	if ( !_config.headers || !_config.headers['Content-Type'] ) {
-		_config.headers['Content-Type'] = 'application/json'
-	}
-
+	
 	_config.cache = _config.cache ?? 'default';
 
 	normalizeCookies(_config);
@@ -67,10 +64,16 @@ export const normalizeBody = (
 			) {
 				return config.data
 			}
+			if ( !config.headers || !config.headers['content-type'] ) {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				config.headers!['content-type'] = 'application/json'
+			}
+
+			return JSON.stringify(config.data);
 		}
 	}
 
-	return config.data ? JSON.stringify(config.data) : null
+	return config.data
 }
 
 export type NormalizeRequestConfig = Omit<RequestConfig, 'url'> & { url: URL }
@@ -99,33 +102,7 @@ export const normalizeRequest = (
 			_config = onRequest(_config);
 		}
 		
-		if ( _config.data ) {
-			if ( 
-				_config.data instanceof FormData ||
-				_config.data instanceof Blob ||
-				_config.data instanceof URLSearchParams ||
-				_config.data instanceof ArrayBuffer ||
-				_config.data instanceof ReadableStream
-			) {
-				(_config as RequestConfig & { body: RequestInit['body'] }).body = _config.data as any
-			}
-			else if ( typeof _config.data === 'object' ) {
-				if ( 
-					Object.keys(_config.data).length &&
-					_config.data.buffer != null &&
-					_config.data.byteLength != null &&
-					_config.data.byteOffset != null
-				) {
-					(_config as RequestConfig & { body: RequestInit['body'] }).body = _config.data 
-				}
-				else {
-					(_config as RequestConfig & { body: RequestInit['body'] }).body = JSON.stringify(_config.data)
-				}
-			}
-			else {
-				(_config as RequestConfig & { body: RequestInit['body'] }).body = JSON.stringify(_config.data)
-			}
-		}
+		(_config as RequestConfig & { body: RequestInit['body'] }).body = normalizeBody(_config)
 
 		return _config;
 	}

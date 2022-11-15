@@ -23,6 +23,9 @@ export const throttlePromise = (
 	cb: () => Promise<any>,
 	threshold: number
 ) => {
+	if ( threshold === 0 ) {
+		return cb();
+	}
 	const now = Date.now();
 
 	const cachedRecord = get(cacheKey, {
