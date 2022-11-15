@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/resourge/fetch/compare/v1.5.8...v1.6.0) (2022-11-15)
+
+
+### Features
+
+* **httpservice:** add ways to change some default configs ([aeef579](https://github.com/resourge/fetch/commit/aeef57985f55d59a459d96017c950b180f3507ea))
+
 ## [1.5.8](https://github.com/resourge/fetch/compare/v1.5.7...v1.5.8) (2022-11-15)
 
 
