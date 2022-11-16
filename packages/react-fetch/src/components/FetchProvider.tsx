@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
 
 import {
 	InterceptorOnRequest,
@@ -102,7 +102,7 @@ const FetchProvider: React.FC<Props> = ({
 		onResponseError
 	};
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if ( fetchService ) {
 			// eslint-disable-next-line new-cap
 			const newHttpService = new fetchService();
