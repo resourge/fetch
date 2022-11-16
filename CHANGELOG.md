@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/resourge/fetch/compare/v1.7.1...v1.7.2) (2022-11-16)
+
+
+### Bug Fixes
+
+* **fetchprovider:** change from useEffect to useLayoutEffect to make sure new HttpService is done ([8012ea9](https://github.com/resourge/fetch/commit/8012ea90e7092171e5e7ab2b11c3d754f7078cff))
+
 ## [1.7.1](https://github.com/resourge/fetch/compare/v1.7.0...v1.7.1) (2022-11-15)
 
 
