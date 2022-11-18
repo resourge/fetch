@@ -41,15 +41,16 @@ _Note: All request need to pass throw this to useFetch/useFetchCallback to work 
 In a specific project requires that request are done in a certain way (ex: all request are posts(it happens)), HttpServiceClass serves as a way for the developer to extend all request.
 
 ```Typescript
-import { HttpServiceClass } from '@resourge/http-service'
-// In case HttpServiceClass is augmented, it's necessary to also declare it
-// like the following for it to work with autocomplete and types
-declare module '@resourge/http-service' {
-  interface HttpServiceClass {
-    fileBlob: (url: string) => Promise<{ file: Blob, fileName: string }>
-  }
-}
+// In a *.d.ts (for example: react-app-env.d.ts)
+import { HttpServiceV2 } from '....'
 
+declare module '@resourge/react-fetch' {
+	export const HttpService: HttpServiceV2
+}
+```
+
+```Typescript
+// 
 import { HttpServiceClass, setDefaultHttpService } from '@resourge/http-service';
 
 class YourHttpServiceClass extends HttpServiceClass {
@@ -85,6 +86,15 @@ class YourHttpServiceClass extends HttpServiceClass {
 
 // Method to change global/default HttpService
 setDefaultHttpService(new YourHttpServiceClass())
+```
+
+```Typescript
+// In a *.d.ts (for example: react-app-env.d.ts)
+import { YourHttpServiceClass } from '....'
+
+declare module '@resourge/react-fetch' {
+	export const HttpService: YourHttpServiceClass
+}
 ```
 
 ## LoadingService

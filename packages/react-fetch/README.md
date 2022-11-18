@@ -34,8 +34,7 @@ import React from 'react'
 
 import {
   FetchProvider,
-  useFetch,
-  HttpService
+  useFetch
 } from '@resourge/react-fetch'
 
 function FooComponent() {
@@ -43,7 +42,7 @@ function FooComponent() {
   // or
   const { data: products, isLoading, error } = useFetch(
 	() => {
-	  return HttpService.get('/productList')
+	  return Http.get('/productList')
 	},
 	{
 	  initialValue: []
@@ -123,8 +122,8 @@ It will do the loading, error, set data, manually abort request if component is 
 // } = useFetch(
 // or 
 const [data, fetch, error, isLoading] = useFetch(
-  async () => {
-    return HttpService.get("url")
+  async (Http) => {
+    return Http.get("url")
   }, 
   {
     initialState: []
@@ -139,8 +138,8 @@ const [data, fetch, error, isLoading] = useFetch(
 // } = useFetch(
 // or 
 const [fetch, error, isLoading] = useFetch(
-  async () => {
-    return HttpService.get("url")
+  async (Http) => {
+    return Http.get("url")
   }
 );
 ```
@@ -167,16 +166,15 @@ import React from 'react'
 
 import {
   useScrollRestoration,
-  useFetch,
-  HttpService
+  useFetch
 } from '@resourge/react-fetch'
 
 function App() {
   const [scrollRestoration, ref] = useScrollRestoration('unique id to this component');
   // If ref is not set it will update window scrollbar
   const { data: products, isLoading, error } = useFetch(
-	() => {
-	  return HttpService.get('/productList')
+	(Http) => {
+	  return Http.get('/productList')
 	},
 	{
 	  initialValue: [],
@@ -268,8 +266,8 @@ import {
 
 function Bar() {
   const [data, fetch, error, isLoading] = useFetch(
-    () => {
-      return HttpService.get("/getBar")
+    (Http) => {
+      return Http.get("/getBar")
     }, 
     {
       initialState: [],
@@ -314,8 +312,8 @@ import {
 
 function Foo() {
   const [data, fetch, error, isLoading] = useFetch(
-    () => {
-      return HttpService.get("/getFoo")
+    (Http) => {
+      return Http.get("/getFoo")
     }, 
     {
       initialState: [],
@@ -352,8 +350,8 @@ export default App
 ```JSX
 function Foo() {
   const [data, fetch, error, isLoading] = useFetch(
-    () => {
-      return HttpService.get("/getFoo")
+    (Http) => {
+      return Http.get("/getFoo")
     }, 
     {
       initialState: [],
@@ -386,52 +384,12 @@ _Note: All request need to pass throw this to useFetch to work as intended._
 
 In a specific project requires that request are done in a certain way (ex: all request are posts(it happens)), HttpServiceClass serves as a way for the developer to extend all request.
 
+
 ```jsx
-import { HttpServiceClass } from '@resourge/react-fetch'
-// In case HttpServiceClass is augmented, it's necessary to also declare it
-// like the following for it to work with autocomplete and types
-declare module '@resourge/react-fetch' {
-  interface HttpServiceClass {
-    fileBlob: (url: string) => Promise<{ file: Blob, fileName: string }>
-  }
-}
-
-import { HttpServiceClass, setDefaultHttpService } from '@resourge/react-fetch';
-
-class YourHttpServiceClass extends HttpServiceClass {
-  public async get<T = any, R = ResponseConfig<T>>(url: string): Promise<R>;
-  public async get<T = any, R = ResponseConfig<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
-  public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params: K): Promise<R>;
-  public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params: K, config: GetMethodConfig): Promise<R>;
-  public async get<T = any, R = ResponseConfig<T>, K extends object | any[] = any>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
-    return super.get(url, params, { ...config, method: 'post' })
-  }
-
-  public fileBlob(url: string): Promise<{ file: Blob, fileName: string }> {
-    return this.get(
-      url,
-      undefined,
-      {
-        async transform(response, request) {
-          const fileName = request.headers ? (request.headers      ['x-content-filename'] ??   '')   : '';
-          
-          const div = document.createElement('div');
-          
-          div.innerHTML = fileName;
-          
-          return {
-            file: await response.blob(),
-            fileName: div.textContent
-          }
-        }
-      }
-    )
-  }
-}
-
 import {
   FetchProvider
 } from '@resourge/react-fetch'
+import { YourHttpServiceClass } from '....'
 
 function App() {
   return (
@@ -444,6 +402,15 @@ function App() {
 	  ...
 	</FetchProvider>
   )
+}
+```
+
+```Typescript
+// In a *.d.ts (for example: react-app-env.d.ts)
+import { YourHttpServiceClass } from '....'
+
+declare module '@resourge/react-fetch' {
+	export const HttpService: YourHttpServiceClass
 }
 ```
 
