@@ -1,3 +1,10 @@
+## [1.8.4](https://github.com/resourge/fetch/compare/v1.8.3...v1.8.4) (2022-11-18)
+
+
+### Bug Fixes
+
+* **usefetch:** make Http match HttpService type ([e21ea13](https://github.com/resourge/fetch/commit/e21ea13c8009a94e8b9379c9554cb8e8ceecd8b4))
+
 ## [1.8.3](https://github.com/resourge/fetch/compare/v1.8.2...v1.8.3) (2022-11-18)
 
 
