@@ -23,7 +23,7 @@ import { useId } from '../utils/useIdShim';
 
 import { useOnFocusFetch } from './useOnFocusFetch';
 
-type UseFetch<T extends any[], Result = any> = {
+type UseFetch<Result, T extends any[]> = {
 	(...args: T): Promise<Result>
 	error: HttpResponseError | FetchError | Error
 	/**
@@ -41,7 +41,7 @@ type UseFetch<T extends any[], Result = any> = {
 	boolean
 ];
 
-export type UseFetchEffect<T extends any[], Result = any> = {
+export type UseFetchEffect<Result, T extends any[]> = {
 	(...args: Partial<T>): Promise<void>
 	data: Result
 	error: HttpResponseError | FetchError | Error
@@ -163,18 +163,19 @@ type State<T> = {
 ```
  */
 
-export function useFetch<Result = any, T extends any[] = any[]>(
+export function useFetch<Result, T extends any[]>(
 	method: (Http: typeof HttpService, ...args: T) => Promise<Result>,
 	config?: UseFetchConfig
-): UseFetch<T, Result> 
-export function useFetch<Result = any, T extends any[] = any[]>(
+): UseFetch<Result, T> 
+export function useFetch<Result, T extends any[]>(
 	method: (Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchEffectConfig
-): UseFetchEffect<T, Result>
-export function useFetch<Result = any, T extends any[] = undefined[]>(
-	method: ((Http: typeof HttpService, ...args: T) => Promise<Result>) | ((Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>),
+): UseFetchEffect<Result, T>
+export function useFetch<Result, T extends any[]>(
+	method: ((Http: typeof HttpService, ...args: T) => Promise<Result>) | 
+	((Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>),
 	config?: UseFetchConfig | UseFetchEffectConfig
-): UseFetch<T, Result> | UseFetchEffect<T> {
+): UseFetch<Result, T> | UseFetchEffect<Result, T> {
 	const httpContext = useFetchContext();
 
 	const controllers = useRef<Map<string, AbortController>>(new Map())
