@@ -48,12 +48,12 @@ export type UseFetchEffect<Result, T extends any[]> = {
 	/**
 	 * Fetch Method with loading
 	 */
-	fetch: (...args: Partial<T>) => Promise<void>
+	fetch: (...args: Partial<T>) => Promise<Result>
 	isLoading: boolean
 	/**
 	 * Fetch Method without loading
 	 */
-	noLoadingFetch: (...args: Partial<T>) => Promise<void>
+	noLoadingFetch: (...args: Partial<T>) => Promise<Result>
 	/**
 	 * Sets Data Manually
 	 */
@@ -194,8 +194,10 @@ export function useFetch<Result, T extends any[]>(
 		Http.interceptors.response = {
 			...Http.interceptors.response
 		}
-		Http.interceptors.request.values = new Set(Http.interceptors.request.values)
-		Http.interceptors.response.values = new Set(Http.interceptors.response.values)
+		const oldRequest = new Set(Http.interceptors.request.values.values());
+		const oldResponse = new Set(Http.interceptors.response.values.values());
+		Http.interceptors.request.values = new Set()
+		Http.interceptors.response.values = new Set()
 
 		Http.interceptors.request.use(
 			(config) => {
@@ -219,9 +221,17 @@ export function useFetch<Result, T extends any[]>(
 
 					controllers.current.delete(url);
 				}
-				return config;
+				return response;
 			}
 		);
+
+		oldRequest.forEach((obj) => {
+			Http.interceptors.request.values.add(obj);
+		})
+
+		oldResponse.forEach((obj) => {
+			Http.interceptors.response.values.add(obj);
+		})
 
 		return Http;
 	});

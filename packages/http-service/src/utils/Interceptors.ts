@@ -60,35 +60,35 @@ export class Interceptor {
 	constructor() {
 		this.request = {
 			values: new Set(),
-			use: (
+			use: function (
 				onRequest: InterceptorOnRequest,
 				onRequestError?: InterceptorOnRequestError
-			) => {
+			) {
 				const obj = {
 					onRequest,
 					onRequestError
 				}
-				this.request.values.add(obj);
+				this.values.add(obj);
 	
 				return () => {
-					this.request.values.delete(obj);
+					this.values.delete(obj);
 				}
 			}
 		}
 		this.response = {
 			values: new Set(),
-			use: (
+			use: function (
 				onResponse: InterceptorOnResponse,
 				onResponseError?: InterceptorOnResponseError
-			) => {
+			) {
 				const obj = {
 					onResponse,
 					onResponseError
 				}
-				this.response.values.add(obj);
+				this.values.add(obj);
 	
 				return () => {
-					this.response.values.delete(obj);
+					this.values.delete(obj);
 				}
 			}
 		}
