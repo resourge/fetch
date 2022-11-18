@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/resourge/fetch/compare/v1.8.2...v1.8.3) (2022-11-18)
+
+
+### Bug Fixes
+
+* **usefetch:** fix useFetchEffect type ([1c5eaec](https://github.com/resourge/fetch/commit/1c5eaec082f60f6871674287c92b90b71bdfd385))
+
 ## [1.8.2](https://github.com/resourge/fetch/compare/v1.8.1...v1.8.2) (2022-11-18)
 
 
