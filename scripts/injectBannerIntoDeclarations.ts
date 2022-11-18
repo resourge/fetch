@@ -1,7 +1,6 @@
 import fs from 'fs';
 import minimist from 'minimist';
 import path from 'path';
-import mergeDirs from 'recursive-copy';
 
 const myArgs = minimist(process.argv.slice(2));
 
@@ -17,60 +16,13 @@ async function getFiles(dir: string): Promise<string[]> {
 }
 
 (async () => {
-	await mergeDirs('./packages/react-fetch/dist/react-fetch/src', './packages/react-fetch/dist', {
-		overwrite: true
-	})
-
-	const declarationFiles = await getFiles('./packages/react-fetch/dist');
+	const declarationFiles = await getFiles(myArgs.folder);
 
 	await Promise.all(
 		declarationFiles.map(async (fileName) => {
-			let content = await fs.promises.readFile(fileName, 'utf-8');
-
-			content = content.replace(/import '.*http-service\/.*';/g, '')
-
-			const mat = content.match(/import (.*) from '.*http-service\/.*';/g) ?? [];
-
-			const contentImports: any[] = [];
-
-			if ( mat.length && !fileName.includes('.js.map')) {
-				const firstIndex = content.indexOf(mat[0])
-
-				mat
-				.forEach((found) => {
-					const matImports = (found.match(/import\s(.*)\sfrom/g) ?? [])
-					.map((matImport: any) => {
-						matImport = matImport.replace('import ', '')
-						matImport = matImport.replace(' from', '')
-						matImport = matImport.replace('{ ', '')
-						matImport = matImport.replace(' }', '')
-						return matImport.split(', ');
-					});
-
-					contentImports.push(...matImports);
-	
-					content = content.replace(
-						found,
-						''
-					)
-				})
-
-				const newHttpService = contentImports
-				.filter((imp, index, arr: any[]) => arr.findIndex((val) => val === imp) === index)
-				.flat()
-				.join(', ');
-
-				content = content.slice(0, firstIndex) + `import { ${newHttpService} } from '@resourge/http-service';` + content.slice(firstIndex);
-			}
+			const content = await fs.promises.readFile(fileName, 'utf-8');
 
 			return await fs.promises.writeFile(fileName, [myArgs.text, content].join('\n'), 'utf-8')
 		})
 	)
-
-	await fs.promises.rmdir('./packages/react-fetch/dist/http-service', {
-		recursive: true
-	})
-	await fs.promises.rmdir('./packages/react-fetch/dist/react-fetch', {
-		recursive: true
-	})
 })();

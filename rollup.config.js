@@ -123,7 +123,7 @@ const getPackage = (
 				extensions: ['.ts', '.tsx']
 			}),
 			execute({ 
-				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json`], 
+				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`], 
 				sync: true,
 				hook: 'buildEnd' 
 			})
@@ -187,8 +187,6 @@ const getPackage = (
 }
 
 export default function rollup() {
-	const { banner } = getProjectNameAndBanner('react-fetch');
-
 	return [
 		...getPackage(
 			'./packages/http-service/',
@@ -204,9 +202,9 @@ export default function rollup() {
 		{
 			input: './empty.js',
 			plugins: [
-
+				
 				execute({ 
-					commands: [`npm run injectBannerIntoDeclarations -- --text "${banner}"`], 
+					commands: ['npm run fixReactFetch'], 
 					sync: true,
 					hook: 'buildStart' 
 				})
