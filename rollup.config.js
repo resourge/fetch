@@ -1,6 +1,7 @@
 import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fg from 'fast-glob'
+import fs from 'fs'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
@@ -82,7 +83,8 @@ const getProjectNameAndBanner = (
 const getPackage = (
 	BASE_OUTPUT_DIR,
 	SOURCE_FOLDER,
-	PACKAGE_NAME
+	PACKAGE_NAME,
+	merge
 ) => {
 	const OUTPUT_DIR = `${BASE_OUTPUT_DIR}dist`
 	const SOURCE_INDEX_FILE = `${SOURCE_FOLDER}/index.ts`
@@ -129,8 +131,8 @@ const getPackage = (
 		...input
 	})
 
-	/* if ( merge ) {
-		// #region Create build and change http-services for the package version
+	if ( merge ) {
+		/* // #region Create build and change http-services for the package version
 		await mergeDirs(SOURCE_FOLDER, BUILD_FOLDER, {
 			overwrite: true
 		})
@@ -160,7 +162,7 @@ const getPackage = (
 			})
 		);
 		// #endregion Create build and change http-services for the package version
-
+ */
 		// #region Update package json dependency
 		const packageJson = JSON.parse(fs.readFileSync(`${BASE_OUTPUT_DIR}/package.json`, 'utf-8'));
 
@@ -172,11 +174,7 @@ const getPackage = (
 
 		fs.writeFileSync(`${BASE_OUTPUT_DIR}/package.json`, JSON.stringify(packageJson, null, 2), 'utf-8')
 		// #endregion Update package json dependency
-
-		SOURCE_INDEX_FILE = `${BUILD_FOLDER}/index.ts`;
-
-		SOURCE_FOLDER = BUILD_FOLDER;
-	} */
+	}
 
 	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`)
 	.filter((fileName) => fileName.includes('.native.'));
@@ -200,7 +198,8 @@ export default function rollup() {
 		...getPackage(
 			'./packages/react-fetch/',
 			'./packages/react-fetch/src',
-			'react-fetch'
+			'react-fetch',
+			true
 		),
 		{
 			input: './empty.js',
