@@ -1,3 +1,10 @@
+## [1.8.7](https://github.com/resourge/fetch/compare/v1.8.6...v1.8.7) (2022-11-18)
+
+
+### Bug Fixes
+
+* **usefetch:** fix wrong type ([56a88de](https://github.com/resourge/fetch/commit/56a88de066c2fc741728c6b665f39c9b02e2561b))
+
 ## [1.8.6](https://github.com/resourge/fetch/compare/v1.8.5...v1.8.6) (2022-11-18)
 
 
