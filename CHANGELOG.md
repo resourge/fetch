@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/resourge/fetch/compare/v1.7.2...v1.8.0) (2022-11-18)
+
+
+### Features
+
+* **usefetch:** simplify usefetch ([6146473](https://github.com/resourge/fetch/commit/614647305c315712981e3ba242e4e04752b18c86))
+
 ## [1.7.2](https://github.com/resourge/fetch/compare/v1.7.1...v1.7.2) (2022-11-16)
 
 
