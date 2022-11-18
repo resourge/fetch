@@ -13,7 +13,7 @@ import {
 	LoadingService,
 	FetchError,
 	HttpResponseError,
-	HttpServiceClass,
+	HttpService,
 	HttpResponse,
 	_httpService
 } from '../../../http-service/src'
@@ -164,23 +164,23 @@ type State<T> = {
  */
 
 export function useFetch<Result = any, T extends any[] = any[]>(
-	method: (Http: HttpServiceClass, ...args: T) => Promise<Result>,
+	method: (Http: typeof HttpService, ...args: T) => Promise<Result>,
 	config?: UseFetchConfig
 ): UseFetch<T, Result> 
 export function useFetch<Result = any, T extends any[] = any[]>(
-	method: (Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>,
+	method: (Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchEffectConfig
 ): UseFetchEffect<T, Result>
 export function useFetch<Result = any, T extends any[] = undefined[]>(
-	method: ((Http: HttpServiceClass, ...args: T) => Promise<Result>) | ((Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>),
+	method: ((Http: typeof HttpService, ...args: T) => Promise<Result>) | ((Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>),
 	config?: UseFetchConfig | UseFetchEffectConfig
 ): UseFetch<T, Result> | UseFetchEffect<T> {
 	const httpContext = useFetchContext();
 
 	const controllers = useRef<Map<string, AbortController>>(new Map())
 
-	const [_HttpService] = useState<HttpServiceClass>(() => {
-		const Http: HttpServiceClass = shallowClone(_httpService);
+	const [_HttpService] = useState<typeof HttpService>(() => {
+		const Http: typeof HttpService = shallowClone(_httpService);
 		Http.defaultConfig = {
 			...Http.defaultConfig
 		}
