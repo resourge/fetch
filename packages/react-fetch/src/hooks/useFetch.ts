@@ -36,13 +36,13 @@ type UseFetch<Result, T extends any[]> = {
 	 */
 	noLoadingFetch: (...args: T) => Promise<Result>
 } & [
-	() => Promise<void>,
+	(...args: T) => Promise<Result>,
 	HttpResponseError | FetchError | Error,
 	boolean
 ];
 
 export type UseFetchEffect<Result, T extends any[]> = {
-	(...args: Partial<T>): Promise<void>
+	(...args: Partial<T>): Promise<Result>
 	data: Result
 	error: HttpResponseError | FetchError | Error
 	/**
@@ -60,7 +60,7 @@ export type UseFetchEffect<Result, T extends any[]> = {
 	setData: (data: Result) => void
 } & [
 	Result,
-	(...args: Partial<T>) => Promise<void>,
+	(...args: Partial<T>) => Promise<Result>,
 	HttpResponseError | FetchError | Error,
 	boolean,
 	(data: Result) => void
