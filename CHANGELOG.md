@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/resourge/fetch/compare/v1.8.1...v1.8.2) (2022-11-18)
+
+
+### Bug Fixes
+
+* **http-service:** fix types not having banner ([31befea](https://github.com/resourge/fetch/commit/31befea4bc9959c3fab1b3e13c415496ae17674a))
+
 ## [1.8.1](https://github.com/resourge/fetch/compare/v1.8.0...v1.8.1) (2022-11-18)
 
 
