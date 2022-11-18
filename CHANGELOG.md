@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/resourge/fetch/compare/v1.8.0...v1.8.1) (2022-11-18)
+
+
+### Bug Fixes
+
+* **react-fetch:** fix http-service version ([4d99a98](https://github.com/resourge/fetch/commit/4d99a980c4fcd79ddc10d8f86bb295fdf820a293))
+
 # [1.8.0](https://github.com/resourge/fetch/compare/v1.7.2...v1.8.0) (2022-11-18)
 
 
