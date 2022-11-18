@@ -43,7 +43,7 @@ type UseFetch<T extends any[], Result = any> = {
 
 export type UseFetchEffect<T extends any[], Result = any> = {
 	(...args: Partial<T>): Promise<void>
-	data: T
+	data: Result
 	error: HttpResponseError | FetchError | Error
 	/**
 	 * Fetch Method with loading
