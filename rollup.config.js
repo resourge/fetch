@@ -1,24 +1,10 @@
 import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fg from 'fast-glob'
-import fs from 'fs'
-import path from 'path'
-import mergeDirs from 'recursive-copy'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
 import { author, license } from './package.json'
-
-async function getFiles(dir) {
-	const dirFiles = await fs.promises.readdir(dir, {
-		withFileTypes: true 
-	});
-	const files = await Promise.all(dirFiles.map((dirent) => {
-		const res = path.resolve(dir, dirent.name);
-		return dirent.isDirectory() ? getFiles(res) : res;
-	}));
-	return Array.prototype.concat(...files);
-}
 
 const external = [
 	'react',
@@ -27,6 +13,7 @@ const external = [
 	'use-sync-external-store/shim',
 	'use-sync-external-store/shim/with-selector',
 	'react-native',
+	'@resourge/shallow-clone',
 	'@resourge/http-service'
 ];
 
@@ -92,16 +79,13 @@ const getProjectNameAndBanner = (
 	}
 }
 
-const BUILD_FOLDER = './build';
-
-const getPackage = async (
+const getPackage = (
 	BASE_OUTPUT_DIR,
 	SOURCE_FOLDER,
-	PACKAGE_NAME,
-	merge
+	PACKAGE_NAME
 ) => {
 	const OUTPUT_DIR = `${BASE_OUTPUT_DIR}dist`
-	let SOURCE_INDEX_FILE = `${SOURCE_FOLDER}/index.ts`
+	const SOURCE_INDEX_FILE = `${SOURCE_FOLDER}/index.ts`
 	const { banner } = getProjectNameAndBanner(PACKAGE_NAME);
 
 	/**
@@ -137,7 +121,7 @@ const getPackage = async (
 				extensions: ['.ts', '.tsx']
 			}),
 			execute({ 
-				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`], 
+				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json`], 
 				sync: true,
 				hook: 'buildEnd' 
 			})
@@ -145,7 +129,7 @@ const getPackage = async (
 		...input
 	})
 
-	if ( merge ) {
+	/* if ( merge ) {
 		// #region Create build and change http-services for the package version
 		await mergeDirs(SOURCE_FOLDER, BUILD_FOLDER, {
 			overwrite: true
@@ -192,7 +176,7 @@ const getPackage = async (
 		SOURCE_INDEX_FILE = `${BUILD_FOLDER}/index.ts`;
 
 		SOURCE_FOLDER = BUILD_FOLDER;
-	}
+	} */
 
 	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`)
 	.filter((fileName) => fileName.includes('.native.'));
@@ -204,34 +188,31 @@ const getPackage = async (
 	];
 }
 
-export default async function rollup() {
-	const modules = await Promise.all([
-		getPackage(
+export default function rollup() {
+	const { banner } = getProjectNameAndBanner('react-fetch');
+
+	return [
+		...getPackage(
 			'./packages/http-service/',
 			'./packages/http-service/src',
 			'http-service'
 		),
-		getPackage(
+		...getPackage(
 			'./packages/react-fetch/',
 			'./packages/react-fetch/src',
-			'react-fetch',
-			true
-		)
-	])
-
-	return [
-		...modules.flat(),
+			'react-fetch'
+		),
 		{
 			input: './empty.js',
 			plugins: [
-				{
-					buildStart() {
-						fs.rmSync(BUILD_FOLDER, {
-							recursive: true 
-						});
-					}
-				}
+
+				execute({ 
+					commands: [`npm run injectBannerIntoDeclarations -- --text "${banner}"`], 
+					sync: true,
+					hook: 'buildStart' 
+				})
 			]
 		}
+
 	];
 }

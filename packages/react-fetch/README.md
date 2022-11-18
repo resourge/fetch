@@ -1,7 +1,7 @@
 # react-fetch
 
 `react-fetch` provides a set of tools to simplify the request process. <br />
-Provides useFetch, useFetchCallback, useScrollRestoration, FetchProvider, HttpService, LoadingService and a Loader and GlobalLoader.
+Provides useFetch, useScrollRestoration, FetchProvider, HttpService, LoadingService and a Loader and GlobalLoader.
 
 ## Features
 
@@ -105,17 +105,42 @@ export default App
 ## useFetch
 
 Hook to fetch and set data.
-It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
+It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch's.
+
+`useFetch` has 2 modes.
+ - When initialState is not set in the config, useEffect is simply a hook that returns a method that trigger's loading, error and the promise.
+ - When initialState is set in the config, it will also do everything in the previous mode plus will trigger an useEffect and useOnFocusFetch and will also return `data`.
 
 ```JSX
-// const { data: products, isLoading, error } = useFetch(
-// or
+// Fetch with useEffect 
+// const {
+//	data,
+//    error,
+//    fetch,
+//    isLoading,
+//    noLoadingFetch,
+//    setData
+// } = useFetch(
+// or 
 const [data, fetch, error, isLoading] = useFetch(
-  () => {
+  async () => {
     return HttpService.get("url")
   }, 
   {
     initialState: []
+  }
+);
+// Fetch without useEffect, no data is returned or no useEffect will be triggered
+// const {
+//    error,
+//    fetch,
+//    isLoading,
+//    noLoadingFetch
+// } = useFetch(
+// or 
+const [fetch, error, isLoading] = useFetch(
+  async () => {
+    return HttpService.get("url")
   }
 );
 ```
@@ -124,16 +149,16 @@ const [data, fetch, error, isLoading] = useFetch(
 
 | Name | Type | Required | Description |
 | ---- | ---- | -------- | ----------- |
-| **initialState** | `any` | true | Default data values. |
-| **deps** | `React.DependencyList` | false | useEffect dependencies. Basically works on useEffect dependencies |
+| **initialState** | `any` | true for useEffect trigger, otherwise no | Default data values. |
+| **deps** | `React.DependencyList` | false | useEffect dependencies. Basically works on useEffect dependencies. _Note: Only with initialState set_ |
 | **noEmitError** | `boolean` | false | When false makes it so no error is emitted.  |
-| **onWindowFocus** | `boolean` | false | Fetch on window focus (default: true) |
-| **scrollRestoration** | `method or array of method` | false | Serves to restore scroll position. [see how its done](#scrollRestoration) |
+| **onWindowFocus** | `boolean` | false | Fetch on window focus (default: true). _Note: Only with initialState set_ |
+| **scrollRestoration** | `method or array of method` | false | Serves to restore scroll position. [see how its done](#scrollRestoration). _Note: Only with initialState set_ |
 | **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
 | **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
 | **fetchId** | `string` | false | Serves as an uniqueId to be able to trigger in other fetch calls |
-| **trigger** | `object` | false | To trigger other useFetchCallback/useFetch. <br /> _Note: In the case of useFetchCallback having params, its necessary to set trigger after/before with name and params instead of a string_ [see more](#trigger) |
-| **abort** | `boolean` | false | To abort on component unmount. |
+| **trigger** | `object` | false | To trigger other useFetch. <br /> _Note: In the case of useFetch having params, its necessary to set trigger after/before with name and params instead of a string_ [see more](#trigger) |
+| **abort** | `boolean` | false | To abort on component unmount. (default: true when initialState is set, otherwise false) |
 
 #### scrollRestoration
 
@@ -187,32 +212,6 @@ When:
 *  true - Will trigger GlobalLoading loading;
 *  string - Will trigger loaderId Loading ("``` <Loader loaderId="">```") 
 *  string[] - Will trigger all loaderId Loading ("``` <Loader loaderId="">```") 
-
-## useFetchCallBack
-
-Hook to fetch and control loading.
-It will manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's.
-_Note: It will not trigger on useEffect, for that use `useFetch`._
-
-```JSX
-// const { data: products, isLoading, error } = useFetch(
-// or
-const fetchMethod = useFetchCallBack(() => {
-  return HttpService.get("url")
-});
-```
-
-### Options
-
-| Name | Type | Required | Description |
-| ---- | ---- | -------- | ----------- |
-| **initialState** | `boolean` | false | Default data values. |
-| **noEmitError** | `boolean` | false | When false makes it so no error is emitted.  |
-| **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
-| **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
-| **fetchId** | `string` | false | Serves as an uniqueId to be able to trigger in other fetch calls |
-| **trigger** | `object` | false | To trigger other useFetchCallback/useFetch.  <br />_Note: In the case of useFetchCallback having params, its necessary to set trigger after/before with name and params instead of a string_ [see more](#trigger) |
-| **abort** | `boolean` | false | To abort on component unmount. |
 
 ## FetchProvider
 
@@ -346,15 +345,9 @@ function App() {
 export default App
 ```
 
-## Trigger
+## useTriggerFetch
 
-`Trigger` is the ability to trigger other useFetch/useFetchCallback after or before current useFetch/useFetchCallback.
-In the case of useFetchCallback having params, its necessary to set trigger after/before with name and params instead of a string.
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| **after** | `Array<string | { loaderId: string, params: any[] }>` | Triggers useFetch/useFetchCallback(by triggerId) after current fetch is done. |
-| **before** | `Array<string | { loaderId: string, params: any[] }>` | Triggers useFetch/useFetchCallback(by triggerId) before current fetch is done. |
+`useTriggerFetch` is a hook that returns a method to trigger other useFetch's.
 
 ```JSX
 function Foo() {
@@ -364,18 +357,9 @@ function Foo() {
     }, 
     {
       initialState: [],
-	  triggerId: 'Fetch from Foo'
+	  fetchId: 'Fetch from Foo'
     }
   );
-
-  const getSecondMethod = useFetchCallback(
-	(dataSourceId) => {
-      return HttpService.get("/getSecondMethod", { dataSourceId })
-	}, 
-    {
-	  triggerId: 'Second Fetch from Foo'
-    }
-  )
 
   return (
 	...
@@ -383,26 +367,9 @@ function Foo() {
 }
 
 function Bar({ dataSourceId }) {
-  const [data, fetch, error, isLoading] = useFetch(
-    () => {
-      return HttpService.get("/getBar")
-    }, 
-    {
-      initialState: [],
-	  trigger: {
-		// After this request is done it will trigger Foo component fetch. (Note: each time this fetch is done.)
-		after: ['Fetch from Foo'],
-		// Before this request is done it will trigger Foo component fetch. (Note: each time this fetch is done.)
-		before: [
-			// When the trigger method has params, its mandatory to be an object otherwise a string is enough
-			{
-				loaderId: 'Second Fetch from Foo',
-				params: [dataSourceId]
-			}
-		]
-	  }
-    }
-  );
+  const getSecondMethod = useTriggerFetch('Fetch from Foo');
+
+  // getSecondMethod() it will trigger Foo useFetch
 
   return (
 	...
@@ -413,7 +380,7 @@ function Bar({ dataSourceId }) {
 ## HttpService
 
 Main service to make the requests to the server.
-_Note: All request need to pass throw this to useFetch/useFetchCallback to work as intended._
+_Note: All request need to pass throw this to useFetch to work as intended._
 
 ### HttpServiceClass
 

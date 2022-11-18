@@ -8,7 +8,7 @@
 		"isolatedModules": false
 	},
 	"include": [
-		"../build/**/*"
+		"../packages/react-fetch/src/**/*"
 	],
 	"exclude": [
 		"**/dist/*"

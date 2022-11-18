@@ -12,6 +12,10 @@ export type MethodConfig = Omit<RequestConfig, 'url'> & {
 }
 
 export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
+	/**
+	 * If threshold is enabled
+	 */
+	isThresholdEnabled?: boolean
 	method?: string
 	/**
 	 * Throttle threshold
@@ -24,6 +28,10 @@ export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 }
 
 export type HttpServiceDefaultConfig = {
+	/**
+	 * If threshold is enabled
+	 */
+	isThresholdEnabled: boolean
 	/**
 	 * Default threshold for get request @default 3500 milliseconds
 	 */
@@ -42,7 +50,8 @@ export class HttpServiceClass {
 	 * Default config of HttpService
 	 */
 	public defaultConfig: HttpServiceDefaultConfig = {
-		threshold: 3500
+		threshold: 3500,
+		isThresholdEnabled: false
 	}
 
 	public interceptors = new Interceptor()
@@ -132,7 +141,7 @@ export class HttpServiceClass {
 			_url.search = urlSearchParams.toString();
 		}
 
-		const threshold = config?.threshold ?? this.defaultConfig.threshold;
+		const threshold = (config?.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) ? (config?.threshold ?? this.defaultConfig.threshold) : 0;
 		
 		const _config: NormalizeRequestConfig = {
 			...config,
@@ -228,13 +237,13 @@ export class HttpServiceClass {
 	}
 }
 
-let httpService = new HttpServiceClass();
+export let _httpService = new HttpServiceClass();
 
 /**
  * Method to update default HttpService to different standards.
  */
 export const setDefaultHttpService = (http: HttpServiceClass) => {
-	httpService = http;
+	_httpService = http;
 }
 
 /**
@@ -242,9 +251,9 @@ export const setDefaultHttpService = (http: HttpServiceClass) => {
  * * Note: All request need to pass throw this to useFetch/useFetchCallback
  * * to work as intended.
  */
-const HttpService: HttpServiceClass = new Proxy(httpService, {
+const HttpService: HttpServiceClass = new Proxy(_httpService, {
 	get(_, p: keyof HttpServiceClass) {
-		return httpService[p]
+		return _httpService[p]
 	}
 });
 

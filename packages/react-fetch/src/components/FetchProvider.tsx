@@ -9,7 +9,8 @@ import {
 	HttpService,
 	HttpServiceClass,
 	setDefaultHttpService
-} from '../../../http-service/src'
+} from '../../../http-service/src/index'
+
 import {
 	FetchContext,
 	FetchContextConfig,
@@ -116,7 +117,7 @@ const FetchProvider: React.FC<Props> = ({
 				return onRequestRef.current.onRequest(config);
 			},
 			onRequestRef.current.onRequestError ? (error) => {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
 				return onRequestRef.current.onRequestError!(error);
 			} : undefined
 		)
@@ -125,7 +126,7 @@ const FetchProvider: React.FC<Props> = ({
 				return onRequestRef.current.onResponse(data);
 			},
 			onRequestRef.current.onResponseError ? (error) => {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
 				return onRequestRef.current.onResponseError!(error);
 			} : undefined
 		)

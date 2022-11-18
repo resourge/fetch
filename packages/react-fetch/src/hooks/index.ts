@@ -1,9 +1,11 @@
 import { useFetch } from './useFetch';
-import { useFetchCallback } from './useFetchCallback';
+import type { UseFetchConfig, UseFetchEffect, UseFetchEffectConfig } from './useFetch';
 import { useScrollRestoration } from './useScrollRestoration';
+import { useTriggerFetch } from './useTriggerFetch';
 
 export {
-	useFetchCallback,
+	UseFetchConfig, UseFetchEffect, UseFetchEffectConfig,
 	useFetch,
-	useScrollRestoration
+	useScrollRestoration,
+	useTriggerFetch
 }
