@@ -1,3 +1,10 @@
+## [1.8.6](https://github.com/resourge/fetch/compare/v1.8.5...v1.8.6) (2022-11-18)
+
+
+### Bug Fixes
+
+* **interceptors:** change Interceptor order on useFetch ([572a48e](https://github.com/resourge/fetch/commit/572a48e4037cbd4c9d7bd5f0c6a5701be5ad9d07))
+
 ## [1.8.5](https://github.com/resourge/fetch/compare/v1.8.4...v1.8.5) (2022-11-18)
 
 
