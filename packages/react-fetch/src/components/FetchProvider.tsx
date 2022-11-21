@@ -16,14 +16,8 @@ import {
 	setDefaultHttpService
 } from '../../../http-service/src/index'
 
-import {
-	FetchContext,
-	FetchContextConfig,
-	FetchContextType,
-	useFetchContext
-} from '../context/FetchContext'
+import { FetchContext, FetchContextConfig, FetchContextType } from '../context/FetchContext'
 import { MissingBaseUrlError } from '../errors/MissingBaseUrlError';
-import { MultipleHttpProviderError } from '../errors/MultipleHttpProviderError';
 
 type Props = {
 	children: React.ReactNode
@@ -83,13 +77,6 @@ const FetchProvider: React.FC<Props> = ({
 	onResponseError
 }) => {
 	if ( __DEV__ ) {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		const context = useFetchContext();
-
-		if ( context ) {
-			throw new MultipleHttpProviderError();
-		}
-
 		if ( !baseUrl && !isBrowser() ) {
 			throw new MissingBaseUrlError();
 		}
