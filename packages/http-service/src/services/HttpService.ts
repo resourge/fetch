@@ -59,6 +59,8 @@ export class HttpServiceClass {
 	public static clone(http: typeof _httpService) {
 		const newHttpServiceClass = new this();
 
+		newHttpServiceClass.baseUrl = http.baseUrl;
+
 		newHttpServiceClass.defaultConfig.isThresholdEnabled = http.defaultConfig.isThresholdEnabled;
 		newHttpServiceClass.defaultConfig.threshold = http.defaultConfig.threshold;
 
