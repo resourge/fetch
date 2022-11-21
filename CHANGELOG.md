@@ -1,3 +1,10 @@
+## [1.8.8](https://github.com/resourge/fetch/compare/v1.8.7...v1.8.8) (2022-11-21)
+
+
+### Bug Fixes
+
+* **fetchcontext:** add httpService to context ([fcc931b](https://github.com/resourge/fetch/commit/fcc931b8ab4fc860976a8ec57d51cc7462ab3d22))
+
 ## [1.8.7](https://github.com/resourge/fetch/compare/v1.8.6...v1.8.7) (2022-11-18)
 
 
