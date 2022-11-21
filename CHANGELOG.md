@@ -1,3 +1,11 @@
+## [1.8.9](https://github.com/resourge/fetch/compare/v1.8.8...v1.8.9) (2022-11-21)
+
+
+### Bug Fixes
+
+* **fetchprovider:** remove error catch when using multiple FetchProviders ([f70bbf9](https://github.com/resourge/fetch/commit/f70bbf9922466b85bb27dee9ea9896b1d8f3ee6a))
+* **usefetch:** fix useFetch HttpService clone ([e012ff3](https://github.com/resourge/fetch/commit/e012ff304d26c034b910d8ce0873a755270e774b))
+
 ## [1.8.8](https://github.com/resourge/fetch/compare/v1.8.7...v1.8.8) (2022-11-21)
 
 
