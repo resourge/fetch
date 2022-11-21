@@ -1,3 +1,11 @@
+## [1.8.10](https://github.com/resourge/fetch/compare/v1.8.9...v1.8.10) (2022-11-21)
+
+
+### Bug Fixes
+
+* **fetchprovider:** change baseUrl even if not fetchService exists ([de1f9d4](https://github.com/resourge/fetch/commit/de1f9d428c036f2a022090e7fd994bbbf5ae80f0))
+* **httpservice:** add baseUrl to clone method ([bc9b2e5](https://github.com/resourge/fetch/commit/bc9b2e54deb415969c98bb6893174723b2acbcc1))
+
 ## [1.8.9](https://github.com/resourge/fetch/compare/v1.8.8...v1.8.9) (2022-11-21)
 
 
