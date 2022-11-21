@@ -98,9 +98,9 @@ export const normalizeRequest = (
 			throw new FetchError('Unsupported protocol ' + config.url.protocol);
 		}
 
-		for (const { onRequest } of interceptors.request.values) {
+		interceptors.request.values.forEach(({ onRequest }) => {
 			_config = onRequest(_config);
-		}
+		});
 		
 		(_config as RequestConfig & { body: RequestInit['body'] }).body = normalizeBody(_config)
 
@@ -108,11 +108,11 @@ export const normalizeRequest = (
 	}
 	catch (e) {
 		if ( e instanceof Error ) {
-			for (const { onRequestError } of interceptors.request.values) {
+			interceptors.request.values.forEach(({ onRequestError }) => {
 				if ( onRequestError ) {
-					onRequestError(FetchError.setFromError(e));
+					onRequestError(FetchError.setFromError(e as any));
 				}
-			}
+			});
 		}
 		throw e;
 	}

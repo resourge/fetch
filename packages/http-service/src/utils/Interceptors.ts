@@ -16,7 +16,7 @@ type InterceptorRequest = {
 		onRequest: InterceptorOnRequest,
 		onRequestError?: InterceptorOnRequestError
 	) => () => void
-	values: Set<{
+	values: Array<{
 		onRequest: InterceptorOnRequest
 		onRequestError?: InterceptorOnRequestError
 	}>
@@ -30,7 +30,7 @@ type InterceptorResponse = {
 		onResponse: InterceptorOnResponse,
 		onResponseError?: InterceptorOnResponseError
 	) => () => void
-	values: Set<{
+	values: Array<{
 		onResponse: InterceptorOnResponse
 		onResponseError?: InterceptorOnResponseError
 	}>
@@ -49,17 +49,19 @@ export class Interceptor {
 		newInterceptor.request = {
 			...interceptor.request
 		}
+		newInterceptor.request.values = [...newInterceptor.request.values];
 
 		newInterceptor.response = {
 			...interceptor.response
 		}
+		newInterceptor.response.values = [...newInterceptor.response.values];
 
 		return newInterceptor;
 	}
 
 	constructor() {
 		this.request = {
-			values: new Set(),
+			values: [],
 			use: function (
 				onRequest: InterceptorOnRequest,
 				onRequestError?: InterceptorOnRequestError
@@ -68,15 +70,15 @@ export class Interceptor {
 					onRequest,
 					onRequestError
 				}
-				this.values.add(obj);
+				this.values.push(obj);
 	
 				return () => {
-					this.values.delete(obj);
+					this.values = this.values.filter((val) => val !== obj);
 				}
 			}
 		}
 		this.response = {
-			values: new Set(),
+			values: [],
 			use: function (
 				onResponse: InterceptorOnResponse,
 				onResponseError?: InterceptorOnResponseError
@@ -85,10 +87,10 @@ export class Interceptor {
 					onResponse,
 					onResponseError
 				}
-				this.values.add(obj);
+				this.values.push(obj);
 	
 				return () => {
-					this.values.delete(obj);
+					this.values = this.values.filter((val) => val !== obj);
 				}
 			}
 		}

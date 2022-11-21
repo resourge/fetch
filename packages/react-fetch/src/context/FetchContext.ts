@@ -10,6 +10,10 @@ export type FetchContextType = {
 	HttpService: typeof HttpService
 	request: Map<string, (...args: any[]) => Promise<any>>
 	config?: FetchContextConfig
+	HttpServiceClass?: {
+		new(): typeof HttpService
+		clone: (http: typeof HttpService) => typeof HttpService
+	}
 }
 
 export const FetchContext = createContext<FetchContextType | undefined>(undefined);

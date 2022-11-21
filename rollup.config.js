@@ -14,7 +14,6 @@ const external = [
 	'use-sync-external-store/shim',
 	'use-sync-external-store/shim/with-selector',
 	'react-native',
-	'@resourge/shallow-clone',
 	'@resourge/http-service'
 ];
 

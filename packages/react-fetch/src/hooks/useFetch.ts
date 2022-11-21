@@ -6,7 +6,6 @@ import {
 	useState
 } from 'react'
 
-import { shallowClone } from '@resourge/shallow-clone'
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
 import {
@@ -15,7 +14,8 @@ import {
 	HttpResponseError,
 	HttpService,
 	HttpResponse,
-	_httpService
+	_httpService,
+	HttpServiceClass
 } from '../../../http-service/src'
 import { useFetchContext } from '../context/FetchContext';
 import NotificationService from '../services/NotificationService';
@@ -181,26 +181,12 @@ export function useFetch<Result, T extends any[]>(
 	const controllers = useRef<Map<string, AbortController>>(new Map())
 
 	const [_HttpService] = useState<typeof HttpService>(() => {
-		const Http: typeof HttpService = shallowClone(httpContext?.HttpService ?? _httpService);
-		Http.defaultConfig = {
-			...Http.defaultConfig
-		}
-		Http.interceptors = {
-			...Http.interceptors
-		}
-		Http.interceptors.request = {
-			...Http.interceptors.request
-		}
-		Http.interceptors.response = {
-			...Http.interceptors.response
-		}
-		const oldRequest = new Set(Http.interceptors.request.values.values());
-		const oldResponse = new Set(Http.interceptors.response.values.values());
-		Http.interceptors.request.values = new Set()
-		Http.interceptors.response.values = new Set()
+		const _HttpServiceClass = httpContext?.HttpServiceClass ?? HttpServiceClass;
 
-		Http.interceptors.request.use(
-			(config) => {
+		const Http: typeof HttpService = _HttpServiceClass.clone((httpContext?.HttpService ?? _httpService));
+		
+		Http.interceptors.request.values.unshift({
+			onRequest: (config) => {
 				if ( !config.signal ) {
 					const url = (config.url as URL).href;
 					const controller = new AbortController();
@@ -211,10 +197,10 @@ export function useFetch<Result, T extends any[]>(
 				}
 				return config;
 			}
-		);
+		});
 
-		Http.interceptors.response.use(
-			(response: HttpResponse<any>) => {
+		Http.interceptors.response.values.unshift({
+			onResponse: (response: HttpResponse<any>) => {
 				const config = response.request;
 				if ( config.signal ) {
 					const url = config.url;
@@ -223,15 +209,7 @@ export function useFetch<Result, T extends any[]>(
 				}
 				return response;
 			}
-		);
-
-		oldRequest.forEach((obj) => {
-			Http.interceptors.request.values.add(obj);
-		})
-
-		oldResponse.forEach((obj) => {
-			Http.interceptors.response.values.add(obj);
-		})
+		});
 
 		return Http;
 	});

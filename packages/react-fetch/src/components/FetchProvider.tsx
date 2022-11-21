@@ -45,7 +45,10 @@ type Props = {
 	 * will not be reflected on the type. Or if you want new functions that 
 	 * you deem appropriated ask me.
 	 */
-	httpService?: new() => HttpServiceClass
+	httpService?: {
+		new(): HttpServiceClass
+		clone: (http: HttpServiceClass) => HttpServiceClass
+	}
 	/**
 	 * Intercepts on every request.
 	 * Serves to inject token, headers and some configs.
@@ -115,7 +118,7 @@ const FetchProvider: React.FC<Props> = ({
 
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const [httpService] = useState(() => {
-		let _newHttpService
+		let _newHttpService = HttpService;
 		if ( fetchService ) {
 			// eslint-disable-next-line new-cap
 			const newHttpService = new fetchService();
@@ -125,7 +128,6 @@ const FetchProvider: React.FC<Props> = ({
 
 			_newHttpService = newHttpService;
 		}
-		_newHttpService = HttpService;
 
 		ref.current.removeRequest = _newHttpService.interceptors.request.use(
 			(config) => {
@@ -160,7 +162,8 @@ const FetchProvider: React.FC<Props> = ({
 	const value = useMemo((): FetchContextType => ({
 		request: new Map(),
 		config,
-		HttpService: httpService
+		HttpService: httpService,
+		HttpServiceClass: fetchService
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}), [httpService])
 

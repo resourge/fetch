@@ -43,7 +43,6 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
-    "@resourge/shallow-clone": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
   "devDependencies": {

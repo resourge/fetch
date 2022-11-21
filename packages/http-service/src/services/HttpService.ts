@@ -54,7 +54,18 @@ export class HttpServiceClass {
 		isThresholdEnabled: false
 	}
 
-	public interceptors = new Interceptor()
+	public interceptors = new Interceptor();
+	
+	public static clone(http: typeof _httpService) {
+		const newHttpServiceClass = new this();
+
+		newHttpServiceClass.defaultConfig.isThresholdEnabled = http.defaultConfig.isThresholdEnabled;
+		newHttpServiceClass.defaultConfig.threshold = http.defaultConfig.threshold;
+
+		newHttpServiceClass.interceptors = Interceptor.clone(http.interceptors);
+
+		return newHttpServiceClass;
+	}
 
 	private throttleRequest(
 		cacheKey: string,
