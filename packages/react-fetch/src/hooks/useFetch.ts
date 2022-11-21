@@ -181,7 +181,7 @@ export function useFetch<Result, T extends any[]>(
 	const controllers = useRef<Map<string, AbortController>>(new Map())
 
 	const [_HttpService] = useState<typeof HttpService>(() => {
-		const Http: typeof HttpService = shallowClone(_httpService);
+		const Http: typeof HttpService = shallowClone(httpContext?.HttpService ?? _httpService);
 		Http.defaultConfig = {
 			...Http.defaultConfig
 		}

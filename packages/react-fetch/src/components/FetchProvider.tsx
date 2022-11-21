@@ -1,4 +1,9 @@
-import React, { useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react'
 
 import {
 	InterceptorOnRequest,
@@ -87,62 +92,77 @@ const FetchProvider: React.FC<Props> = ({
 		}
 	}
 
-	const onRequestRef = useRef<{
+	const ref = useRef<{
 		onRequest: InterceptorOnRequest
 		onResponse: InterceptorOnResponse
 		
+		removeRequest: () => void
+		removeResponse: () => void
+
 		onRequestError?: InterceptorOnRequestError
 		onResponseError?: InterceptorOnResponseError
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	}>(null!);
 
-	onRequestRef.current = {
+	ref.current = {
 		onRequest,
 		onRequestError,
 		onResponse,
-		onResponseError
+		onResponseError,
+		removeRequest: () => {},
+		removeResponse: () => {}
 	};
 
-	useLayoutEffect(() => {
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	const [httpService] = useState(() => {
+		let _newHttpService
 		if ( fetchService ) {
 			// eslint-disable-next-line new-cap
 			const newHttpService = new fetchService();
 
 			newHttpService.baseUrl = baseUrl ?? newHttpService.baseUrl;
 			setDefaultHttpService(newHttpService)
+
+			_newHttpService = newHttpService;
 		}
+		_newHttpService = HttpService;
 
-		const removeRequest = HttpService.interceptors.request.use(
+		ref.current.removeRequest = _newHttpService.interceptors.request.use(
 			(config) => {
-				return onRequestRef.current.onRequest(config);
+				return ref.current.onRequest(config);
 			},
-			onRequestRef.current.onRequestError ? (error) => {
+			ref.current.onRequestError ? (error) => {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-				return onRequestRef.current.onRequestError!(error);
+				return ref.current.onRequestError!(error);
 			} : undefined
 		)
-		const removeResponse = HttpService.interceptors.response.use(
+		ref.current.removeResponse = _newHttpService.interceptors.response.use(
 			(data) => {
-				return onRequestRef.current.onResponse(data);
+				return ref.current.onResponse(data);
 			},
-			onRequestRef.current.onResponseError ? (error) => {
+			ref.current.onResponseError ? (error) => {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-				return onRequestRef.current.onResponseError!(error);
+				return ref.current.onResponseError!(error);
 			} : undefined
 		)
 
+		return _newHttpService;
+	});
+
+	useEffect(() => {
 		return () => {
-			removeRequest();
-			removeResponse();
+			ref.current.removeRequest();
+			ref.current.removeResponse();
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	const value = useMemo((): FetchContextType => ({
 		request: new Map(),
-		config
+		config,
+		HttpService: httpService
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}), [])
+	}), [httpService])
 
 	return (
 		<FetchContext.Provider value={value}>
