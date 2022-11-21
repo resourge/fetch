@@ -109,12 +109,12 @@ const FetchProvider: React.FC<Props> = ({
 		if ( fetchService ) {
 			// eslint-disable-next-line new-cap
 			const newHttpService = new fetchService();
-
-			newHttpService.baseUrl = baseUrl ?? newHttpService.baseUrl;
 			setDefaultHttpService(newHttpService)
 
 			_newHttpService = newHttpService;
 		}
+
+		_newHttpService.baseUrl = baseUrl ?? HttpService.baseUrl;
 
 		ref.current.removeRequest = _newHttpService.interceptors.request.use(
 			(config) => {
