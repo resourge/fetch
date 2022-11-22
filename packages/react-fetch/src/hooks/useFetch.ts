@@ -43,6 +43,24 @@ type UseFetch<Result, T extends any[]> = {
 
 export type UseFetchEffect<Result, T extends any[]> = {
 	(...args: Partial<T>): Promise<Result>
+	error: HttpResponseError | FetchError | Error
+	/**
+	 * Fetch Method with loading
+	 */
+	fetch: (...args: Partial<T>) => Promise<Result>
+	isLoading: boolean
+	/**
+	 * Fetch Method without loading
+	 */
+	noLoadingFetch: (...args: Partial<T>) => Promise<Result>
+} & [
+	(...args: Partial<T>) => Promise<Result>,
+	HttpResponseError | FetchError | Error,
+	boolean
+];
+
+export type UseFetchState<Result, T extends any[]> = {
+	(...args: Partial<T>): Promise<Result>
 	data: Result
 	error: HttpResponseError | FetchError | Error
 	/**
@@ -93,7 +111,7 @@ export type UseFetchConfig = {
 	useLoadingService?: boolean | string | string[]
 }
 
-export type UseFetchEffectConfig<T = any> = UseFetchConfig & {
+export type UseFetchEffectConfig = UseFetchConfig & {
 	/**
 	 * useEffect dependencies.
 	 * Basically works on useEffect dependencies
@@ -101,18 +119,21 @@ export type UseFetchEffectConfig<T = any> = UseFetchConfig & {
 	 */
 	deps?: React.DependencyList
 	/**
+	 * Serves to restore scroll position
+	 */
+	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
+}
+
+export type UseFetchStateConfig<T = any> = UseFetchEffectConfig & {
+	/**
 	* Default data values.
 	*/
 	initialState?: T
 	/**
 	 * Fetch on window focus
-	 * @default true
+	 * @default true when initialState is defined.
 	 */
 	onWindowFocus?: boolean
-	/**
-	 * Serves to restore scroll position
-	 */
-	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
 }
 
 type State<T> = {
@@ -172,10 +193,14 @@ export function useFetch<Result, T extends any[]>(
 	config: UseFetchEffectConfig
 ): UseFetchEffect<Result, T>
 export function useFetch<Result, T extends any[]>(
+	method: (Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>,
+	config: UseFetchStateConfig
+): UseFetchState<Result, T>
+export function useFetch<Result, T extends any[]>(
 	method: ((Http: typeof HttpService, ...args: T) => Promise<Result>) | 
 	((Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>),
-	config?: UseFetchConfig | UseFetchEffectConfig
-): UseFetch<Result, T> | UseFetchEffect<Result, T> {
+	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig
+): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
 	const httpContext = useFetchContext();
 
 	const controllers = useRef<Map<string, AbortController>>(new Map())
@@ -217,7 +242,7 @@ export function useFetch<Result, T extends any[]>(
 	let isFetchEffect = false;
 	let isFetchEffectWithData = false;
 	if ( config ) {
-		const keys = Object.keys(config) as Array<keyof UseFetchEffectConfig>;
+		const keys = Object.keys(config) as Array<keyof UseFetchStateConfig>;
 		
 		isFetchEffect = keys.some((key) => key === 'initialState' || key === 'deps');
 		
@@ -225,14 +250,14 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const deps = (config as UseFetchEffectConfig)?.deps ?? [];
-	const onWindowFocus = (config as UseFetchEffectConfig)?.onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
+	const onWindowFocus = (config as UseFetchStateConfig)?.onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
 	const scrollRestoration = (config as UseFetchEffectConfig)?.scrollRestoration;
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
 	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
 
 	const currentData = useRef<State<Result>>({
-		data: (config as UseFetchEffectConfig)?.initialState,
+		data: (config as UseFetchStateConfig)?.initialState,
 		isLoading: true,
 		error: null
 	});
@@ -374,20 +399,11 @@ export function useFetch<Result, T extends any[]>(
 	result.fetch = fetch;
 	result.noLoadingFetch = noLoadingFetch;
 
+	result[0] = fetch;
+	result[1] = currentData.current.error;
+	result[2] = _isLoading;
+
 	if ( isFetchEffect ) {
-		// This is to make sure onFocus will only trigger if the hook commands the data,
-		// Otherwise it can lead to errors
-		if ( isFetchEffectWithData ) {
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			useOnFocusFetch(
-				async () => {
-					await result.noLoadingFetch();
-					NotificationService.notify(id);
-				},
-				onWindowFocus
-			);
-		}
-	
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			_HttpService.defaultConfig.isThresholdEnabled = true;
@@ -405,18 +421,26 @@ export function useFetch<Result, T extends any[]>(
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, deps)
 
-		result.data = currentData.current.data;
-		result.setData = setData;
-		result[0] = currentData.current.data;
-		result[1] = fetch;
-		result[2] = currentData.current.error;
-		result[3] = _isLoading;
-		result[4] = setData;
-	}
-	else {
-		result[0] = fetch;
-		result[1] = currentData.current.error;
-		result[2] = _isLoading;
+		// This is to make sure onFocus will only trigger if the hook commands the data,
+		// Otherwise it can lead to errors
+		if ( isFetchEffectWithData ) {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			useOnFocusFetch(
+				async () => {
+					await result.noLoadingFetch();
+					NotificationService.notify(id);
+				},
+				onWindowFocus
+			);
+
+			result.data = currentData.current.data;
+			result.setData = setData;
+			result[0] = currentData.current.data;
+			result[1] = fetch;
+			result[2] = currentData.current.error;
+			result[3] = _isLoading;
+			result[4] = setData;
+		}
 	}
 
 	useEffect(() => {

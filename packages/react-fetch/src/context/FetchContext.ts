@@ -2,9 +2,9 @@ import { createContext, useContext } from 'react';
 
 import { HttpService } from 'packages/http-service/src';
 
-import { UseFetchEffectConfig } from '../hooks/useFetch';
+import { UseFetchStateConfig } from '../hooks/useFetch';
 
-export type FetchContextConfig = Omit<UseFetchEffectConfig, 'initialState' | 'deps' | 'scrollRestoration' | 'fetchId'>
+export type FetchContextConfig = Omit<UseFetchStateConfig, 'initialState' | 'deps' | 'scrollRestoration' | 'fetchId'>
 
 export type FetchContextType = {
 	HttpService: typeof HttpService
