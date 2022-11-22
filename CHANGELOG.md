@@ -1,3 +1,10 @@
+## [1.8.13](https://github.com/resourge/fetch/compare/v1.8.12...v1.8.13) (2022-11-22)
+
+
+### Bug Fixes
+
+* **usefetch:** add null to FetchError ([8a612e9](https://github.com/resourge/fetch/commit/8a612e922cc8967414f236cde252aae88c963020))
+
 ## [1.8.12](https://github.com/resourge/fetch/compare/v1.8.11...v1.8.12) (2022-11-22)
 
 
