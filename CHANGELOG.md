@@ -1,3 +1,10 @@
+## [1.8.12](https://github.com/resourge/fetch/compare/v1.8.11...v1.8.12) (2022-11-22)
+
+
+### Bug Fixes
+
+* **hooks/index.ts:** include UseFetchStateConfig on export ([cca5dee](https://github.com/resourge/fetch/commit/cca5deeb563d8bf323304755f0aca898d15be846))
+
 ## [1.8.11](https://github.com/resourge/fetch/compare/v1.8.10...v1.8.11) (2022-11-22)
 
 
