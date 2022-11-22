@@ -23,9 +23,11 @@ import { useId } from '../utils/useIdShim';
 
 import { useOnFocusFetch } from './useOnFocusFetch';
 
+type UseFetchError = HttpResponseError | FetchError | Error | null | any
+
 type UseFetch<Result, T extends any[]> = {
 	(...args: T): Promise<Result>
-	error: HttpResponseError | FetchError | Error
+	error: UseFetchError
 	/**
 	 * Fetch Method with loading
 	 */
@@ -37,13 +39,13 @@ type UseFetch<Result, T extends any[]> = {
 	noLoadingFetch: (...args: T) => Promise<Result>
 } & [
 	(...args: T) => Promise<Result>,
-	HttpResponseError | FetchError | Error,
+	UseFetchError,
 	boolean
 ];
 
 export type UseFetchEffect<Result, T extends any[]> = {
 	(...args: Partial<T>): Promise<Result>
-	error: HttpResponseError | FetchError | Error
+	error: UseFetchError
 	/**
 	 * Fetch Method with loading
 	 */
@@ -55,14 +57,14 @@ export type UseFetchEffect<Result, T extends any[]> = {
 	noLoadingFetch: (...args: Partial<T>) => Promise<Result>
 } & [
 	(...args: Partial<T>) => Promise<Result>,
-	HttpResponseError | FetchError | Error,
+	UseFetchError,
 	boolean
 ];
 
 export type UseFetchState<Result, T extends any[]> = {
 	(...args: Partial<T>): Promise<Result>
 	data: Result
-	error: HttpResponseError | FetchError | Error
+	error: UseFetchError
 	/**
 	 * Fetch Method with loading
 	 */
@@ -79,7 +81,7 @@ export type UseFetchState<Result, T extends any[]> = {
 } & [
 	Result,
 	(...args: Partial<T>) => Promise<Result>,
-	HttpResponseError | FetchError | Error,
+	UseFetchError,
 	boolean,
 	(data: Result) => void
 ];
@@ -138,7 +140,7 @@ export type UseFetchStateConfig<T = any> = UseFetchEffectConfig & {
 
 type State<T> = {
 	data: T | undefined
-	error: null | Error | FetchError | any
+	error: UseFetchError
 	isLoading: boolean
 }
 
