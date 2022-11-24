@@ -78,7 +78,7 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-	const scrollRestore = (behavior: ScrollBehavior = 'smooth') => {
+	const scrollRestore = (behavior: ScrollBehavior = 'auto') => {
 		if ( canRestore.current ) {
 			const existingRecord = visitedUrl.get(scrollRestorationId);
 
