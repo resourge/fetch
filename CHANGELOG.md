@@ -1,3 +1,10 @@
+## [1.8.14](https://github.com/resourge/fetch/compare/v1.8.13...v1.8.14) (2022-11-24)
+
+
+### Bug Fixes
+
+* **usescrollrestoration:** change scroll behavior to auto ([21c92f6](https://github.com/resourge/fetch/commit/21c92f644b8af6951d5e4f42f310b2ae1ad96d7e))
+
 ## [1.8.13](https://github.com/resourge/fetch/compare/v1.8.12...v1.8.13) (2022-11-22)
 
 
