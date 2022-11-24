@@ -1,3 +1,10 @@
+## [1.8.15](https://github.com/resourge/fetch/compare/v1.8.14...v1.8.15) (2022-11-24)
+
+
+### Bug Fixes
+
+* **httpservice:** fix onResponseError Data being txt instead of JSON in content-type json ([522414c](https://github.com/resourge/fetch/commit/522414ca701d850ceaf6f5be5855c2f862eb94a3))
+
 ## [1.8.14](https://github.com/resourge/fetch/compare/v1.8.13...v1.8.14) (2022-11-24)
 
 
