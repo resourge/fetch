@@ -93,8 +93,11 @@ export class HttpServiceClass {
 		}
 		const response = _response.clone();
 
+		const isJson = response.headers.get('content-type')?.includes('application/json');
+		
+		const data = await (config.transform ? config.transform(_response.clone(), config) : (isJson ? response.json() : response.text()));
+
 		if ( _response.ok ) {
-			const data = await (config.transform ? config.transform(_response.clone(), config) : response.json());
 			return new HttpResponse(
 				response.status,
 				response.statusText,
@@ -108,7 +111,7 @@ export class HttpServiceClass {
 			new HttpResponseError(
 				response.statusText,
 				request,
-				await response.text(),
+				data,
 				response.status,
 				response
 			)
