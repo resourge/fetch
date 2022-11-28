@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/resourge/fetch/compare/v1.8.15...v1.9.0) (2022-11-28)
+
+
+### Features
+
+* **throttlepromise:** when threshold is 0 make it 500 to prevent repeating requests ([af11141](https://github.com/resourge/fetch/commit/af11141f66dd906a06b2063efeb6e39cc0685b7e))
+
 ## [1.8.15](https://github.com/resourge/fetch/compare/v1.8.14...v1.8.15) (2022-11-24)
 
 
