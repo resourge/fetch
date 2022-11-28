@@ -1,7 +1,9 @@
-const cache: Map<string, { timestamp: number, value?: Promise<any> }> = new Map();
+
+type CacheType = { timestamp: number, value?: Promise<any> };
+const cache: Map<string, CacheType> = new Map();
 const maxCacheItems = 10;
 
-const add = (key: string, value: { timestamp: number, value?: Promise<any> }) => {
+const add = (key: string, value: CacheType) => {
 	if ( cache.size > maxCacheItems ) {
 		const [firstKey] = cache.keys();
 
@@ -10,7 +12,7 @@ const add = (key: string, value: { timestamp: number, value?: Promise<any> }) =>
 	cache.set(key, value);
 }
 
-const get = (key: string, defaultValue: { timestamp: number, value?: Promise<any> }) => {
+const get = (key: string, defaultValue: CacheType): CacheType => {
 	return cache.get(key) ?? defaultValue
 }
 
@@ -22,9 +24,12 @@ export const throttlePromise = (
 	cacheKey: string,
 	cb: () => Promise<any>,
 	threshold: number
-) => {
+): Promise<any> => {
 	if ( threshold === 0 ) {
-		return cb();
+		if ( process.env.NODE_ENV === 'test' ) {
+			return cb();
+		}
+		return throttlePromise(cacheKey, cb, 500);
 	}
 	const now = Date.now();
 
