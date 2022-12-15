@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/resourge/fetch/compare/v1.9.0...v1.10.0) (2022-12-15)
+
+
+### Features
+
+* **httpservice:** reduce threshold from 3500 to 2750 ([6335e2a](https://github.com/resourge/fetch/commit/6335e2aece55fb0d1a60e248ee36547d4c3bef68))
+
 # [1.9.0](https://github.com/resourge/fetch/compare/v1.8.15...v1.9.0) (2022-11-28)
 
 
