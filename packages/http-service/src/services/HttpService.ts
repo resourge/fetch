@@ -33,7 +33,7 @@ export type HttpServiceDefaultConfig = {
 	 */
 	isThresholdEnabled: boolean
 	/**
-	 * Default threshold for get request @default 3500 milliseconds
+	 * Default threshold for get request @default 2750 milliseconds
 	 */
 	threshold: number
 }
@@ -50,7 +50,7 @@ export class HttpServiceClass {
 	 * Default config of HttpService
 	 */
 	public defaultConfig: HttpServiceDefaultConfig = {
-		threshold: 3500,
+		threshold: 2750,
 		isThresholdEnabled: false
 	}
 
