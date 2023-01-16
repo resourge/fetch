@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/resourge/fetch/compare/v1.10.0...v1.10.1) (2023-01-16)
+
+
+### Bug Fixes
+
+* **for nextjs:** remove the use of window object without validation first to prefent nextjs error ([81fd6bb](https://github.com/resourge/fetch/commit/81fd6bb9fcd2958dc0fe7041ef92e7bcd7e10028))
+
 # [1.10.0](https://github.com/resourge/fetch/compare/v1.9.0...v1.10.0) (2022-12-15)
 
 
