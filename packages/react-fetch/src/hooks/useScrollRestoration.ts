@@ -79,10 +79,10 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 	}, [])
 
 	const scrollRestore = (behavior: ScrollBehavior = 'auto') => {
-		if ( canRestore.current ) {
+		if ( canRestore.current && typeof window !== 'undefined' ) {
 			const existingRecord = visitedUrl.get(scrollRestorationId);
 
-			if (existingRecord !== undefined) {
+			if ( existingRecord !== undefined ) {
 				window.requestAnimationFrame(() => {
 					if ( ref.current ) {
 						ref.current.scrollTo({

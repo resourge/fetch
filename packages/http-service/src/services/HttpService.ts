@@ -44,7 +44,7 @@ export type HttpServiceDefaultConfig = {
  * and the upload method.
  */
 export class HttpServiceClass {
-	public baseUrl: string = window.location.origin;
+	public baseUrl: string = typeof window !== 'undefined' ? window.location.origin : '/';
 
 	/**
 	 * Default config of HttpService

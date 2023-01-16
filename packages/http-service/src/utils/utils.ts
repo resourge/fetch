@@ -25,15 +25,21 @@ export function readCookie(name: string) {
 	return (match ? decodeURIComponent(match[3]) : null);
 }
 
-const originURL = new URL(window.location.href)
-
 /**
  * Checks if URL has the same origin as requestUrl
  */
-export function isURLSameOrigin(url: string | URL) {
-	const parsedUrl = new URL(url as string);
-	return (
-		parsedUrl.protocol === originURL.protocol &&
-		parsedUrl.host === originURL.host
-	);
-}
+export const isURLSameOrigin = ((): (url: string | URL) => boolean => {
+	if ( isBrowser() ) {
+		const originURL = new URL(window.location.href)
+
+		return (url: string | URL) => {
+			const parsedUrl = new URL(url as string);
+			return (
+				parsedUrl.protocol === originURL.protocol &&
+				parsedUrl.host === originURL.host
+			)
+		}
+	}
+
+	return () => true
+})()
