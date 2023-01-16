@@ -97,6 +97,12 @@ export type UseFetchConfig = {
 	 */
 	noEmitError?: boolean
 	/**
+	 * When this camp is false useEffect will not trigger fetch
+	 * * Note: It is not included in the deps.}
+	 * @default true
+	 */
+	shouldTriggerFetch?: boolean
+	/**
 	 * Doesn't trigger any Loading
 	 * @default false
 	 */
@@ -257,6 +263,7 @@ export function useFetch<Result, T extends any[]>(
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
 	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
+	const shouldTriggerFetch = config?.shouldTriggerFetch ?? httpContext?.config?.shouldTriggerFetch; 
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig)?.initialState,
@@ -408,18 +415,20 @@ export function useFetch<Result, T extends any[]>(
 	if ( isFetchEffect ) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			_HttpService.defaultConfig.isThresholdEnabled = true;
-			result()
-			.finally(() => {
-				_HttpService.defaultConfig.isThresholdEnabled = false;
-				if ( scrollRestoration ) {
-					if ( Array.isArray(scrollRestoration) ) {
-						scrollRestoration.forEach((method) => method());
-						return;
+			if ( shouldTriggerFetch ) {
+				_HttpService.defaultConfig.isThresholdEnabled = true;
+				result()
+				.finally(() => {
+					_HttpService.defaultConfig.isThresholdEnabled = false;
+					if ( scrollRestoration ) {
+						if ( Array.isArray(scrollRestoration) ) {
+							scrollRestoration.forEach((method) => method());
+							return;
+						}
+						scrollRestoration();
 					}
-					scrollRestoration();
-				}
-			});
+				});
+			}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, deps)
 

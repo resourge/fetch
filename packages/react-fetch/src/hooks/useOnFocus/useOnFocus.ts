@@ -23,17 +23,15 @@ export const useOnFocus = (
 				}
 			}
 
-			if ( typeof window !== 'undefined' ) {
-				window.addEventListener('focus', focus); 
-				window.addEventListener('blur', blur);
-				window.addEventListener('visibilitychange', visibilitychange);
+			window.addEventListener('focus', focus); 
+			window.addEventListener('blur', blur);
+			window.addEventListener('visibilitychange', visibilitychange);
 
-				return () => {
-					clear();
-					window.removeEventListener('focus', focus); 
-					window.removeEventListener('blur', blur);
-					window.removeEventListener('visibilitychange', visibilitychange);
-				}
+			return () => {
+				clear();
+				window.removeEventListener('focus', focus); 
+				window.removeEventListener('blur', blur);
+				window.removeEventListener('visibilitychange', visibilitychange);
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
