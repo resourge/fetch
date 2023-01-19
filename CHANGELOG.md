@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/resourge/fetch/compare/v1.11.0...v1.11.1) (2023-01-19)
+
+
+### Bug Fixes
+
+* **usefetch:** fix shouldTriggerFetch not being true by default ([426aaae](https://github.com/resourge/fetch/commit/426aaae7fcd0fcd88986acb0b090e441b6b62614))
+
 # [1.11.0](https://github.com/resourge/fetch/compare/v1.10.1...v1.11.0) (2023-01-19)
 
 
