@@ -263,7 +263,7 @@ export function useFetch<Result, T extends any[]>(
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
 	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
-	const shouldTriggerFetch = config?.shouldTriggerFetch ?? httpContext?.config?.shouldTriggerFetch; 
+	const shouldTriggerFetch = config?.shouldTriggerFetch ?? httpContext?.config?.shouldTriggerFetch ?? true; 
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig)?.initialState,
