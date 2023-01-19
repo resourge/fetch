@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/resourge/fetch/compare/v1.10.1...v1.11.0) (2023-01-19)
+
+
+### Features
+
+* **useform:** add shouldTriggerFetch to make possible request not being called at component mount ([a19f8f8](https://github.com/resourge/fetch/commit/a19f8f81793cdfaaffd376a9f336938a0ff11198))
+
 ## [1.10.1](https://github.com/resourge/fetch/compare/v1.10.0...v1.10.1) (2023-01-16)
 
 
