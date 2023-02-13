@@ -39,7 +39,7 @@ class LoadingService {
 		return () => {
 			const event = this.events.get(loaderId)
 			if ( event ) {
-				const index = event.emits.findIndex(onEmit);
+				const index = event.emits.findIndex((value) => value === onEmit);
 
 				if ( index > -1 ) {
 					event.emits.slice(index, 1);
