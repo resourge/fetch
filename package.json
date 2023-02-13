@@ -43,6 +43,7 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
+    "broadcast-channel": "^4.20.2",
     "use-sync-external-store": "^1.2.0"
   },
   "devDependencies": {

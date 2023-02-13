@@ -289,7 +289,7 @@ function App() {
 	  loadingElement={<div>Loading Message</div>}
 	>
 	  children
-	</FetchProvider>
+	</Loader>
   )
 }
 
