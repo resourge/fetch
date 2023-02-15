@@ -88,6 +88,12 @@ export type UseFetchState<Result, T extends any[]> = {
 
 export type UseFetchConfig = {	
 	/**
+	 * When this camp is false useEffect will not trigger fetch
+	 * * Note: It is not included in the deps.}
+	 * @default true
+	 */
+	enable?: boolean
+	/**
 	 * Serves as an uniqueId to be able to trigger in other fetch calls
 	 */
 	fetchId?: string
@@ -96,12 +102,6 @@ export type UseFetchConfig = {
 	 * @default false
 	 */
 	noEmitError?: boolean
-	/**
-	 * When this camp is false useEffect will not trigger fetch
-	 * * Note: It is not included in the deps.}
-	 * @default true
-	 */
-	shouldTriggerFetch?: boolean
 	/**
 	 * Doesn't trigger any Loading
 	 * @default false
@@ -263,7 +263,7 @@ export function useFetch<Result, T extends any[]>(
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
 	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
-	const shouldTriggerFetch = config?.shouldTriggerFetch ?? httpContext?.config?.shouldTriggerFetch ?? true; 
+	const shouldTriggerFetch = config?.enable ?? httpContext?.config?.enable ?? true; 
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig)?.initialState,
