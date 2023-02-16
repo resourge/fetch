@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/resourge/fetch/compare/v1.12.1...v1.12.2) (2023-02-16)
+
+
+### Bug Fixes
+
+* **package.json:** remove unecessary dependency ([8c5c77a](https://github.com/resourge/fetch/commit/8c5c77ab069221411be8842384eb446ce9e58ccc))
+
 ## [1.12.1](https://github.com/resourge/fetch/compare/v1.12.0...v1.12.1) (2023-02-16)
 
 
