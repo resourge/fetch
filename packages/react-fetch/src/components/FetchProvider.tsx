@@ -11,9 +11,7 @@ import {
 	InterceptorOnResponse,
 	InterceptorOnResponseError,
 	isBrowser,
-	HttpService,
-	HttpServiceClass,
-	setDefaultHttpService
+	HttpServiceClass
 } from '../../../http-service/src/index'
 
 import { FetchContext, FetchContextConfig, FetchContextType } from '../context/FetchContext'
@@ -39,10 +37,7 @@ type Props = {
 	 * will not be reflected on the type. Or if you want new functions that 
 	 * you deem appropriated ask me.
 	 */
-	httpService?: {
-		new(): HttpServiceClass
-		clone: (http: HttpServiceClass) => HttpServiceClass
-	}
+	httpService?: HttpServiceClass
 	/**
 	 * Intercepts on every request.
 	 * Serves to inject token, headers and some configs.
@@ -105,16 +100,9 @@ const FetchProvider: React.FC<Props> = ({
 
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const [httpService] = useState(() => {
-		let _newHttpService = HttpService;
-		if ( fetchService ) {
-			// eslint-disable-next-line new-cap
-			const newHttpService = new fetchService();
-			setDefaultHttpService(newHttpService)
+		const _newHttpService: HttpServiceClass = fetchService ?? new HttpServiceClass();
 
-			_newHttpService = newHttpService;
-		}
-
-		_newHttpService.baseUrl = baseUrl ?? HttpService.baseUrl;
+		_newHttpService.baseUrl = baseUrl ?? _newHttpService.baseUrl;
 
 		ref.current.removeRequest = _newHttpService.interceptors.request.use(
 			(config) => {
@@ -149,8 +137,7 @@ const FetchProvider: React.FC<Props> = ({
 	const value = useMemo((): FetchContextType => ({
 		request: new Map(),
 		config,
-		HttpService: httpService,
-		HttpServiceClass: fetchService
+		HttpService: httpService
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}), [httpService])
 

@@ -43,6 +43,13 @@ export type HttpServiceDefaultConfig = {
  * It's a simple wrapper on Fetch api, adding throttle to get's
  * and the upload method.
  */
+
+const keysToIgnoreInClone = [
+	'baseUrl',
+	'defaultConfig',
+	'interceptors'
+];
+
 export class HttpServiceClass {
 	public baseUrl: string = typeof window !== 'undefined' ? window.location.origin : '/';
 
@@ -56,8 +63,14 @@ export class HttpServiceClass {
 
 	public interceptors = new Interceptor();
 	
-	public static clone(http: typeof _httpService) {
+	public static clone<T extends HttpServiceClass>(http: T) {
 		const newHttpServiceClass = new this();
+
+		Object.entries(http)
+		.filter(([key]) => !keysToIgnoreInClone.includes(key))
+		.forEach(([key, value]) => {
+			newHttpServiceClass[key as keyof typeof newHttpServiceClass] = value;
+		})
 
 		newHttpServiceClass.baseUrl = http.baseUrl;
 
@@ -252,25 +265,3 @@ export class HttpServiceClass {
 		return this.request<T, R>(_config);
 	}
 }
-
-export let _httpService = new HttpServiceClass();
-
-/**
- * Method to update default HttpService to different standards.
- */
-export const setDefaultHttpService = (http: HttpServiceClass) => {
-	_httpService = http;
-}
-
-/**
- * Main service to make the requests to the server.
- * * Note: All request need to pass throw this to useFetch/useFetchCallback
- * * to work as intended.
- */
-const HttpService: HttpServiceClass = new Proxy(_httpService, {
-	get(_, p: keyof HttpServiceClass) {
-		return _httpService[p]
-	}
-});
-
-export default HttpService

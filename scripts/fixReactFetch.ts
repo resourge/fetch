@@ -18,10 +18,10 @@ async function getFiles(dir: string): Promise<string[]> {
 		overwrite: true
 	})
 
-	await fs.promises.rmdir('./packages/react-fetch/dist/http-service', {
+	await fs.promises.rm('./packages/react-fetch/dist/http-service', {
 		recursive: true
 	})
-	await fs.promises.rmdir('./packages/react-fetch/dist/react-fetch', {
+	await fs.promises.rm('./packages/react-fetch/dist/react-fetch', {
 		recursive: true
 	})
 

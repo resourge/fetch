@@ -1,12 +1,10 @@
-import HttpService, { _httpService, setDefaultHttpService, HttpServiceClass } from './HttpService';
+import { HttpServiceClass } from './HttpService';
 import type { GetMethodConfig, MethodConfig, HttpServiceDefaultConfig } from './HttpService';
 import LoadingService from './LoadingService';
 
 export {
-	HttpService,
 	GetMethodConfig, MethodConfig, 
 	HttpServiceDefaultConfig,
-	HttpServiceClass, setDefaultHttpService,
-	LoadingService,
-	_httpService
+	HttpServiceClass,
+	LoadingService
 }

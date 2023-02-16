@@ -12,9 +12,7 @@ import {
 	LoadingService,
 	FetchError,
 	HttpResponseError,
-	HttpService,
 	HttpResponse,
-	_httpService,
 	HttpServiceClass
 } from '../../../http-service/src'
 import { useFetchContext } from '../context/FetchContext';
@@ -193,30 +191,30 @@ type State<T> = {
  */
 
 export function useFetch<Result, T extends any[]>(
-	method: (Http: typeof HttpService, ...args: T) => Promise<Result>,
+	method: (Http: HttpServiceClass, ...args: T) => Promise<Result>,
 	config?: UseFetchConfig
 ): UseFetch<Result, T> 
 export function useFetch<Result, T extends any[]>(
-	method: (Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>,
+	method: (Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchEffectConfig
 ): UseFetchEffect<Result, T>
 export function useFetch<Result, T extends any[]>(
-	method: (Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>,
+	method: (Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchStateConfig
 ): UseFetchState<Result, T>
 export function useFetch<Result, T extends any[]>(
-	method: ((Http: typeof HttpService, ...args: T) => Promise<Result>) | 
-	((Http: typeof HttpService, ...args: Partial<T>) => Promise<Result>),
+	method: ((Http: HttpServiceClass, ...args: T) => Promise<Result>) | 
+	((Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>),
 	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig
 ): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
 	const httpContext = useFetchContext();
 
 	const controllers = useRef<Map<string, AbortController>>(new Map())
 
-	const [_HttpService] = useState<typeof HttpService>(() => {
-		const _HttpServiceClass = httpContext?.HttpServiceClass ?? HttpServiceClass;
+	const [_HttpService] = useState<HttpServiceClass>(() => {
+		const _HttpServiceClass: HttpServiceClass = httpContext?.HttpService ?? new HttpServiceClass();
 
-		const Http: typeof HttpService = _HttpServiceClass.clone((httpContext?.HttpService ?? _httpService));
+		const Http = HttpServiceClass.clone(_HttpServiceClass);
 		
 		Http.interceptors.request.values.unshift({
 			onRequest: (config) => {
@@ -263,7 +261,7 @@ export function useFetch<Result, T extends any[]>(
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
 	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
-	const shouldTriggerFetch = config?.enable ?? httpContext?.config?.enable ?? true; 
+	const enable = config?.enable ?? httpContext?.config?.enable ?? true; 
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig)?.initialState,
@@ -415,7 +413,7 @@ export function useFetch<Result, T extends any[]>(
 	if ( isFetchEffect ) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			if ( shouldTriggerFetch ) {
+			if ( enable ) {
 				_HttpService.defaultConfig.isThresholdEnabled = true;
 				result()
 				.finally(() => {

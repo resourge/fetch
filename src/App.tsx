@@ -1,9 +1,6 @@
-import { throttlePromise } from 'packages/http-service/src/utils/throttlePromise'
-
 function App() {
-	console.log('throttlePromise', throttlePromise)
 	return (
-		<div className="App">
+		<div>
 			App
 		</div>
 	)
