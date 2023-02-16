@@ -4,7 +4,7 @@ import { type HttpServiceClass } from 'packages/http-service/src';
 
 import { type UseFetchStateConfig } from '../hooks/useFetch';
 
-export type FetchContextConfig = Omit<UseFetchStateConfig, 'initialState' | 'deps' | 'scrollRestoration' | 'fetchId'>
+export type FetchContextConfig = Omit<UseFetchStateConfig<any>, 'initialState' | 'deps' | 'scrollRestoration' | 'fetchId'>
 
 export type FetchContextType = {
 	HttpService: HttpServiceClass
