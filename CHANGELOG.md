@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/resourge/fetch/compare/v1.12.2...v1.12.3) (2023-02-16)
+
+
+### Bug Fixes
+
+* **basehttpservice:** fix bug with HttpServiceInterface ([3c78e07](https://github.com/resourge/fetch/commit/3c78e07b12dda25c81e0a00513bffae970826492))
+
 ## [1.12.2](https://github.com/resourge/fetch/compare/v1.12.1...v1.12.2) (2023-02-16)
 
 
