@@ -1,3 +1,18 @@
+# [1.12.0](https://github.com/resourge/fetch/compare/v1.11.1...v1.12.0) (2023-02-16)
+
+
+### Bug Fixes
+
+* **httpservice:** fix type ([2c79cf7](https://github.com/resourge/fetch/commit/2c79cf721d20affa3f3bae93d337b264b8db0702))
+* **loadingservice:** fix findIndex not working as intended ([cc04ca2](https://github.com/resourge/fetch/commit/cc04ca2f575fa5d9fa3a74f50ba6ecdfc5aedace))
+* **readme:** react-fetch documentation ([921a7dc](https://github.com/resourge/fetch/commit/921a7dc027d4841724faeb43c12251e56a746080))
+
+
+### Features
+
+* **react-fetch:** improve httpclassservice support ([c4f095a](https://github.com/resourge/fetch/commit/c4f095ae7ae58bb18f3f7bcbe9c9c964b591cb20))
+* **usefetch:** change option name to better match it's use ([57b541f](https://github.com/resourge/fetch/commit/57b541f7d957363b5a8a1dc3a7d6057762eff85b))
+
 ## [1.11.1](https://github.com/resourge/fetch/compare/v1.11.0...v1.11.1) (2023-01-19)
 
 
