@@ -5,7 +5,7 @@ import fs from 'fs'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
-import packageJson from './package.json' assert { type: "json" }
+import packageJson from './package.json' assert { type: 'json' }
 
 const { author, license } = packageJson
 
@@ -168,17 +168,17 @@ const getPackage = (
 		const packageJson = JSON.parse(fs.readFileSync(`${BASE_OUTPUT_DIR}/package.json`, 'utf-8'));
 
 		Object.keys(packageJson.dependencies)
-			.filter((key) => key.includes('@resourge'))
-			.forEach((key) => {
-				packageJson.dependencies[key] = VERSION ?? '1.0.0'
-			})
+		.filter((key) => key.includes('@resourge'))
+		.forEach((key) => {
+			packageJson.dependencies[key] = VERSION ?? '1.0.0'
+		})
 
 		fs.writeFileSync(`${BASE_OUTPUT_DIR}/package.json`, JSON.stringify(packageJson, null, 2), 'utf-8')
 		// #endregion Update package json dependency
 	}
 
 	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`)
-		.filter((fileName) => fileName.includes('.native.'));
+	.filter((fileName) => fileName.includes('.native.'));
 
 	return [
 		getDefault({
