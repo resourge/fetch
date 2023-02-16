@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/resourge/fetch/compare/v1.12.0...v1.12.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* **fetchcontext:** fix an type needing generic type ([6da5db5](https://github.com/resourge/fetch/commit/6da5db542fdff42237844dd8243f67843085f32b))
+
 # [1.12.0](https://github.com/resourge/fetch/compare/v1.11.1...v1.12.0) (2023-02-16)
 
 
