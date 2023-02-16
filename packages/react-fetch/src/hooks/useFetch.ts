@@ -8,14 +8,14 @@ import {
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
-import { type HttpServiceInterface } from 'packages/http-service/src/services/HttpService';
+import { type HttpServiceInterface } from 'packages/http-service/src/services/BaseHttpService';
 
 import {
 	LoadingService,
 	type FetchError,
 	type HttpResponseError,
 	type HttpResponse,
-	HttpServiceClass
+	BaseHttpService
 } from '../../../http-service/src'
 import { useFetchContext } from '../context/FetchContext';
 import NotificationService from '../services/NotificationService';
@@ -217,9 +217,9 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 	const controllers = useRef<Map<string, AbortController>>(new Map())
 
 	const [_HttpService] = useState<HS>(() => {
-		const _HttpServiceClass = httpContext?.HttpService ?? new HttpServiceClass()
+		const _HttpServiceClass = httpContext?.HttpService ?? new BaseHttpService()
 
-		const Http: HS = HttpServiceClass.clone(_HttpServiceClass) as HS;
+		const Http: HS = BaseHttpService.clone(_HttpServiceClass) as HS;
 		
 		Http.interceptors.request.values.unshift({
 			onRequest: (config) => {

@@ -11,7 +11,7 @@ import {
 	type InterceptorOnResponse,
 	type InterceptorOnResponseError,
 	isBrowser,
-	HttpServiceClass
+	BaseHttpService
 } from '../../../http-service/src/index'
 
 import { FetchContext, type FetchContextConfig, type FetchContextType } from '../context/FetchContext'
@@ -37,7 +37,7 @@ type Props = {
 	 * will not be reflected on the type. Or if you want new functions that 
 	 * you deem appropriated ask me.
 	 */
-	httpService?: HttpServiceClass
+	httpService?: BaseHttpService
 	/**
 	 * Intercepts on every request.
 	 * Serves to inject token, headers and some configs.
@@ -100,7 +100,7 @@ const FetchProvider: React.FC<Props> = ({
 
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const [httpService] = useState(() => {
-		const _newHttpService: HttpServiceClass = fetchService ?? new HttpServiceClass();
+		const _newHttpService: BaseHttpService = fetchService ?? new BaseHttpService();
 
 		_newHttpService.baseUrl = baseUrl ?? _newHttpService.baseUrl;
 

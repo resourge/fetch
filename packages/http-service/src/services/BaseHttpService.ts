@@ -50,7 +50,7 @@ const keysToIgnoreInClone = [
 	'interceptors'
 ];
 
-export class HttpServiceClass {
+export class BaseHttpService {
 	public baseUrl: string = typeof window !== 'undefined' ? window.location.origin : '/';
 
 	/**
@@ -266,6 +266,4 @@ export class HttpServiceClass {
 	}
 }
 
-export interface HttpServiceInterface extends HttpServiceClass {
-
-}
+export type HttpServiceInterface = BaseHttpService;
