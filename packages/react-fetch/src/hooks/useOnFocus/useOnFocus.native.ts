@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { AppState, AppStateStatus, Platform } from 'react-native';
+import { AppState, type AppStateStatus, Platform } from 'react-native';
 
 export const useOnFocus = (
 	cb: () => {

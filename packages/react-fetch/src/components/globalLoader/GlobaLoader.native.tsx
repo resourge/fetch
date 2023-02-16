@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native'
+import { type StyleProp, View, type ViewStyle } from 'react-native'
 
 import Loader from '../Loader';
 
 import { GlobalLoading } from './GlobalLoading';
-import { BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
+import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
 
 export type GlobalLoaderProps = BaseGlobalLoaderProps<StyleProp<ViewStyle>>
 

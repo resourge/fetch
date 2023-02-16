@@ -38,7 +38,7 @@ async function getFiles(dir: string): Promise<string[]> {
 			const contentImports: any[] = [];
 
 			if ( mat.length && !fileName.includes('.js.map')) {
-				const firstIndex = content.indexOf(mat[0])
+				const firstIndex = content.indexOf(mat[0] || '')
 
 				mat
 				.forEach((found) => {

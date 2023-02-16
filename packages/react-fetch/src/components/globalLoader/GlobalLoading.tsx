@@ -1,4 +1,4 @@
-import { GlobalLoadingProps } from './constants'
+import { type GlobalLoadingProps } from './constants'
 
 export const GlobalLoading = ({ color }: GlobalLoadingProps) => (
 	<svg height="100" stroke={color} viewBox="0 0 44 44" width="100" xmlns="http://www.w3.org/2000/svg">

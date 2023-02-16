@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { ScrollRestorationIdIsUndefined } from '../errors/ScrollRestorationIdIsUndefined';
 
-import { ElementWithScrollTo, useOnScroll } from './useOnScroll/useOnScroll';
+import { type ElementWithScrollTo, useOnScroll } from './useOnScroll/useOnScroll';
 
 type ScrollPos = {
 	left: number

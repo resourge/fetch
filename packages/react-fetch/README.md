@@ -77,7 +77,7 @@ function App() {
 	<FetchProvider
 	  // Exists by default a global HttpService 
 	  // But in case the developer needs a different HttpService
-	  // httpService={httpServiceClass}
+	  // httpService={YourHttpService}
 	  config={{
 		// Exists Global Config and Local
 		// Basically sets the default action it should take
@@ -229,7 +229,7 @@ function App() {
 	<FetchProvider
 	  // Exists by default a global HttpService 
 	  // But in case the developer needs a different HttpService
-	  // httpService={httpServiceClass}
+	  // httpService={YourHttpService}
 	  config={{
 		// Exists Global Config and Local
 		// Basically sets the default action it should take
@@ -396,7 +396,7 @@ function App() {
 	// Not required but necessary to inject token
 	<FetchProvider
 	  // This will override default HttpService
-	  httpService={YourHttpServiceClass}
+	  httpService={YourHttpService}
 	  ...
 	>
 	  ...
@@ -409,8 +409,8 @@ function App() {
 // In a *.d.ts (for example: react-app-env.d.ts)
 import { YourHttpServiceClass } from '....'
 
-declare module '@resourge/react-fetch' {
-	export const HttpService: YourHttpServiceClass
+declare module '@resourge/http-service' {
+	export interface HttpServiceInterface extends YourHttpServiceClass {} 
 }
 ```
 

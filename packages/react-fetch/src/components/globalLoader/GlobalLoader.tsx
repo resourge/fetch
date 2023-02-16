@@ -3,7 +3,7 @@ import React from 'react';
 import Loader from '../Loader';
 
 import { GlobalLoading } from './GlobalLoading';
-import { BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
+import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
 
 export type GlobalLoaderProps = BaseGlobalLoaderProps<React.CSSProperties>
 

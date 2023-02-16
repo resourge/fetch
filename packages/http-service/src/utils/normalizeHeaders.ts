@@ -1,7 +1,7 @@
 import { FetchError } from '../errors/FetchError';
-import { RequestConfig } from '../types/RequestConfig';
+import { type RequestConfig } from '../types/RequestConfig';
 
-import { Interceptor } from './Interceptors';
+import { type Interceptor } from './Interceptors';
 import { isBrowser, isURLSameOrigin, readCookie } from './utils';
 
 const xsrfCookieName = 'XSRF-TOKEN';

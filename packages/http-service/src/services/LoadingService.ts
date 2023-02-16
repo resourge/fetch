@@ -7,7 +7,7 @@ type LoadingServiceEvent = {
  * Simple Service to show/hide the loading.
  */
 class LoadingService {
-	private readonly events: Map<string, LoadingServiceEvent> = new Map();
+	private readonly events = new Map<string, LoadingServiceEvent>();
 
 	constructor() {
 		this.events = new Map();
@@ -116,4 +116,5 @@ class LoadingService {
 		}
 	}
 }
+// eslint-disable-next-line import/no-anonymous-default-export
 export default new LoadingService();

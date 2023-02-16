@@ -6,15 +6,15 @@ import React, {
 } from 'react'
 
 import {
-	InterceptorOnRequest,
-	InterceptorOnRequestError,
-	InterceptorOnResponse,
-	InterceptorOnResponseError,
+	type InterceptorOnRequest,
+	type InterceptorOnRequestError,
+	type InterceptorOnResponse,
+	type InterceptorOnResponseError,
 	isBrowser,
 	HttpServiceClass
 } from '../../../http-service/src/index'
 
-import { FetchContext, FetchContextConfig, FetchContextType } from '../context/FetchContext'
+import { FetchContext, type FetchContextConfig, type FetchContextType } from '../context/FetchContext'
 import { MissingBaseUrlError } from '../errors/MissingBaseUrlError';
 
 type Props = {

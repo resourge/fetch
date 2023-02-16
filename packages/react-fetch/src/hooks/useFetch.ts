@@ -8,11 +8,13 @@ import {
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
+import { type HttpServiceInterface } from 'packages/http-service/src/services/HttpService';
+
 import {
 	LoadingService,
-	FetchError,
-	HttpResponseError,
-	HttpResponse,
+	type FetchError,
+	type HttpResponseError,
+	type HttpResponse,
 	HttpServiceClass
 } from '../../../http-service/src'
 import { useFetchContext } from '../context/FetchContext';
@@ -23,7 +25,7 @@ import { useOnFocusFetch } from './useOnFocusFetch';
 
 type UseFetchError = HttpResponseError | FetchError | Error | null | any
 
-type UseFetch<Result, T extends any[]> = {
+export type UseFetch<Result, T extends any[]> = {
 	(...args: T): Promise<Result>
 	error: UseFetchError
 	/**
@@ -87,7 +89,7 @@ export type UseFetchState<Result, T extends any[]> = {
 export type UseFetchConfig = {	
 	/**
 	 * When this camp is false useEffect will not trigger fetch
-	 * * Note: It is not included in the deps.}
+	 * * Note: It is not included in the deps.
 	 * @default true
 	 */
 	enable?: boolean
@@ -123,18 +125,22 @@ export type UseFetchEffectConfig = UseFetchConfig & {
 	 * Basically works on useEffect dependencies
 	 * @default []
 	 */
-	deps?: React.DependencyList
+	deps?: readonly any[]
+	/**
+	* Default data values.
+	*/
+	initialState?: never
 	/**
 	 * Serves to restore scroll position
 	 */
 	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
 }
 
-export type UseFetchStateConfig<T = any> = UseFetchEffectConfig & {
+export type UseFetchStateConfig<T> = Omit<UseFetchEffectConfig, 'initialState'> & {
 	/**
 	* Default data values.
 	*/
-	initialState?: T
+	initialState: T
 	/**
 	 * Fetch on window focus
 	 * @default true when initialState is defined.
@@ -189,32 +195,31 @@ type State<T> = {
   );
 ```
  */
-
-export function useFetch<Result, T extends any[]>(
-	method: (Http: HttpServiceClass, ...args: T) => Promise<Result>,
-	config?: UseFetchConfig
-): UseFetch<Result, T> 
-export function useFetch<Result, T extends any[]>(
-	method: (Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>,
+export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
+	method: (Http: HS, ...args: Partial<T>) => Promise<Result>,
+	config: UseFetchStateConfig<Result>
+): UseFetchState<Result, T>
+export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
+	method: (Http: HS, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchEffectConfig
 ): UseFetchEffect<Result, T>
-export function useFetch<Result, T extends any[]>(
-	method: (Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>,
-	config: UseFetchStateConfig
-): UseFetchState<Result, T>
-export function useFetch<Result, T extends any[]>(
-	method: ((Http: HttpServiceClass, ...args: T) => Promise<Result>) | 
-	((Http: HttpServiceClass, ...args: Partial<T>) => Promise<Result>),
-	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig
+export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
+	method: (Http: HS, ...args: T) => Promise<Result>,
+	config?: UseFetchConfig
+): UseFetch<Result, T> 
+export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
+	method: ((Http: HS, ...args: T) => Promise<Result>) | 
+	((Http: HS, ...args: Partial<T>) => Promise<Result>),
+	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig<Result>
 ): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
 	const httpContext = useFetchContext();
 
 	const controllers = useRef<Map<string, AbortController>>(new Map())
 
-	const [_HttpService] = useState<HttpServiceClass>(() => {
-		const _HttpServiceClass: HttpServiceClass = httpContext?.HttpService ?? new HttpServiceClass();
+	const [_HttpService] = useState<HS>(() => {
+		const _HttpServiceClass = httpContext?.HttpService ?? new HttpServiceClass()
 
-		const Http = HttpServiceClass.clone(_HttpServiceClass);
+		const Http: HS = HttpServiceClass.clone(_HttpServiceClass) as HS;
 		
 		Http.interceptors.request.values.unshift({
 			onRequest: (config) => {
@@ -248,7 +253,7 @@ export function useFetch<Result, T extends any[]>(
 	let isFetchEffect = false;
 	let isFetchEffectWithData = false;
 	if ( config ) {
-		const keys = Object.keys(config) as Array<keyof UseFetchStateConfig>;
+		const keys = Object.keys(config) as Array<keyof UseFetchStateConfig<Result>>;
 		
 		isFetchEffect = keys.some((key) => key === 'initialState' || key === 'deps');
 		
@@ -256,7 +261,7 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const deps = (config as UseFetchEffectConfig)?.deps ?? [];
-	const onWindowFocus = (config as UseFetchStateConfig)?.onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
+	const onWindowFocus = (config as UseFetchStateConfig<Result>)?.onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
 	const scrollRestoration = (config as UseFetchEffectConfig)?.scrollRestoration;
 	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
 	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
@@ -264,7 +269,7 @@ export function useFetch<Result, T extends any[]>(
 	const enable = config?.enable ?? httpContext?.config?.enable ?? true; 
 
 	const currentData = useRef<State<Result>>({
-		data: (config as UseFetchStateConfig)?.initialState,
+		data: (config as UseFetchStateConfig<Result>)?.initialState,
 		isLoading: true,
 		error: null
 	});
@@ -420,7 +425,9 @@ export function useFetch<Result, T extends any[]>(
 					_HttpService.defaultConfig.isThresholdEnabled = false;
 					if ( scrollRestoration ) {
 						if ( Array.isArray(scrollRestoration) ) {
-							scrollRestoration.forEach((method) => method());
+							scrollRestoration.forEach((method) => {
+								method(); 
+							});
 							return;
 						}
 						scrollRestoration();

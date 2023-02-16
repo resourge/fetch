@@ -1,8 +1,8 @@
 import { createContext, useContext } from 'react';
 
-import { HttpServiceClass } from 'packages/http-service/src';
+import { type HttpServiceClass } from 'packages/http-service/src';
 
-import { UseFetchStateConfig } from '../hooks/useFetch';
+import { type UseFetchStateConfig } from '../hooks/useFetch';
 
 export type FetchContextConfig = Omit<UseFetchStateConfig, 'initialState' | 'deps' | 'scrollRestoration' | 'fetchId'>
 

@@ -1,4 +1,4 @@
-import { NormalizeRequestConfig } from './normalizeHeaders'
+import { type NormalizeRequestConfig } from './normalizeHeaders'
 
 /**
  * Generate cacheKey for throttle.

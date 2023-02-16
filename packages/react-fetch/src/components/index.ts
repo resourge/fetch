@@ -6,6 +6,6 @@ import GlobalLoader from './globalLoader/GlobalLoader';
 export {
 	FetchProvider,
 	Loader,
-	LoaderProps,
+	type LoaderProps,
 	GlobalLoader
 }

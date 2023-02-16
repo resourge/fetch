@@ -19,7 +19,9 @@ npm install @resourge/http-service
 ## Usage
 
 ```JSX
-import { HttpService } from '@resourge/http-service'
+import { HttpServiceClass } from '@resourge/http-service'
+
+const HttpService = new HttpServiceClass();
 
 const result = await HttpService.get('/getProducts');
 const resultWithParams = await HttpService.get('/getProducts', { productId: 1 });
@@ -42,10 +44,10 @@ In a specific project requires that request are done in a certain way (ex: all r
 
 ```Typescript
 // In a *.d.ts (for example: react-app-env.d.ts)
-import { HttpServiceV2 } from '....'
+import { YourHttpServiceClass } from '....'
 
-declare module '@resourge/react-fetch' {
-	export const HttpService: HttpServiceV2
+declare module '@resourge/http-service' {
+	export interface HttpServiceInterface extends YourHttpServiceClass {} 
 }
 ```
 
@@ -83,17 +85,14 @@ class YourHttpServiceClass extends HttpServiceClass {
     )
   }
 }
-
-// Method to change global/default HttpService
-setDefaultHttpService(new YourHttpServiceClass())
 ```
 
 ```Typescript
 // In a *.d.ts (for example: react-app-env.d.ts)
 import { YourHttpServiceClass } from '....'
 
-declare module '@resourge/react-fetch' {
-	export const HttpService: YourHttpServiceClass
+declare module '@resourge/http-service' {
+	export interface HttpServiceInterface extends YourHttpServiceClass {} 
 }
 ```
 

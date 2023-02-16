@@ -5,6 +5,6 @@ export {
 	FetchContext, 
 	useFetchContext,
 
-	FetchContextConfig, 
-	FetchContextType
+	type FetchContextConfig, 
+	type FetchContextType
 }

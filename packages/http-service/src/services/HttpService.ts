@@ -1,9 +1,9 @@
-import { RequestConfig } from '../types/RequestConfig';
+import { type RequestConfig } from '../types/RequestConfig';
 import { HttpResponse, HttpResponseError } from '../utils/HttpResponse';
 import { Interceptor } from '../utils/Interceptors';
 import { formatToFormData } from '../utils/formatToFormData';
 import { getCacheKey } from '../utils/getCacheKey';
-import { normalizeRequest, NormalizeRequestConfig } from '../utils/normalizeHeaders';
+import { normalizeRequest, type NormalizeRequestConfig } from '../utils/normalizeHeaders';
 import { throttlePromise } from '../utils/throttlePromise';
 import { convertParamsToQueryString } from '../utils/transformURLSearchParams';
 
@@ -63,7 +63,7 @@ export class HttpServiceClass {
 
 	public interceptors = new Interceptor();
 	
-	public static clone<T extends HttpServiceClass>(http: T) {
+	public static clone<T extends HttpServiceInterface>(http: T) {
 		const newHttpServiceClass = new this();
 
 		Object.entries(http)
@@ -264,4 +264,8 @@ export class HttpServiceClass {
 
 		return this.request<T, R>(_config);
 	}
+}
+
+export interface HttpServiceInterface extends HttpServiceClass {
+
 }

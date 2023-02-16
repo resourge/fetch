@@ -1,4 +1,4 @@
-import { LoaderProps } from '../Loader'
+import { type LoaderProps } from '../Loader'
 
 import { GlobalLoading } from './GlobalLoading';
 

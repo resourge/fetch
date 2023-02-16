@@ -9,7 +9,7 @@ import { useScrollRestoration } from './useScrollRestoration';
 import { useTriggerFetch } from './useTriggerFetch';
 
 export {
-	UseFetchConfig, UseFetchEffect, UseFetchEffectConfig, UseFetchStateConfig,
+	type UseFetchConfig, type UseFetchEffect, type UseFetchEffectConfig, type UseFetchStateConfig,
 	useFetch,
 	useScrollRestoration,
 	useTriggerFetch

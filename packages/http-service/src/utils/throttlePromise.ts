@@ -1,6 +1,6 @@
 
 type CacheType = { timestamp: number, value?: Promise<any> };
-const cache: Map<string, CacheType> = new Map();
+const cache = new Map<string, CacheType>();
 const maxCacheItems = 10;
 
 const add = (key: string, value: CacheType) => {

@@ -5,7 +5,9 @@ import fs from 'fs'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
-import { author, license } from './package.json'
+import packageJson from './package.json' assert { type: "json" }
+
+const { author, license } = packageJson
 
 const external = [
 	'react',
@@ -121,16 +123,16 @@ const getPackage = (
 				plugins: babelPlugins,
 				extensions: ['.ts', '.tsx']
 			}),
-			execute({ 
-				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`], 
+			execute({
+				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`],
 				sync: true,
-				hook: 'buildEnd' 
+				hook: 'buildEnd'
 			})
 		],
 		...input
 	})
 
-	if ( merge ) {
+	if (merge) {
 		/* // #region Create build and change http-services for the package version
 		await mergeDirs(SOURCE_FOLDER, BUILD_FOLDER, {
 			overwrite: true
@@ -166,17 +168,17 @@ const getPackage = (
 		const packageJson = JSON.parse(fs.readFileSync(`${BASE_OUTPUT_DIR}/package.json`, 'utf-8'));
 
 		Object.keys(packageJson.dependencies)
-		.filter((key) => key.includes('@resourge'))
-		.forEach((key) => {
-			packageJson.dependencies[key] = VERSION ?? '1.0.0'
-		})
+			.filter((key) => key.includes('@resourge'))
+			.forEach((key) => {
+				packageJson.dependencies[key] = VERSION ?? '1.0.0'
+			})
 
 		fs.writeFileSync(`${BASE_OUTPUT_DIR}/package.json`, JSON.stringify(packageJson, null, 2), 'utf-8')
 		// #endregion Update package json dependency
 	}
 
 	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`)
-	.filter((fileName) => fileName.includes('.native.'));
+		.filter((fileName) => fileName.includes('.native.'));
 
 	return [
 		getDefault({
@@ -201,11 +203,11 @@ export default function rollup() {
 		{
 			input: './empty.js',
 			plugins: [
-				
-				execute({ 
-					commands: ['npm run fixReactFetch'], 
+
+				execute({
+					commands: ['npm run fixReactFetch'],
 					sync: true,
-					hook: 'buildStart' 
+					hook: 'buildStart'
 				})
 			]
 		}

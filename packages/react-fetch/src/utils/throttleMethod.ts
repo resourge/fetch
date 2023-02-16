@@ -1,4 +1,4 @@
-const cacheMethod: Map<string, number> = new Map();
+const cacheMethod = new Map<string, number>();
 
 export const throttleMethod = <T extends any[]>(
 	method: (...args: T) => any,

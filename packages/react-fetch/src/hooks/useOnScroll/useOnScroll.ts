@@ -1,11 +1,11 @@
 import {
-	MutableRefObject,
-	UIEvent,
+	type MutableRefObject,
+	type UIEvent,
 	useEffect,
 	useRef
 } from 'react'
 
-import { ScrollPos } from './types';
+import { type ScrollPos } from './types';
 
 export const getScrollPage = (): ScrollPos => {
 	let docScrollTop = 0;

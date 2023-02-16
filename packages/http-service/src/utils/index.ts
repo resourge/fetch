@@ -8,10 +8,10 @@ import type {
 import { isBrowser } from './utils'
 
 export {
-	InterceptorOnRequest,
-	InterceptorOnRequestError,
-	InterceptorOnResponse,
-	InterceptorOnResponseError,
+	type InterceptorOnRequest,
+	type InterceptorOnRequestError,
+	type InterceptorOnResponse,
+	type InterceptorOnResponseError,
 
 	isBrowser,
 	HttpResponse,
