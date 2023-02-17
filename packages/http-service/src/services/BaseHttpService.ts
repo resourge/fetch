@@ -43,13 +43,6 @@ export type HttpServiceDefaultConfig = {
  * It's a simple wrapper on Fetch api, adding throttle to get's
  * and the upload method.
  */
-
-const keysToIgnoreInClone = [
-	'baseUrl',
-	'defaultConfig',
-	'interceptors'
-];
-
 export class BaseHttpService {
 	public baseUrl: string = typeof window !== 'undefined' ? window.location.origin : '/';
 
@@ -62,25 +55,6 @@ export class BaseHttpService {
 	}
 
 	public interceptors = new Interceptor();
-	
-	public static clone<T extends HttpServiceInterface>(http: T) {
-		const newHttpServiceClass = new this();
-
-		Object.entries(http)
-		.filter(([key]) => !keysToIgnoreInClone.includes(key))
-		.forEach(([key, value]) => {
-			newHttpServiceClass[key as keyof typeof newHttpServiceClass] = value;
-		})
-
-		newHttpServiceClass.baseUrl = http.baseUrl;
-
-		newHttpServiceClass.defaultConfig.isThresholdEnabled = http.defaultConfig.isThresholdEnabled;
-		newHttpServiceClass.defaultConfig.threshold = http.defaultConfig.threshold;
-
-		newHttpServiceClass.interceptors = Interceptor.clone(http.interceptors);
-
-		return newHttpServiceClass;
-	}
 
 	private throttleRequest(
 		cacheKey: string,
