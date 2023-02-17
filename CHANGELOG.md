@@ -1,3 +1,10 @@
+## [1.12.4](https://github.com/resourge/fetch/compare/v1.12.3...v1.12.4) (2023-02-17)
+
+
+### Bug Fixes
+
+* **usefetch:** remove BaseHttpService from clone ([c23a8f0](https://github.com/resourge/fetch/commit/c23a8f03859eb718a8dfe4753b7eb8feb7834a9f))
+
 ## [1.12.3](https://github.com/resourge/fetch/compare/v1.12.2...v1.12.3) (2023-02-16)
 
 
