@@ -1,3 +1,10 @@
+## [1.12.5](https://github.com/resourge/fetch/compare/v1.12.4...v1.12.5) (2023-02-20)
+
+
+### Bug Fixes
+
+* **usefetch:** fix interceptor not being accessible ([9959170](https://github.com/resourge/fetch/commit/99591703d096bd1f941f0b0c7995648a72e543c9))
+
 ## [1.12.4](https://github.com/resourge/fetch/compare/v1.12.3...v1.12.4) (2023-02-17)
 
 
