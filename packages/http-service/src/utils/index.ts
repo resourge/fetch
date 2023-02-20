@@ -1,4 +1,5 @@
 import { HttpResponse, HttpResponseError } from './HttpResponse'
+import { Interceptor } from './Interceptors'
 import type {
 	InterceptorOnRequest,
 	InterceptorOnRequestError,
@@ -8,6 +9,8 @@ import type {
 import { isBrowser } from './utils'
 
 export {
+	Interceptor,
+	
 	type InterceptorOnRequest,
 	type InterceptorOnRequestError,
 	type InterceptorOnResponse,
