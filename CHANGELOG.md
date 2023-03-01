@@ -1,3 +1,10 @@
+## [1.12.6](https://github.com/resourge/fetch/compare/v1.12.5...v1.12.6) (2023-03-01)
+
+
+### Bug Fixes
+
+* **fetchprovider:** fix bug with hotreload ([2a81416](https://github.com/resourge/fetch/commit/2a81416f4bcb619ad4f4ca7bb3451622cd6d465a))
+
 ## [1.12.5](https://github.com/resourge/fetch/compare/v1.12.4...v1.12.5) (2023-02-20)
 
 
