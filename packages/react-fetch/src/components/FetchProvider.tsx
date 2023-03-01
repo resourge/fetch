@@ -1,8 +1,9 @@
-import React, {
+import {
+	type FC,
+	type ReactNode,
 	useEffect,
 	useMemo,
-	useRef,
-	useState
+	useRef
 } from 'react'
 
 import {
@@ -18,7 +19,7 @@ import { FetchContext, type FetchContextConfig, type FetchContextType } from '..
 import { MissingBaseUrlError } from '../errors/MissingBaseUrlError';
 
 type Props = {
-	children: React.ReactNode
+	children: ReactNode
 
 	/**
 	 * Base http url
@@ -61,7 +62,7 @@ type Props = {
 /**
  * Component to provide a way to inject headers, token or config.
  */
-const FetchProvider: React.FC<Props> = ({ 
+const FetchProvider: FC<Props> = ({ 
 	children, 
 	httpService: fetchService,
 	config,
@@ -98,8 +99,7 @@ const FetchProvider: React.FC<Props> = ({
 		removeResponse: () => {}
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	const [httpService] = useState(() => {
+	const value = useMemo((): FetchContextType => {
 		const _newHttpService: BaseHttpService = fetchService ?? new BaseHttpService();
 
 		_newHttpService.baseUrl = baseUrl ?? _newHttpService.baseUrl;
@@ -123,8 +123,13 @@ const FetchProvider: React.FC<Props> = ({
 			} : undefined
 		)
 
-		return _newHttpService;
-	});
+		return {
+			request: new Map(),
+			config,
+			HttpService: _newHttpService
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fetchService])
 
 	useEffect(() => {
 		return () => {
@@ -133,13 +138,6 @@ const FetchProvider: React.FC<Props> = ({
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
-
-	const value = useMemo((): FetchContextType => ({
-		request: new Map(),
-		config,
-		HttpService: httpService
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}), [httpService])
 
 	return (
 		<FetchContext.Provider value={value}>
