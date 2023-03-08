@@ -11,6 +11,7 @@ Provides useFetch, useScrollRestoration, FetchProvider, HttpService, LoadingServ
 - FetchProvider to inject configs like token, header, etc.
 - useFetch tries to prevent "Can't perform a React state update on an unmounted component".
 - Centralize request into a unique place, with HttpService.
+- Together with @resourge/http-service it will also abort request on component unmount. (@resourge/http-service is not mandatory but otherwise this functionality will need the developer to do it)
 - Global, local components and LoadingService to centralize showing Loaders.
 
 ## Installation
@@ -33,7 +34,6 @@ npm install @resourge/react-fetch --save
 import React from 'react'
 
 import {
-  FetchProvider,
   useFetch
 } from '@resourge/react-fetch'
 
@@ -42,7 +42,7 @@ function FooComponent() {
   // or
   const { data: products, isLoading, error } = useFetch(
 	() => {
-	  return Http.get('/productList')
+      return // Axios/fetch/HttpService
 	},
 	{
 	  initialValue: []
@@ -65,36 +65,6 @@ function FooComponent() {
 		))
 	  }
     </ul>
-  )
-}
-
-
-function App() {
-  const token = '';
-  return (
-    ...
-	// Not required but necessary to inject token
-	<FetchProvider
-	  // Exists by default a global HttpService 
-	  // But in case the developer needs a different HttpService
-	  // httpService={YourHttpService}
-	  config={{
-		// Exists Global Config and Local
-		// Basically sets the default action it should take
-		// Local config will always override global
-	  }}
-	  onRequest={(config) => {
-		// To Inject token or other headers
-		config.headers = {
-		  ...config.headers,
-		  Authorization: `Bearer ${token}`
-		}
-		return config;
-	  }}
-	>
-	  <FooComponent />
-	</FetchProvider>
-	...
   )
 }
 
@@ -122,8 +92,8 @@ It will do the loading, error, set data, manually abort request if component is 
 // } = useFetch(
 // or 
 const [data, fetch, error, isLoading] = useFetch(
-  async (Http) => {
-    return Http.get("url")
+  async () => {
+    return // Axios/fetch/HttpService
   }, 
   {
     initialState: []
@@ -138,8 +108,8 @@ const [data, fetch, error, isLoading] = useFetch(
 // } = useFetch(
 // or 
 const [fetch, error, isLoading] = useFetch(
-  async (Http) => {
-    return Http.get("url")
+  async () => {
+    return // Axios/fetch/HttpService
   }
 );
 ```
@@ -150,14 +120,12 @@ const [fetch, error, isLoading] = useFetch(
 | ---- | ---- | -------- | ----------- |
 | **initialState** | `any` | true for useEffect trigger, otherwise no | Default data values. |
 | **deps** | `React.DependencyList` | false | useEffect dependencies. Basically works on useEffect dependencies. _Note: Only with initialState set_ |
+| **enable** | `boolean` | true | When false useEffect will not trigger fetch  |
 | **noEmitError** | `boolean` | false | When false makes it so no error is emitted.  |
-| **onWindowFocus** | `boolean` | false | Fetch on window focus (default: true). _Note: Only with initialState set_ |
-| **scrollRestoration** | `method or array of method` | false | Serves to restore scroll position. [see how its done](#scrollRestoration). _Note: Only with initialState set_ |
 | **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
 | **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
-| **fetchId** | `string` | false | Serves as an uniqueId to be able to trigger in other fetch calls |
-| **trigger** | `object` | false | To trigger other useFetch. <br /> _Note: In the case of useFetch having params, its necessary to set trigger after/before with name and params instead of a string_ [see more](#trigger) |
-| **abort** | `boolean` | false | To abort on component unmount. (default: true when initialState is set, otherwise false) |
+| **onWindowFocus** | `boolean` | false | Fetch on window focus (default: true). _Note: Only with initialState set_ |
+| **scrollRestoration** | `method or array of method` | false | Serves to restore scroll position. [see how its done](#scrollRestoration). _Note: Only with initialState set_ |
 
 #### scrollRestoration
 
@@ -170,11 +138,12 @@ import {
 } from '@resourge/react-fetch'
 
 function App() {
-  const [scrollRestoration, ref] = useScrollRestoration('unique id to this component');
+  // <<navigation action type>> is to know if the navigation was pop/push/replace/etc use together with navigation package (@resourge/react-router or react-router)
+  const [scrollRestoration, ref] = useScrollRestoration('<<navigation action type>>');
   // If ref is not set it will update window scrollbar
   const { data: products, isLoading, error } = useFetch(
-	(Http) => {
-	  return Http.get('/productList')
+    async () => {
+      return // Axios/fetch/HttpService
 	},
 	{
 	  initialValue: [],
@@ -211,47 +180,6 @@ When:
 *  string - Will trigger loaderId Loading ("``` <Loader loaderId="">```") 
 *  string[] - Will trigger all loaderId Loading ("``` <Loader loaderId="">```") 
 
-## FetchProvider
-
-Component to provide a way to inject headers, token or config.
-
-```JSX
-import React from 'react'
-
-import {
-  FetchProvider
-} from '@resourge/react-fetch'
-
-function App() {
-  const token = '';
-  return (
-	// Not required but necessary to inject token
-	<FetchProvider
-	  // Exists by default a global HttpService 
-	  // But in case the developer needs a different HttpService
-	  // httpService={YourHttpService}
-	  config={{
-		// Exists Global Config and Local
-		// Basically sets the default action it should take
-		// Local config will always override global
-	  }}
-	  onRequest={(config) => {
-		// To Inject token or other headers
-		config.headers = {
-		  ...config.headers,
-		  Authorization: `Bearer ${token}`
-		}
-		return config;
-	  }}
-	>
-	  ...
-	</FetchProvider>
-  )
-}
-
-export default App
-```
-
 ## Loader
 
 Component show loading at the useFetch or LoadingService command. <br />
@@ -266,8 +194,8 @@ import {
 
 function Bar() {
   const [data, fetch, error, isLoading] = useFetch(
-    (Http) => {
-      return Http.get("/getBar")
+    async () => {
+      return // Axios/fetch/HttpService
     }, 
     {
       initialState: [],
@@ -312,8 +240,8 @@ import {
 
 function Foo() {
   const [data, fetch, error, isLoading] = useFetch(
-    (Http) => {
-      return Http.get("/getFoo")
+    async () => {
+      return // Axios/fetch/HttpService
     }, 
     {
       initialState: [],
@@ -341,77 +269,6 @@ function App() {
 }
 
 export default App
-```
-
-## useTriggerFetch
-
-`useTriggerFetch` is a hook that returns a method to trigger other useFetch's.
-
-```JSX
-function Foo() {
-  const [data, fetch, error, isLoading] = useFetch(
-    (Http) => {
-      return Http.get("/getFoo")
-    }, 
-    {
-      initialState: [],
-	  fetchId: 'Fetch from Foo'
-    }
-  );
-
-  return (
-	...
-  )
-}
-
-function Bar({ dataSourceId }) {
-  const getSecondMethod = useTriggerFetch('Fetch from Foo');
-
-  // getSecondMethod() it will trigger Foo useFetch
-
-  return (
-	...
-  )
-}
-```
-
-## HttpService
-
-Main service to make the requests to the server.
-_Note: All request need to pass throw this to useFetch to work as intended._
-
-### HttpServiceClass
-
-In a specific project requires that request are done in a certain way (ex: all request are posts(it happens)), HttpServiceClass serves as a way for the developer to extend all request.
-
-
-```jsx
-import {
-  FetchProvider
-} from '@resourge/react-fetch'
-import { YourHttpServiceClass } from '....'
-
-function App() {
-  return (
-	// Not required but necessary to inject token
-	<FetchProvider
-	  // This will override default HttpService
-	  httpService={YourHttpService}
-	  ...
-	>
-	  ...
-	</FetchProvider>
-  )
-}
-```
-
-```Typescript
-// In a *.d.ts (for example: react-app-env.d.ts)
-import { YourHttpServiceClass } from '....'
-
-declare module '@resourge/http-service' {
-	export interface HttpServiceInterface extends YourHttpServiceClass {} 
-}
 ```
 
 ## LoadingService

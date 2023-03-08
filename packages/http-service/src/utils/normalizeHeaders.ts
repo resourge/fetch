@@ -1,7 +1,7 @@
 import { FetchError } from '../errors/FetchError';
 import { type RequestConfig } from '../types/RequestConfig';
 
-import { type Interceptor } from './Interceptors';
+import { type InterceptorOnRequest, type Interceptor } from './Interceptors';
 import { isBrowser, isURLSameOrigin, readCookie } from './utils';
 
 const xsrfCookieName = 'XSRF-TOKEN';
@@ -87,6 +87,7 @@ const permittedProtocols = ['http:', 'https:', 'file:'];
  */
 export const normalizeRequest = (
 	config: NormalizeRequestConfig,
+	setToken: InterceptorOnRequest,
 	interceptors: Interceptor
 ) => {
 	try {
@@ -97,6 +98,8 @@ export const normalizeRequest = (
 		) {
 			throw new FetchError('Unsupported protocol ' + config.url.protocol);
 		}
+
+		_config = setToken(_config);
 
 		interceptors.request.values.forEach(({ onRequest }) => {
 			_config = onRequest(_config);

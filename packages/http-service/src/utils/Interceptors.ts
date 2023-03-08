@@ -43,22 +43,6 @@ export class Interceptor {
 	public request: InterceptorRequest;
 	public response: InterceptorResponse;
 
-	static clone(interceptor: Interceptor) {
-		const newInterceptor = new Interceptor();
-
-		newInterceptor.request = {
-			...interceptor.request
-		}
-		newInterceptor.request.values = [...newInterceptor.request.values];
-
-		newInterceptor.response = {
-			...interceptor.response
-		}
-		newInterceptor.response.values = [...newInterceptor.response.values];
-
-		return newInterceptor;
-	}
-
 	constructor() {
 		this.request = {
 			values: [],

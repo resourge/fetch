@@ -1,30 +1,16 @@
 import { type RequestConfig } from '../types/RequestConfig';
 import { HttpResponse, HttpResponseError } from '../utils/HttpResponse';
-import { Interceptor } from '../utils/Interceptors';
+import { Interceptor, type InterceptorOnRequest } from '../utils/Interceptors';
 import { formatToFormData } from '../utils/formatToFormData';
 import { getCacheKey } from '../utils/getCacheKey';
 import { normalizeRequest, type NormalizeRequestConfig } from '../utils/normalizeHeaders';
 import { throttlePromise } from '../utils/throttlePromise';
 import { convertParamsToQueryString } from '../utils/transformURLSearchParams';
 
+import QueueKingSystem from './QueueKingSystem';
+
 export type MethodConfig = Omit<RequestConfig, 'url'> & {
 	method?: string
-}
-
-export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
-	/**
-	 * If threshold is enabled
-	 */
-	isThresholdEnabled?: boolean
-	method?: string
-	/**
-	 * Throttle threshold
-	 */
-	threshold?: number
-	/**
-	 * Throttle key
-	 */
-	throttleKey?: string
 }
 
 export type HttpServiceDefaultConfig = {
@@ -38,18 +24,33 @@ export type HttpServiceDefaultConfig = {
 	threshold: number
 }
 
+export type BaseRequestConfig = Partial<HttpServiceDefaultConfig> & {
+	/**
+	 * A signal object that allows you to communicate with a DOM request (such as a Fetch) and abort it if required via an AbortController object.
+	 */
+	signal?: AbortSignal
+}
+
+export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
+	method?: string
+	/**
+	 * Throttle key
+	 */
+	throttleKey?: string
+} & BaseRequestConfig
+
 /**
  * Main service to make the requests to the server
  * It's a simple wrapper on Fetch api, adding throttle to get's
  * and the upload method.
  */
-export class BaseHttpService {
+export abstract class BaseHttpService {
 	public baseUrl: string = typeof window !== 'undefined' ? window.location.origin : '/';
 
 	/**
 	 * Default config of HttpService
 	 */
-	public defaultConfig: HttpServiceDefaultConfig = {
+	public defaultConfig: Omit<HttpServiceDefaultConfig, 'signal'> = {
 		threshold: 2750,
 		isThresholdEnabled: false
 	}
@@ -105,6 +106,11 @@ export class BaseHttpService {
 		);
 	}
 
+	protected _setToken: InterceptorOnRequest = (config) => config;
+	public setToken(cb: InterceptorOnRequest) {
+		this._setToken = cb;
+	}
+
 	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
 		if ( typeof config.url === 'string' ) {
 			config.url = new URL(config.url, this.baseUrl)
@@ -114,6 +120,7 @@ export class BaseHttpService {
 
 		const _config = normalizeRequest(
 			config as NormalizeRequestConfig,
+			this._setToken,
 			this.interceptors
 		);
 
@@ -144,8 +151,20 @@ export class BaseHttpService {
 			_url.search = urlSearchParams.toString();
 		}
 
-		const threshold = (config?.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) ? (config?.threshold ?? this.defaultConfig.threshold) : 0;
-		
+		if ( !config?.signal ) {
+			const controller = new AbortController();
+
+			if ( !config ) {
+				config = {}
+			}
+
+			config.signal = controller.signal;
+
+			QueueKingSystem.send(controller)
+		}
+
+		const threshold = (QueueKingSystem.isThresholdEnabled ?? config?.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) ? (config?.threshold ?? this.defaultConfig.threshold) : 0;
+
 		const _config: NormalizeRequestConfig = {
 			...config,
 			method: config?.method ?? 'get',
@@ -239,5 +258,3 @@ export class BaseHttpService {
 		return this.request<T, R>(_config);
 	}
 }
-
-export type HttpServiceInterface = BaseHttpService;

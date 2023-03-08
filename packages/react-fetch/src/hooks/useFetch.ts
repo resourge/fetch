@@ -1,25 +1,13 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState
-} from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
-import { type HttpServiceInterface } from 'packages/http-service/src/services/BaseHttpService';
-import { Interceptor } from 'packages/http-service/src/utils/Interceptors';
+import { QueueKingSystem } from 'packages/http-service/src/index';
 
-import {
-	LoadingService,
-	type FetchError,
-	type HttpResponseError,
-	type HttpResponse,
-	BaseHttpService
-} from '../../../http-service/src'
-import { useFetchContext } from '../context/FetchContext';
+import { LoadingService, type FetchError, type HttpResponseError } from '../../../http-service/src'
 import NotificationService from '../services/NotificationService';
+import { getFetchDefaultConfig } from '../utils/defaultConfig';
 import { useId } from '../utils/useIdShim';
 
 import { useOnFocusFetch } from './useOnFocusFetch';
@@ -89,15 +77,11 @@ export type UseFetchState<Result, T extends any[]> = {
 
 export type UseFetchConfig = {	
 	/**
-	 * When this camp is false useEffect will not trigger fetch
+	 * When false useEffect will not trigger fetch
 	 * * Note: It is not included in the deps.
 	 * @default true
 	 */
 	enable?: boolean
-	/**
-	 * Serves as an uniqueId to be able to trigger in other fetch calls
-	 */
-	fetchId?: string
 	/**
 	 * When false makes it so no error is emitted
 	 * @default false
@@ -196,60 +180,24 @@ type State<T> = {
   );
 ```
  */
-export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
-	method: (Http: HS, ...args: Partial<T>) => Promise<Result>,
+
+export function useFetch<Result, T extends any[]>(
+	method: (...args: Partial<T>) => Promise<Result>,
 	config: UseFetchStateConfig<Result>
 ): UseFetchState<Result, T>
-export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
-	method: (Http: HS, ...args: Partial<T>) => Promise<Result>,
+export function useFetch<Result, T extends any[]>(
+	method: (...args: Partial<T>) => Promise<Result>,
 	config: UseFetchEffectConfig
 ): UseFetchEffect<Result, T>
-export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
-	method: (Http: HS, ...args: T) => Promise<Result>,
+export function useFetch<Result, T extends any[]>(
+	method: (...args: T) => Promise<Result>,
 	config?: UseFetchConfig
 ): UseFetch<Result, T> 
-export function useFetch<HS extends HttpServiceInterface, Result, T extends any[]>(
-	method: ((Http: HS, ...args: T) => Promise<Result>) | 
-	((Http: HS, ...args: Partial<T>) => Promise<Result>),
+export function useFetch<Result, T extends any[]>(
+	method: ((...args: T) => Promise<Result>) | ((...args: Partial<T>) => Promise<Result>),
 	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig<Result>
 ): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
-	const httpContext = useFetchContext();
-
-	const controllers = useRef<Map<string, AbortController>>(new Map())
-
-	const [_HttpService] = useState<HS>(() => {
-		const Http = (httpContext?.HttpService ?? new BaseHttpService()) as HS
-
-		Http.interceptors = Interceptor.clone(Http.interceptors);
-		
-		Http.interceptors.request.values.unshift({
-			onRequest: (config) => {
-				if ( !config.signal ) {
-					const url = (config.url as URL).href;
-					const controller = new AbortController();
-
-					controllers.current.set(url, controller)
-
-					config.signal = controller.signal;
-				}
-				return config;
-			}
-		});
-
-		Http.interceptors.response.values.unshift({
-			onResponse: (response: HttpResponse<any>) => {
-				const config = response.request;
-				if ( config.signal ) {
-					const url = config.url;
-
-					controllers.current.delete(url);
-				}
-				return response;
-			}
-		});
-
-		return Http;
-	});
+	const controllers = useRef<Set<AbortController>>(new Set())
 
 	let isFetchEffect = false;
 	let isFetchEffectWithData = false;
@@ -261,13 +209,15 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 		isFetchEffectWithData = keys.includes('initialState');
 	}
 
+	const defaultConfig = getFetchDefaultConfig()
+
 	const deps = (config as UseFetchEffectConfig)?.deps ?? [];
-	const onWindowFocus = (config as UseFetchStateConfig<Result>)?.onWindowFocus ?? httpContext?.config?.onWindowFocus ?? true;
+	const onWindowFocus = (config as UseFetchStateConfig<Result>)?.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true;
 	const scrollRestoration = (config as UseFetchEffectConfig)?.scrollRestoration;
-	const useLoadingService = config?.useLoadingService ?? httpContext?.config?.useLoadingService;
-	const silent = config?.silent ?? httpContext?.config?.silent ?? false;
-	const noEmitError = config?.noEmitError ?? httpContext?.config?.noEmitError; 
-	const enable = config?.enable ?? httpContext?.config?.enable ?? true; 
+	const useLoadingService = config?.useLoadingService ?? defaultConfig.useLoadingService;
+	const silent = config?.silent ?? defaultConfig.silent ?? false;
+	const noEmitError = config?.noEmitError ?? defaultConfig.noEmitError; 
+	const enable = config?.enable ?? defaultConfig.enable ?? true; 
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig<Result>)?.initialState,
@@ -315,9 +265,25 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 		NotificationService.notify(id);
 	}
 
+	const controllerSystem = () => {
+		return QueueKingSystem.add(
+			(controller) => {
+				controllers.current.add(controller)
+			},
+			(controller) => {
+				controllers.current.delete(controller)
+			}
+		)
+	}
+
 	const request = isFetchEffect 
 		? async (...args: Partial<T>) => {
-			const data = await method(_HttpService, ...(args ?? []) as T);
+			const remove = controllerSystem();
+
+			const data = await method(...(args ?? []) as T)
+			.finally(() => {
+				remove();
+			});
 
 			if ( isFetchEffectWithData ) {
 				currentData.current = {
@@ -328,7 +294,11 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 
 			return data;
 		} : (...args: T): Promise<Result> => {
-			return method(_HttpService, ...args);
+			const remove = controllerSystem();
+
+			return method(...args).finally(() => {
+				remove()
+			});
 		}
 
 	const noLoadingFetch = async (...args: Partial<T>) => {
@@ -420,10 +390,9 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			if ( enable ) {
-				_HttpService.defaultConfig.isThresholdEnabled = true;
+				QueueKingSystem.isThresholdEnabled = true;
 				result()
 				.finally(() => {
-					_HttpService.defaultConfig.isThresholdEnabled = false;
 					if ( scrollRestoration ) {
 						if ( Array.isArray(scrollRestoration) ) {
 							scrollRestoration.forEach((method) => {
@@ -461,17 +430,7 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 	}
 
 	useEffect(() => {
-		if ( config?.fetchId && httpContext ) {
-			const fetchId = config?.fetchId;
-			httpContext.request.set(fetchId, fetch as (...args: any[]) => Promise<any>);
-		}
-	})
-
-	useEffect(() => {
 		return () => {
-			if ( config?.fetchId && httpContext ) {
-				httpContext.request.delete(config?.fetchId)
-			}
 			if ( controllers.current.size ) {
 				// eslint-disable-next-line react-hooks/exhaustive-deps
 				controllers.current.forEach((controller) => {
@@ -479,6 +438,7 @@ export function useFetch<HS extends HttpServiceInterface, Result, T extends any[
 						controller.abort();
 					}
 				})
+				controllers.current = new Set();
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
