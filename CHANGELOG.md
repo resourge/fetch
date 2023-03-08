@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/resourge/fetch/compare/v1.12.6...v1.13.0) (2023-03-08)
+
+
+### Features
+
+* **usefetch/http-service:** simplify syntaxe and automatically do abort request on unmount ([4b758f9](https://github.com/resourge/fetch/commit/4b758f9a512a50c02c8aeee100dfa56f3c445751))
+
 ## [1.12.6](https://github.com/resourge/fetch/compare/v1.12.5...v1.12.6) (2023-03-01)
 
 
