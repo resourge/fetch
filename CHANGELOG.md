@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/resourge/fetch/compare/v1.13.0...v1.13.1) (2023-03-09)
+
+
+### Bug Fixes
+
+* **defaultconfig:** remove silent as default ([1f0461f](https://github.com/resourge/fetch/commit/1f0461f170e2181cd054853df598d0a771b3197e))
+
 # [1.13.0](https://github.com/resourge/fetch/compare/v1.12.6...v1.13.0) (2023-03-08)
 
 
