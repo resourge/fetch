@@ -4,8 +4,7 @@ export type FetchContextConfig = Omit<UseFetchStateConfig<any>, 'initialState' |
 
 const defaultConfig: FetchContextConfig = {
 	useLoadingService: true,
-	noEmitError: true,
-	silent: true
+	noEmitError: true
 }
 
 export function setFetchDefaultConfig(defaultConfig: FetchContextConfig) {
