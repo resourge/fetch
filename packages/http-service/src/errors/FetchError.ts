@@ -12,5 +12,7 @@ export class FetchError extends Error {
 	constructor(message: string) {
 		super(message)
 		this.name = 'FetchError';
+
+		Error.captureStackTrace(this, FetchError);
 	}
 }
