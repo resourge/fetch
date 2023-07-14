@@ -27,11 +27,15 @@ export const normalizeHeaders = (config: RequestConfig) => {
 		...config
 	};
 
-	if (!_config.headers ) {
-		_config.headers = {};
-	}
+	const headers = _config.headers ?? {};
 
-	if ( !_config.headers || !_config.headers.accept ) {
+	_config.headers = Object.keys(headers)
+	.reduce<Record<string, string>>((obj, key) => {
+		obj[key.toLowerCase()] = headers[key];
+		return obj;
+	}, {})
+
+	if ( !_config.headers.accept ) {
 		_config.headers.accept = 'application/json, text/plain, */*'
 	}
 	
@@ -64,7 +68,8 @@ export const normalizeBody = (
 			) {
 				return config.data
 			}
-			if ( !config.headers || !config.headers['content-type'] ) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			if ( !config.headers!['content-type'] ) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				config.headers!['content-type'] = 'application/json'
 			}

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /**
  * Check if it's a standard browser
  */
@@ -43,3 +44,21 @@ export const isURLSameOrigin = ((): (url: string | URL) => boolean => {
 
 	return () => true
 })()
+
+const URL_PATTERN = /^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/
+
+/**
+ * Return an url. In case it doesn't have origin/domain/host it will use baseUrl.
+ */
+export function createUrl(url: URL | string, baseUrl: string): URL {
+	if ( typeof url === 'string' ) {
+		if ( URL_PATTERN.test(url) ) {
+			return new URL(url);
+		}
+
+		const includeSlash = !baseUrl.endsWith('/') || !baseUrl.startsWith('/')
+
+		return new URL(`${baseUrl}${includeSlash ? '/' : ''}${url}`);
+	}
+	return url;
+}
