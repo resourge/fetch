@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/resourge/fetch/compare/v1.13.1...v1.13.2) (2023-07-05)
+
+
+### Bug Fixes
+
+* **basehttpservice.ts:** added base url from basic requests ([5747315](https://github.com/resourge/fetch/commit/5747315e0d2fef991c5e6ba4e635ce239e0e4836))
+
 ## [1.13.1](https://github.com/resourge/fetch/compare/v1.13.0...v1.13.1) (2023-03-09)
 
 

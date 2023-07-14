@@ -141,7 +141,7 @@ export abstract class BaseHttpService {
 	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K): Promise<R>;
 	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
 	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
-		const _url = new URL(url, this.baseUrl);
+		const _url = new URL(`${this.baseUrl}${url}`);
 
 		if ( params ) {
 			const urlSearchParams = convertParamsToQueryString(params);
@@ -189,7 +189,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'post',
-			url,
+			url: new URL(`${this.baseUrl}${url}`),
 			data
 		}
 
@@ -204,7 +204,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'put',
-			url,
+			url: new URL(`${this.baseUrl}${url}`),
 			data
 		}
 
@@ -219,7 +219,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'delete',
-			url,
+			url: new URL(`${this.baseUrl}${url}`),
 			data
 		}
 
@@ -234,7 +234,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'patch',
-			url,
+			url: new URL(`${this.baseUrl}${url}`),
 			data
 		}
 
@@ -251,7 +251,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method,
-			url,
+			url: new URL(`${this.baseUrl}${url}`),
 			data: formatToFormData(files, data)
 		}
 
