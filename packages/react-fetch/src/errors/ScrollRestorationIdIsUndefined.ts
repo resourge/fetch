@@ -7,5 +7,7 @@ export class ScrollRestorationIdIsUndefined extends Error {
 		);
 
 		this.name = 'ScrollRestorationIdIsUndefined'
+
+		Error.captureStackTrace(this, ScrollRestorationIdIsUndefined);
 	}
 }

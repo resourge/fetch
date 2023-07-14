@@ -3,5 +3,7 @@ export class MissingBaseUrlError extends Error {
 		super('In systems not browser, \'baseUrl\' is mandatory.');
 
 		this.name = 'MissingBaseUrlError'
+
+		Error.captureStackTrace(this, MissingBaseUrlError);
 	}
 }
