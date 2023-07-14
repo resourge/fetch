@@ -6,6 +6,7 @@ import { getCacheKey } from '../utils/getCacheKey';
 import { normalizeRequest, type NormalizeRequestConfig } from '../utils/normalizeHeaders';
 import { throttlePromise } from '../utils/throttlePromise';
 import { convertParamsToQueryString } from '../utils/transformURLSearchParams';
+import { createUrl } from '../utils/utils';
 
 import QueueKingSystem from './QueueKingSystem';
 
@@ -39,6 +40,10 @@ export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 	throttleKey?: string
 } & BaseRequestConfig
 
+export type HttpServiceConfig = {
+	baseUrl?: string
+}
+
 /**
  * Main service to make the requests to the server
  * It's a simple wrapper on Fetch api, adding throttle to get's
@@ -56,6 +61,10 @@ export abstract class BaseHttpService {
 	}
 
 	public interceptors = new Interceptor();
+
+	constructor({ baseUrl }: HttpServiceConfig) {
+		this.baseUrl = baseUrl ?? this.baseUrl;
+	}
 
 	private throttleRequest(
 		cacheKey: string,
@@ -112,9 +121,7 @@ export abstract class BaseHttpService {
 	}
 
 	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
-		if ( typeof config.url === 'string' ) {
-			config.url = new URL(config.url, this.baseUrl)
-		}
+		config.url = createUrl(config.url, this.baseUrl)
 
 		config.url.searchParams.sort();
 
@@ -141,7 +148,7 @@ export abstract class BaseHttpService {
 	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K): Promise<R>;
 	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
 	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
-		const _url = new URL(`${this.baseUrl}${url}`);
+		const _url = createUrl(url, this.baseUrl);
 
 		if ( params ) {
 			const urlSearchParams = convertParamsToQueryString(params);
@@ -189,7 +196,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'post',
-			url: new URL(`${this.baseUrl}${url}`),
+			url,
 			data
 		}
 
@@ -204,7 +211,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'put',
-			url: new URL(`${this.baseUrl}${url}`),
+			url,
 			data
 		}
 
@@ -219,7 +226,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'delete',
-			url: new URL(`${this.baseUrl}${url}`),
+			url,
 			data
 		}
 
@@ -234,7 +241,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method: config?.method ?? 'patch',
-			url: new URL(`${this.baseUrl}${url}`),
+			url,
 			data
 		}
 
@@ -251,7 +258,7 @@ export abstract class BaseHttpService {
 		const _config: RequestConfig = {
 			...config,
 			method,
-			url: new URL(`${this.baseUrl}${url}`),
+			url,
 			data: formatToFormData(files, data)
 		}
 
