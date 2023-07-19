@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/resourge/fetch/compare/v1.14.1...v1.14.2) (2023-07-19)
+
+
+### Bug Fixes
+
+* **utils:** fix createUrl not working in some cases ([c0e4f93](https://github.com/resourge/fetch/commit/c0e4f9350e812b569354056628805d74cda91b84))
+
 ## [1.14.1](https://github.com/resourge/fetch/compare/v1.14.0...v1.14.1) (2023-07-19)
 
 
