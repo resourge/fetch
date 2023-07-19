@@ -221,7 +221,7 @@ export function useFetch<Result, T extends any[]>(
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig<Result>)?.initialState,
-		isLoading: true,
+		isLoading: isFetchEffect || isFetchEffectWithData,
 		error: null
 	});
 
