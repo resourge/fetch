@@ -7,8 +7,8 @@ const defaultConfig: FetchContextConfig = {
 	noEmitError: true
 }
 
-export function setFetchDefaultConfig(defaultConfig: FetchContextConfig) {
-	Object.entries(defaultConfig)
+export function setFetchDefaultConfig(newDefaultConfig: FetchContextConfig) {
+	Object.entries(newDefaultConfig)
 	.forEach(([key, value]) => {
 		defaultConfig[key as keyof FetchContextConfig] = value as any;
 	})
