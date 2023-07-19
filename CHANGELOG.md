@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/resourge/fetch/compare/v1.14.0...v1.14.1) (2023-07-19)
+
+
+### Bug Fixes
+
+* **utils:** fix createUrl not taking incount url starting with / ([a285808](https://github.com/resourge/fetch/commit/a285808de7102f36896e70dd6b107fd424052377))
+
 # [1.14.0](https://github.com/resourge/fetch/compare/v1.13.2...v1.14.0) (2023-07-19)
 
 
