@@ -56,7 +56,7 @@ export function createUrl(url: URL | string, baseUrl: string): URL {
 			return new URL(url);
 		}
 
-		const includeSlash = !baseUrl.endsWith('/') || !baseUrl.startsWith('/')
+		const includeSlash = !baseUrl.endsWith('/') || !url.startsWith('/')
 
 		return new URL(`${baseUrl}${includeSlash ? '/' : ''}${url}`);
 	}
