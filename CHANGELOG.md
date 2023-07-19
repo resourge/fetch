@@ -1,3 +1,19 @@
+# [1.14.0](https://github.com/resourge/fetch/compare/v1.13.2...v1.14.0) (2023-07-19)
+
+
+### Bug Fixes
+
+* **basehttpservice:** check if url is a full url before merging with baseUrl ([248319d](https://github.com/resourge/fetch/commit/248319d123d46f56a1dcc3ee8d3e7140c988a03c))
+* **defaultconfig:** fix default config not updating ([75edc77](https://github.com/resourge/fetch/commit/75edc7718230ed11feda60ae161ff1c2f182c331))
+* **errors:** add captureStackTrace ([eae8293](https://github.com/resourge/fetch/commit/eae82932deac839ff54b26188e7d57e6e98ae6ce))
+* **normalizeheaders:** make sure all request headers are lowercase ([90f655e](https://github.com/resourge/fetch/commit/90f655e6a2cea5f0b91c1af1cca0ad298c56a794))
+* **usefetch:** fix isLoading being always true even tho useFetch is not on Effect or EffectWithData ([788d76d](https://github.com/resourge/fetch/commit/788d76dca0294f9d3be86ac6b183f10ea6e80a1b))
+
+
+### Features
+
+* **errors:** error constructor is not part of the resulting stacktrace ([85af170](https://github.com/resourge/fetch/commit/85af170221ae13e046a9ab2c065e381a93945ccc))
+
 ## [1.13.2](https://github.com/resourge/fetch/compare/v1.13.1...v1.13.2) (2023-07-05)
 
 
