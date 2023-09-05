@@ -396,7 +396,7 @@ export function useFetch<Result, T extends any[]>(
 			if ( enable ) {
 				QueueKingSystem.isThresholdEnabled = true;
 
-				const _config = (config as UseFetchEffectConfig)
+				const _config = (config as UseFetchEffectConfig);
 				_config.onDepsChange && _config.onDepsChange();
 				
 				result()
