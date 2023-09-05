@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/resourge/fetch/compare/v1.14.2...v1.15.0) (2023-09-05)
+
+
+### Features
+
+* **usefetch:** add onDepsChange ([ff6859b](https://github.com/resourge/fetch/commit/ff6859b23360c095d6c2cf9b71de63fa51f56fc2))
+
 ## [1.14.2](https://github.com/resourge/fetch/compare/v1.14.1...v1.14.2) (2023-07-19)
 
 
