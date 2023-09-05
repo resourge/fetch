@@ -116,6 +116,10 @@ export type UseFetchEffectConfig = UseFetchConfig & {
 	*/
 	initialState?: never
 	/**
+	 * Trigger when deps change
+	 */
+	onDepsChange?: () => void
+	/**
 	 * Serves to restore scroll position
 	 */
 	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
