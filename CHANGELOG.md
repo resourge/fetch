@@ -1,3 +1,11 @@
+## [1.15.1](https://github.com/resourge/fetch/compare/v1.15.0...v1.15.1) (2023-09-05)
+
+
+### Bug Fixes
+
+* **usefetch:** add actual funcionality ([d4b461c](https://github.com/resourge/fetch/commit/d4b461cc0080f40495e54cb2ded7d00147c01ed4))
+* **usefetch:** add funcionality ([ad41304](https://github.com/resourge/fetch/commit/ad413047f7b16c410d56d230ca29d015cc26dbed))
+
 # [1.15.0](https://github.com/resourge/fetch/compare/v1.14.2...v1.15.0) (2023-09-05)
 
 
