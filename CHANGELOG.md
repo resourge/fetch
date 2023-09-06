@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/resourge/fetch/compare/v1.15.1...v1.15.2) (2023-09-06)
+
+
+### Bug Fixes
+
+* **useonscroll:** fix not working when scroll was in windows ([f5d52d0](https://github.com/resourge/fetch/commit/f5d52d060472e0b0dc5e29a5b1ba9b2057bb7a84))
+
 ## [1.15.1](https://github.com/resourge/fetch/compare/v1.15.0...v1.15.1) (2023-09-05)
 
 
