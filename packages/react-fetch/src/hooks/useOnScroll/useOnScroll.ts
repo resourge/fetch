@@ -44,19 +44,14 @@ export const useOnScroll = <T extends ElementWithScrollTo | null>(
 		const element = ref.current;
 		if ( element ) {
 			const onScroll = () => {
-				let position: ScrollPos;
-				if ( element instanceof Window ) {
-					position = getScrollPage();
-					return
-				}
-				else {
-					position = {
-						top: element.scrollTop,
-						left: element.scrollLeft
-					}
-				}
-		
-				onScrollRef.current(position);
+				onScrollRef.current(
+					element instanceof Window 
+						? getScrollPage()
+						: {
+							top: element.scrollTop,
+							left: element.scrollLeft
+						}
+				);
 			}
 			
 			element.addEventListener('scroll', onScroll, true)
