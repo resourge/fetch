@@ -5,9 +5,10 @@ import fs from 'fs'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
-import packageJson from './package.json' assert { type: 'json' }
+import { readFileSync } from "fs";
+const pkg = JSON.parse(readFileSync('package.json', { encoding: 'utf8' }));
 
-const { author, license } = packageJson
+const { author, license } = pkg
 
 const external = [
 	'react',

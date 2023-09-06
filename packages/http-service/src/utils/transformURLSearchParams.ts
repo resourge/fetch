@@ -1,4 +1,3 @@
-
 export const transformURLSearchParamsFromArray = <K extends any[]>(
 	params: K,
 	baseKey: string = ''

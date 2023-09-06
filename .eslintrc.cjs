@@ -8,7 +8,7 @@ module.exports = {
 	extends: [
 		'plugin:react/recommended',
 		'standard-with-typescript',
-		'react-app'
+		'plugin:react-hooks/recommended'
 	],
 	ignorePatterns: ['**/dist/*', './main.js'],
 	parser: '@typescript-eslint/parser',

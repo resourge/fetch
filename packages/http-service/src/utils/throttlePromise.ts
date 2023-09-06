@@ -1,4 +1,3 @@
-
 type CacheType = { timestamp: number, value?: Promise<any> };
 const cache = new Map<string, CacheType>();
 const maxCacheItems = 10;
