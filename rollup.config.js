@@ -1,17 +1,19 @@
 import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fg from 'fast-glob'
-import fs from 'fs'
+import fs, { readFileSync } from 'fs'
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
-import { readFileSync } from "fs";
-const pkg = JSON.parse(readFileSync('package.json', { encoding: 'utf8' }));
+const pkg = JSON.parse(readFileSync('package.json', {
+	encoding: 'utf8' 
+}));
 
 const { author, license } = pkg
 
 const external = [
 	'react',
+	'react-dom',
 	'react/jsx-runtime',
 	'use-sync-external-store',
 	'use-sync-external-store/shim',
