@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/resourge/fetch/compare/v1.15.2...v1.16.0) (2023-09-27)
+
+
+### Features
+
+* **usefetchondependencyupdate:** add hook to add dependencies globaly ([8e91434](https://github.com/resourge/fetch/commit/8e91434fd8e9b5fb660ff091f477a91ba7b59cc5))
+
 ## [1.15.2](https://github.com/resourge/fetch/compare/v1.15.1...v1.15.2) (2023-09-06)
 
 
