@@ -1,3 +1,16 @@
+# [1.17.0](https://github.com/resourge/fetch/compare/v1.16.0...v1.17.0) (2023-09-27)
+
+
+### Bug Fixes
+
+* **basehttpservice:** make config optional ([c347182](https://github.com/resourge/fetch/commit/c347182d21e60694e6c8e9b38bf113b6daf58402))
+* **usefetch:** simplify useFetch return syntax ([e5e8cda](https://github.com/resourge/fetch/commit/e5e8cda5f20fadbf840ddde9cf50776985281f9f))
+
+
+### Features
+
+* **globalloader:** change to portal instead of a simple component ([5eb6b38](https://github.com/resourge/fetch/commit/5eb6b3888ab5af119f6a8cd0cb5df23ff09f7eb7))
+
 # [1.16.0](https://github.com/resourge/fetch/compare/v1.15.2...v1.16.0) (2023-09-27)
 
 
