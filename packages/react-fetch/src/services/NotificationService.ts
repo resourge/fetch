@@ -1,17 +1,27 @@
 class NotificationService {
-	public requestNotification = new Set<string>();
-	public notifications = new Map<string, () => void>();
+	public requestNotification = new Map<string, Promise<any> | undefined>();
+	public notifications = new Map<string, {
+		notification: () => void
+		request: () => void
+	}>();
 
-	public startRequest(id: string) {
-		this.requestNotification.add(id);
+	public getRequest(id: string) {
+		return this.requestNotification.get(id);
+	}
+
+	public startRequest(id: string, prom?: Promise<any>) {
+		this.requestNotification.set(id, prom);
 	}
 
 	public finishRequest(id: string) {
 		this.requestNotification.delete(id);
 	}
 
-	public subscribe = (id: string, notification: () => void) => {
-		this.notifications.set(id, notification);
+	public subscribe = (id: string, notification: () => void, request: () => void) => {
+		this.notifications.set(id, {
+			notification,
+			request
+		});
 
 		return () => {
 			this.finishRequest(id);
@@ -20,16 +30,26 @@ class NotificationService {
 	}
 
 	public notify(id: string) {
-		const notify = this.notifications.get(id);
-		if ( notify ) {
-			notify();
+		const result = this.notifications.get(id);
+		if ( result ) {
+			result.notification();
 		}
 	}
 
 	public notifyAll() {
 		if ( this.requestNotification.size === 0 ) {
-			this.notifications.forEach((notify) => {
-				notify();
+			this.notifications.forEach(({ notification }) => {
+				notification();
+			})
+		}
+	}
+
+	public requestAllAgain(filter?: (id: string) => boolean) {
+		if ( this.notifications.size ) {
+			this.notifications.forEach(({ request }, key) => {
+				if ( !filter || filter(key) ) {
+					request();
+				}
 			})
 		}
 	}

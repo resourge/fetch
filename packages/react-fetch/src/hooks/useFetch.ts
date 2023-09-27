@@ -202,6 +202,7 @@ export function useFetch<Result, T extends any[]>(
 	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig<Result>
 ): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
 	const controllers = useRef<Set<AbortController>>(new Set())
+	const id = useId();
 
 	let isFetchEffect = false;
 	let isFetchEffectWithData = false;
@@ -228,8 +229,6 @@ export function useFetch<Result, T extends any[]>(
 		isLoading: isFetchEffect || isFetchEffectWithData,
 		error: null
 	});
-
-	const id = useId();
 
 	const setLoading = (isLoading: boolean) => { 
 		if ( useLoadingService ) {
@@ -324,18 +323,24 @@ export function useFetch<Result, T extends any[]>(
 
 	const fetch = async (...args: T) => {
 		setLoading(true);
-		NotificationService.startRequest(id);
 		try {
-			return await noLoadingFetch(...args);
+			const prom = (NotificationService.getRequest(id) ?? noLoadingFetch(...args));
+
+			NotificationService.startRequest(id, prom);
+
+			return await prom;
 		}
 		finally {
 			NotificationService.finishRequest(id);
 			setLoading(false);
 		}
 	}
+	const fetchRef = useRef<() => any>(() => {});
+
+	fetchRef.current = () => {}
 
 	useSyncExternalStoreWithSelector(
-		useCallback((a) => NotificationService.subscribe(id, a), [id]),
+		useCallback((a) => NotificationService.subscribe(id, a, () => fetchRef.current()), [id]),
 		() => currentData.current,
 		() => currentData.current,
 		(selection) => selection,
@@ -391,6 +396,8 @@ export function useFetch<Result, T extends any[]>(
 	result[2] = _isLoading;
 
 	if ( isFetchEffect ) {
+		fetchRef.current = result;
+
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			if ( enable ) {
