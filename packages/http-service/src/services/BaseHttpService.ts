@@ -62,8 +62,8 @@ export abstract class BaseHttpService {
 
 	public interceptors = new Interceptor();
 
-	constructor({ baseUrl }: HttpServiceConfig) {
-		this.baseUrl = baseUrl ?? this.baseUrl;
+	constructor(config?: HttpServiceConfig) {
+		this.baseUrl = config?.baseUrl ?? this.baseUrl;
 	}
 
 	private throttleRequest(
