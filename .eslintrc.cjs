@@ -8,7 +8,8 @@ module.exports = {
 	extends: [
 		'plugin:react/recommended',
 		'standard-with-typescript',
-		'plugin:react-hooks/recommended'
+		'plugin:react-hooks/recommended',
+		'plugin:jsx-a11y/recommended'
 	],
 	ignorePatterns: ['**/dist/*', './main.js'],
 	parser: '@typescript-eslint/parser',
@@ -24,7 +25,8 @@ module.exports = {
 		'react',
 		'@typescript-eslint',
 		'typescript-sort-keys',
-		'import-newlines'
+		'import-newlines',
+		'jsx-a11y'
 	],
 	overrides: [
 		{

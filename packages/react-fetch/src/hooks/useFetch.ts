@@ -14,66 +14,35 @@ import { useOnFocusFetch } from './useOnFocusFetch';
 
 type UseFetchError = HttpResponseError | FetchError | Error | null | any
 
-export type UseFetch<Result, T extends any[]> = {
-	(...args: T): Promise<Result>
+type UseBaseFetch = {
 	error: UseFetchError
+	/**
+	 * True for when is request something
+	 */
+	isLoading: boolean
+}
+
+export type UseFetch<Result, T extends any[]> = UseBaseFetch & {
 	/**
 	 * Fetch Method with loading
 	 */
 	fetch: (...args: T) => Promise<Result>
-	isLoading: boolean
-	/**
-	 * Fetch Method without loading
-	 */
-	noLoadingFetch: (...args: T) => Promise<Result>
-} & [
-	(...args: T) => Promise<Result>,
-	UseFetchError,
-	boolean
-];
+};
 
-export type UseFetchEffect<Result, T extends any[]> = {
-	(...args: Partial<T>): Promise<Result>
-	error: UseFetchError
+export type UseFetchEffect<Result, T extends any[]> = UseBaseFetch & {
 	/**
 	 * Fetch Method with loading
 	 */
 	fetch: (...args: Partial<T>) => Promise<Result>
-	isLoading: boolean
-	/**
-	 * Fetch Method without loading
-	 */
-	noLoadingFetch: (...args: Partial<T>) => Promise<Result>
-} & [
-	(...args: Partial<T>) => Promise<Result>,
-	UseFetchError,
-	boolean
-];
+};
 
-export type UseFetchState<Result, T extends any[]> = {
-	(...args: Partial<T>): Promise<Result>
+export type UseFetchState<Result, T extends any[]> = UseFetchEffect<Result, T> & {
 	data: Result
-	error: UseFetchError
 	/**
-	 * Fetch Method with loading
+	 * To set fetch state manually
 	 */
-	fetch: (...args: Partial<T>) => Promise<Result>
-	isLoading: boolean
-	/**
-	 * Fetch Method without loading
-	 */
-	noLoadingFetch: (...args: Partial<T>) => Promise<Result>
-	/**
-	 * Sets Data Manually
-	 */
-	setData: (data: Result) => void
-} & [
-	Result,
-	(...args: Partial<T>) => Promise<Result>,
-	UseFetchError,
-	boolean,
-	(data: Result) => void
-];
+	setFetchState: (data: Result) => void
+};
 
 export type UseFetchConfig = {	
 	/**
@@ -151,17 +120,14 @@ type State<T> = {
  * @param config {@link UseFetchConfig} - fetch config's. They override default HttpProvider config's.
  * @example
  * ```Typescript
-  // Fetch with useEffect 
+  // Fetch with useState 
   // const {
   //	data,
   //    error,
   //    fetch,
   //    isLoading,
-  //    noLoadingFetch,
-  //    setData
+  //    setFetchState
   // } = useFetch(
-  // or 
-  const [data, fetch, error, isLoading] = useFetch(
       async (Http) => {
           return Http.get("url")
       }, 
@@ -169,15 +135,12 @@ type State<T> = {
           initialState: []
       }
   );
-  // Fetch without useEffect 
+  // Fetch without useEffect or with useEffect
   // const {
   //    error,
   //    fetch,
-  //    isLoading,
-  //    noLoadingFetch
+  //    isLoading
   // } = useFetch(
-  // or 
-  const [fetch, error, isLoading] = useFetch(
       async (Http) => {
           return Http.get("url")
       }
@@ -259,7 +222,7 @@ export function useFetch<Result, T extends any[]>(
 		}
 	}
 
-	const setData = (data: Result) => {
+	const setFetchState = (data: Result) => {
 		currentData.current = {
 			...currentData.current,
 			data
@@ -355,48 +318,14 @@ export function useFetch<Result, T extends any[]>(
 
 	const _isLoading = useLoadingService ? false : currentData.current.isLoading;
 
-	const result: any = fetch;
-
-	result[Symbol.iterator] = function () {
-		let i = 0;
-		return {
-			next() {
-				const value = result[i++]
-				if (
-					(
-						isFetchEffect && (
-							i === 5
-						)
-					) || (
-						!isFetchEffect && (
-							i === 3
-						)
-					)
-				) {
-					return {
-						done: true,
-						value 
-					};
-				}
-				return {
-					done: false,
-					value 
-				};
-			}
-		};
-	}
-
-	result.isLoading = _isLoading;
-	result.error = currentData.current.error;
-	result.fetch = fetch;
-	result.noLoadingFetch = noLoadingFetch;
-
-	result[0] = fetch;
-	result[1] = currentData.current.error;
-	result[2] = _isLoading;
+	const result: any = {
+		isLoading: _isLoading,
+		error: currentData.current.error,
+		fetch
+	};
 
 	if ( isFetchEffect ) {
-		fetchRef.current = result;
+		fetchRef.current = fetch;
 
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
@@ -406,7 +335,7 @@ export function useFetch<Result, T extends any[]>(
 				const _config = (config as UseFetchEffectConfig);
 				_config.onDepsChange && _config.onDepsChange();
 				
-				result()
+				result.fetch()
 				.finally(() => {
 					if ( scrollRestoration ) {
 						if ( Array.isArray(scrollRestoration) ) {
@@ -435,12 +364,7 @@ export function useFetch<Result, T extends any[]>(
 			);
 
 			result.data = currentData.current.data;
-			result.setData = setData;
-			result[0] = currentData.current.data;
-			result[1] = fetch;
-			result[2] = currentData.current.error;
-			result[3] = _isLoading;
-			result[4] = setData;
+			result.setFetchState = setFetchState;
 		}
 	}
 
