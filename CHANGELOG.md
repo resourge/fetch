@@ -1,3 +1,10 @@
+## [1.17.1](https://github.com/resourge/fetch/compare/v1.17.0...v1.17.1) (2023-10-02)
+
+
+### Bug Fixes
+
+* **usefetch:** fix useOnFocusFetch ([7d64b07](https://github.com/resourge/fetch/commit/7d64b07672f1579a2c49c1aa889b2119e2616989))
+
 # [1.17.0](https://github.com/resourge/fetch/compare/v1.16.0...v1.17.0) (2023-09-27)
 
 
