@@ -357,7 +357,7 @@ export function useFetch<Result, T extends any[]>(
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			useOnFocusFetch(
 				async () => {
-					await result.noLoadingFetch();
+					await (noLoadingFetch as () => Promise<any>)();
 					NotificationService.notify(id);
 				},
 				onWindowFocus
