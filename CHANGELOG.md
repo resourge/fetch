@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/resourge/fetch/compare/v1.18.0...v1.19.0) (2023-10-03)
+
+
+### Features
+
+* **loadingsuspense:** add LoadingSuspense component to show loader on suspense ([50ac02a](https://github.com/resourge/fetch/commit/50ac02a4a99d8477f358623ad5475b5829474287))
+
 # [1.18.0](https://github.com/resourge/fetch/compare/v1.17.1...v1.18.0) (2023-10-03)
 
 
