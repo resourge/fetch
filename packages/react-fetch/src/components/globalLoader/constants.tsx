@@ -4,7 +4,7 @@ import { GlobalLoading } from './GlobalLoading';
 
 export const globalColor = '#00BFFF';
 
-export type BaseGlobalLoaderProps<Style> = Partial<LoaderProps> & {
+export type BaseGlobalLoaderProps<Style> = Pick<Partial<LoaderProps>, 'loaderId' | 'children'> & {
 	/**
 	 * Changes default color
 	 */
