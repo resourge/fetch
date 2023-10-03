@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/resourge/fetch/compare/v1.17.1...v1.18.0) (2023-10-03)
+
+
+### Features
+
+* **globalloader:** add backdropFilter ([898beb8](https://github.com/resourge/fetch/commit/898beb8a192d29bfd33b9aa56a50dfeb517c9dfb))
+
 ## [1.17.1](https://github.com/resourge/fetch/compare/v1.17.0...v1.17.1) (2023-10-02)
 
 
