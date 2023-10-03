@@ -271,6 +271,29 @@ function App() {
 export default App
 ```
 
+### LoadingSuspense
+
+Component to show loading on Suspense component.
+
+```JSX
+import {
+  LoadingSuspense
+} from '@resourge/react-fetch'
+
+function App() {
+  return (
+	<div>
+	  ...// Other Components
+	  <Suspense fallback={<LoadingSuspense />}>
+        ...
+	  </Suspense>
+	</div>
+  )
+}
+
+export default App
+```
+
 ## LoadingService
 
 Simple global service to show/hide a ```<Loader />```.
