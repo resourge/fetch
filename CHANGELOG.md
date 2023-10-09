@@ -1,3 +1,11 @@
+## [1.20.1](https://github.com/resourge/fetch/compare/v1.20.0...v1.20.1) (2023-10-09)
+
+
+### Bug Fixes
+
+* **interceptors:** fix headers type ([9952e28](https://github.com/resourge/fetch/commit/9952e285e03c378af31b1a1a4c08b5cab2e32585))
+* **normalizeheaders:** remove putting all header into lowercase ([e428ec3](https://github.com/resourge/fetch/commit/e428ec3272f91b81c62164cd17ab929ff25c6e7f))
+
 # [1.20.0](https://github.com/resourge/fetch/compare/v1.19.0...v1.20.0) (2023-10-09)
 
 
