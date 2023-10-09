@@ -27,13 +27,7 @@ export const normalizeHeaders = (config: RequestConfig) => {
 		...config
 	};
 
-	const headers = _config.headers ?? {};
-
-	_config.headers = Object.keys(headers)
-	.reduce<Record<string, string>>((obj, key) => {
-		obj[key.toLowerCase()] = headers[key];
-		return obj;
-	}, {})
+	_config.headers = _config.headers ?? {}
 
 	if ( !_config.headers.accept ) {
 		_config.headers.accept = 'application/json, text/plain, */*'
