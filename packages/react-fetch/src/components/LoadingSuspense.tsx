@@ -1,20 +1,19 @@
-import type React from 'react';
-import { useEffect } from 'react';
+import React from 'react';
+import { type ReactNode, Suspense } from 'react';
 
-import { LoadingService } from 'packages/http-service/src';
+import LoadingFallback from './LoadingFallback';
+
+type Props = {
+	children?: ReactNode
+}
 
 /**
- * Component to show loading on Suspense component
+ * Component that show loading on lazy components.
  */
-const LoadingSuspense: React.FC = () => {
-	useEffect(() => {
-		LoadingService.show();
-		return () => {
-			LoadingService.hide();
-		};
-	}, []);
-
-	return null;
-};
+const LoadingSuspense: React.FC<Props> = ({ children }) => (
+	<Suspense fallback={<LoadingFallback />}>
+		{ children }
+	</Suspense>
+);
 
 export default LoadingSuspense;

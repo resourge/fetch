@@ -271,22 +271,47 @@ function App() {
 export default App
 ```
 
-### LoadingSuspense
+### LoadingFallback
 
-Component to show loading on Suspense component.
+Component that shows loading on mount and hides loading on unmount
 
 ```JSX
 import {
-  LoadingSuspense
+  LoadingFallback
 } from '@resourge/react-fetch'
 
 function App() {
   return (
 	<div>
 	  ...// Other Components
-	  <Suspense fallback={<LoadingSuspense />}>
+	  <Suspense fallback={<LoadingFallback />}>
         ...
 	  </Suspense>
+	</div>
+  )
+}
+
+export default App
+```
+
+### LoadingSuspense
+
+Component that show loading on lazy components.
+
+```JSX
+import {
+  LoadingSuspense
+} from '@resourge/react-fetch'
+
+const LazyComponent = React.lazy(() => import('lazycomponent'))
+
+function App() {
+  return (
+	<div>
+	  ...// Other Components
+	  <LoadingSuspense>
+        <LazyComponent />
+	  </LoadingSuspense>
 	</div>
   )
 }
