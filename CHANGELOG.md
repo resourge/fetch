@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/resourge/fetch/compare/v1.19.0...v1.20.0) (2023-10-09)
+
+
+### Features
+
+* **add loadingfallback and change loadingsuspense:** add suspense to loadingsuspense ([5acff9b](https://github.com/resourge/fetch/commit/5acff9bc855544bc2df16cc4345d8b7fc6e541b6))
+
 # [1.19.0](https://github.com/resourge/fetch/compare/v1.18.0...v1.19.0) (2023-10-03)
 
 
