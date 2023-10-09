@@ -8,7 +8,9 @@ export type Interceptors<Config, Error = any> = {
 	on: (config: Config) => Config
 }
 
-export type InterceptorOnRequest = (config: RequestConfig) => RequestConfig;
+export type InterceptorRequestConfig = Omit<RequestConfig, 'headers'> & Required<Pick<RequestConfig, 'headers'>>
+
+export type InterceptorOnRequest = (config: InterceptorRequestConfig) => InterceptorRequestConfig;
 export type InterceptorOnRequestError = (error: FetchError) => any;
 
 type InterceptorRequest = {

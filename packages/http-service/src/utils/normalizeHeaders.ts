@@ -1,7 +1,7 @@
 import { FetchError } from '../errors/FetchError';
 import { type RequestConfig } from '../types/RequestConfig';
 
-import { type InterceptorOnRequest, type Interceptor } from './Interceptors';
+import { type InterceptorOnRequest, type Interceptor, type InterceptorRequestConfig } from './Interceptors';
 import { isBrowser, isURLSameOrigin, readCookie } from './utils';
 
 const xsrfCookieName = 'XSRF-TOKEN';
@@ -22,10 +22,11 @@ export const normalizeCookies = (config: RequestConfig) => {
 	}
 }
 
-export const normalizeHeaders = (config: RequestConfig) => {
-	const _config: RequestConfig = {
+export const normalizeHeaders = (config: RequestConfig): InterceptorRequestConfig => {
+	// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+	const _config: InterceptorRequestConfig = {
 		...config
-	};
+	} as InterceptorRequestConfig;
 
 	_config.headers = _config.headers ?? {}
 
@@ -90,7 +91,7 @@ export const normalizeRequest = (
 	interceptors: Interceptor
 ) => {
 	try {
-		let _config: RequestConfig = normalizeHeaders(config)
+		let _config = normalizeHeaders(config)
 
 		if (
 			config.url.protocol && !permittedProtocols.includes(config.url.protocol)
