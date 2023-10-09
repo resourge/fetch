@@ -42,7 +42,7 @@ export const normalizeHeaders = (config: RequestConfig): InterceptorRequestConfi
 }
 
 export const normalizeBody = (
-	config: RequestConfig
+	config: InterceptorRequestConfig
 ) => {
 	if ( config.data ) {
 		if ( 
@@ -63,10 +63,14 @@ export const normalizeBody = (
 			) {
 				return config.data
 			}
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			if ( !config.headers!['content-type'] ) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				config.headers!['content-type'] = 'application/json'
+
+			const key = Object.keys(config.headers).find((key) => key.toLowerCase() === 'content-type');
+			if ( key ) {
+				config.headers['Content-Type'] = config.headers[key];
+			}
+			
+			if ( !config.headers['Content-Type'] ) {
+				config.headers['Content-Type'] = 'application/json'
 			}
 
 			return JSON.stringify(config.data);
