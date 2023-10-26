@@ -103,9 +103,9 @@ export const normalizeRequest = (
 	try {
 		let _config = normalizeHeaders(config)
 
-		config.url = createUrl(config.url, baseUrl)
+		_config.url = createUrl(_config.url, baseUrl)
 
-		config.url.searchParams.sort();
+		_config.url.searchParams.sort();
 
 		if (
 			config.url.protocol && !permittedProtocols.includes(config.url.protocol)
