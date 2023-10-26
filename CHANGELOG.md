@@ -1,3 +1,15 @@
+# [1.21.0](https://github.com/resourge/fetch/compare/v1.20.1...v1.21.0) (2023-10-26)
+
+
+### Bug Fixes
+
+* **basehttpservice:** fix BaseHttpService request when config has getter only ([ed35fe7](https://github.com/resourge/fetch/commit/ed35fe7ac397d678a1f7c07c5d1edb62a997b4db))
+
+
+### Features
+
+* **normalizebody:** normalize content-type to fix miss matchs ([e5e4b8e](https://github.com/resourge/fetch/commit/e5e4b8e66ad4d84d18cf1e532b921a6b042dba7d))
+
 ## [1.20.1](https://github.com/resourge/fetch/compare/v1.20.0...v1.20.1) (2023-10-09)
 
 
