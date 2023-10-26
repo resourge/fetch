@@ -1,3 +1,10 @@
+## [1.21.2](https://github.com/resourge/fetch/compare/v1.21.1...v1.21.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **normalieheaders:** change normalizeHeaders location ([67a58ed](https://github.com/resourge/fetch/commit/67a58edf725d3752e3bf2369fceba41b839a12b9))
+
 ## [1.21.1](https://github.com/resourge/fetch/compare/v1.21.0...v1.21.1) (2023-10-26)
 
 
