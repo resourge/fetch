@@ -2,7 +2,12 @@ import { FetchError } from '../errors/FetchError';
 import { type RequestConfig } from '../types/RequestConfig';
 
 import { type InterceptorOnRequest, type Interceptor, type InterceptorRequestConfig } from './Interceptors';
-import { isBrowser, isURLSameOrigin, readCookie } from './utils';
+import {
+	createUrl,
+	isBrowser,
+	isURLSameOrigin,
+	readCookie
+} from './utils'
 
 const xsrfCookieName = 'XSRF-TOKEN';
 const xsrfHeaderName = 'X-XSRF-TOKEN';
@@ -92,10 +97,15 @@ const permittedProtocols = ['http:', 'https:', 'file:'];
 export const normalizeRequest = (
 	config: NormalizeRequestConfig,
 	setToken: InterceptorOnRequest,
-	interceptors: Interceptor
+	interceptors: Interceptor,
+	baseUrl: string
 ) => {
 	try {
 		let _config = normalizeHeaders(config)
+
+		config.url = createUrl(config.url, baseUrl)
+
+		config.url.searchParams.sort();
 
 		if (
 			config.url.protocol && !permittedProtocols.includes(config.url.protocol)

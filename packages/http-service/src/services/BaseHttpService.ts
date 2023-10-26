@@ -121,14 +121,11 @@ export abstract class BaseHttpService {
 	}
 
 	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
-		config.url = createUrl(config.url, this.baseUrl)
-
-		config.url.searchParams.sort();
-
 		const _config = normalizeRequest(
 			config as NormalizeRequestConfig,
 			this._setToken,
-			this.interceptors
+			this.interceptors,
+			this.baseUrl
 		);
 
 		const request = new Request(_config.url, _config);
@@ -170,7 +167,9 @@ export abstract class BaseHttpService {
 			QueueKingSystem.send(controller)
 		}
 
-		const threshold = (QueueKingSystem.isThresholdEnabled ?? config?.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) ? (config?.threshold ?? this.defaultConfig.threshold) : 0;
+		const threshold = (QueueKingSystem.isThresholdEnabled ?? config?.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) 
+			? (config?.threshold ?? this.defaultConfig.threshold) 
+			: 0;
 
 		const _config: NormalizeRequestConfig = {
 			...config,

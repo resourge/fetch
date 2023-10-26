@@ -50,6 +50,7 @@ const GlobalLoader: React.FC<GlobalLoaderProps> = ({
 							alignItems: 'center',
 							backgroundColor: 'rgba(0,0,0,0.25)',
 							zIndex: 10000,
+							WebkitBackdropFilter: 'blur(3px)',
 							backdropFilter: 'blur(3px)',
 							...style
 						}}
