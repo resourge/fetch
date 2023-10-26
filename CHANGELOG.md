@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/resourge/fetch/compare/v1.21.0...v1.21.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **normalizeheaders:** continue fix from previous commit ([ffb176a](https://github.com/resourge/fetch/commit/ffb176acd28042486c8e5c0c4d3954ff9d9774ee))
+
 # [1.21.0](https://github.com/resourge/fetch/compare/v1.20.1...v1.21.0) (2023-10-26)
 
 
