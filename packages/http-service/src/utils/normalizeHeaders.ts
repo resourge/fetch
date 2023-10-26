@@ -27,23 +27,16 @@ export const normalizeCookies = (config: RequestConfig) => {
 	}
 }
 
-export const normalizeHeaders = (config: RequestConfig): InterceptorRequestConfig => {
-	// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-	const _config: InterceptorRequestConfig = {
-		...config
-	} as InterceptorRequestConfig;
+export const normalizeHeaders = (config: InterceptorRequestConfig) => {
+	config.headers = config.headers ?? {}
 
-	_config.headers = _config.headers ?? {}
-
-	if ( !_config.headers.accept ) {
-		_config.headers.accept = 'application/json, text/plain, */*'
+	if ( !config.headers.accept ) {
+		config.headers.accept = 'application/json, text/plain, */*'
 	}
 	
-	_config.cache = _config.cache ?? 'default';
+	config.cache = config.cache ?? 'default';
 
-	normalizeCookies(_config);
-
-	return _config;
+	normalizeCookies(config);
 }
 
 export const normalizeBody = (
@@ -101,11 +94,16 @@ export const normalizeRequest = (
 	baseUrl: string
 ) => {
 	try {
-		let _config = normalizeHeaders(config)
+		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+		let _config: InterceptorRequestConfig = {
+			...config
+		} as InterceptorRequestConfig;
 
-		_config.url = createUrl(_config.url, baseUrl)
+		_config.url = createUrl(config.url, baseUrl)
 
 		_config.url.searchParams.sort();
+		
+		normalizeHeaders(_config);
 
 		if (
 			config.url.protocol && !permittedProtocols.includes(config.url.protocol)
