@@ -1,3 +1,11 @@
+## [1.21.3](https://github.com/resourge/fetch/compare/v1.21.2...v1.21.3) (2023-10-27)
+
+
+### Bug Fixes
+
+* **http-service:** fix createURL regex not matching web url well ([efec75b](https://github.com/resourge/fetch/commit/efec75bb2a80e2cbee7345f38722441107df8a9e))
+* **utils:** fix URL_PATTERN for localhost cases ([eca0cac](https://github.com/resourge/fetch/commit/eca0cac502169500fede790befdcf9075e906ea1))
+
 ## [1.21.2](https://github.com/resourge/fetch/compare/v1.21.1...v1.21.2) (2023-10-26)
 
 
