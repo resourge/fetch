@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/resourge/fetch/compare/v1.21.3...v1.22.0) (2023-10-27)
+
+
+### Features
+
+* **httpservice:** make interceptors work async too ([90fc769](https://github.com/resourge/fetch/commit/90fc769625bd5edd43685cb78f2d25e226bb6127))
+
 ## [1.21.3](https://github.com/resourge/fetch/compare/v1.21.2...v1.21.3) (2023-10-27)
 
 
