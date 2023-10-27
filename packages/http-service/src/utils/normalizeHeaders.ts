@@ -87,7 +87,7 @@ const permittedProtocols = ['http:', 'https:', 'file:'];
  * @param config 
  * @param interceptors 
  */
-export const normalizeRequest = (
+export const normalizeRequest = async (
 	config: NormalizeRequestConfig,
 	setToken: InterceptorOnRequest,
 	interceptors: Interceptor,
@@ -111,11 +111,13 @@ export const normalizeRequest = (
 			throw new FetchError('Unsupported protocol ' + config.url.protocol);
 		}
 
-		_config = setToken(_config);
+		_config = await Promise.resolve(setToken(_config));
 
-		interceptors.request.values.forEach(({ onRequest }) => {
-			_config = onRequest(_config);
-		});
+		await Promise.all([
+			interceptors.request.values.map(async ({ onRequest }) => {
+				_config = await Promise.resolve(onRequest(_config));
+			})
+		]);
 		
 		(_config as RequestConfig & { body: RequestInit['body'] }).body = normalizeBody(_config)
 
@@ -123,11 +125,13 @@ export const normalizeRequest = (
 	}
 	catch (e) {
 		if ( e instanceof Error ) {
-			interceptors.request.values.forEach(({ onRequestError }) => {
-				if ( onRequestError ) {
-					onRequestError(FetchError.setFromError(e as any));
-				}
-			});
+			await Promise.all([
+				interceptors.request.values.map(async ({ onRequestError }) => {
+					if ( onRequestError ) {
+						await Promise.resolve(onRequestError(FetchError.setFromError(e as any)));
+					}
+				})
+			]);
 		}
 		throw e;
 	}

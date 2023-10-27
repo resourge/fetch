@@ -10,7 +10,7 @@ export type Interceptors<Config, Error = any> = {
 
 export type InterceptorRequestConfig = Omit<RequestConfig, 'headers'> & Required<Pick<RequestConfig, 'headers'>>
 
-export type InterceptorOnRequest = (config: InterceptorRequestConfig) => InterceptorRequestConfig;
+export type InterceptorOnRequest = (config: InterceptorRequestConfig) => InterceptorRequestConfig | Promise<InterceptorRequestConfig>;
 export type InterceptorOnRequestError = (error: FetchError) => any;
 
 type InterceptorRequest = {
@@ -24,7 +24,7 @@ type InterceptorRequest = {
 	}>
 }
 
-export type InterceptorOnResponse = <D>(data: HttpResponse<D>) => any
+export type InterceptorOnResponse = <D>(data: HttpResponse<D>) => any | Promise<any>
 export type InterceptorOnResponseError = <E = any>(config: HttpResponseError<E>) => Promise<HttpResponseError<E>>
 
 type InterceptorResponse = {

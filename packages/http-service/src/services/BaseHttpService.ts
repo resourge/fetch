@@ -120,8 +120,8 @@ export abstract class BaseHttpService {
 		this._setToken = cb;
 	}
 
-	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
-		const _config = normalizeRequest(
+	public async request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
+		const _config = await normalizeRequest(
 			config as NormalizeRequestConfig,
 			this._setToken,
 			this.interceptors,
@@ -136,7 +136,7 @@ export abstract class BaseHttpService {
 			requestPromise = requestPromise.then(onResponse, onResponseError)
 		})
 
-		return requestPromise as Promise<R>;
+		return await requestPromise as R;
 	}
 
 	public get<T = any, R = HttpResponse<T>>(url: string): Promise<R>;
