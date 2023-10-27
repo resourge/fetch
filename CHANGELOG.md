@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/resourge/fetch/compare/v1.22.0...v1.23.0) (2023-10-27)
+
+
+### Features
+
+* **httpresponse:** add config ([dd4a7d4](https://github.com/resourge/fetch/commit/dd4a7d4e6bb02054e1f996d2405d4a26d20ca49e))
+
 # [1.22.0](https://github.com/resourge/fetch/compare/v1.21.3...v1.22.0) (2023-10-27)
 
 
