@@ -84,7 +84,8 @@ export abstract class BaseHttpService {
 				new HttpResponseError(
 					'Network Error',
 					request,
-					e
+					e,
+					config
 				)
 			)
 		}
@@ -100,7 +101,8 @@ export abstract class BaseHttpService {
 				response.statusText,
 				request,
 				response,
-				data
+				data,
+				config
 			);
 		}
 
@@ -109,6 +111,7 @@ export abstract class BaseHttpService {
 				response.statusText,
 				request,
 				data,
+				config,
 				response.status,
 				response
 			)
@@ -130,7 +133,7 @@ export abstract class BaseHttpService {
 
 		const request = new Request(_config.url, _config);
 
-		let requestPromise = this.generatePromise(request, config);
+		let requestPromise = this.generatePromise(request, _config);
 
 		this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
 			requestPromise = requestPromise.then(onResponse, onResponseError)
