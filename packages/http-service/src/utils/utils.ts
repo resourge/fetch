@@ -45,7 +45,7 @@ export const isURLSameOrigin = ((): (url: string | URL) => boolean => {
 	return () => true
 })()
 
-const URL_PATTERN = /^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/
+const URL_PATTERN = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
 
 /**
  * Return an url. In case it doesn't have origin/domain/host it will use baseUrl.
