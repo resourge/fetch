@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/resourge/fetch/compare/v1.23.1...v1.24.0) (2023-11-03)
+
+
+### Features
+
+* **normalizeheaders:** make sure all method are uppercase to fix bug with patch method ([5eb1604](https://github.com/resourge/fetch/commit/5eb1604beb4d7cf59d93f958bee315af32e9b4fa))
+
 ## [1.23.1](https://github.com/resourge/fetch/compare/v1.23.0...v1.23.1) (2023-11-03)
 
 
