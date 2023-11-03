@@ -99,7 +99,7 @@ export const normalizeRequest = async (
 			...config
 		} as InterceptorRequestConfig;
 
-		_config.method = config.method;
+		_config.method = config.method.toUpperCase();
 
 		_config.url = createUrl(config.url, baseUrl)
 
