@@ -115,11 +115,11 @@ export const normalizeRequest = async (
 
 		_config = await Promise.resolve(setToken(_config));
 
-		await Promise.all([
+		await Promise.all(
 			interceptors.request.values.map(async ({ onRequest }) => {
 				_config = await Promise.resolve(onRequest(_config));
 			})
-		]);
+		);
 		
 		(_config as RequestConfig & { body: RequestInit['body'] }).body = normalizeBody(_config)
 
