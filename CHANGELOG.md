@@ -1,3 +1,10 @@
+## [1.23.1](https://github.com/resourge/fetch/compare/v1.23.0...v1.23.1) (2023-11-03)
+
+
+### Bug Fixes
+
+* **normalizeheaders:** fix request interceptor ([b4dff6b](https://github.com/resourge/fetch/commit/b4dff6bb59c7ba7386f2fe708202a3cc730cf64c))
+
 # [1.23.0](https://github.com/resourge/fetch/compare/v1.22.0...v1.23.0) (2023-10-27)
 
 
