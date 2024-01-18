@@ -123,11 +123,6 @@ export abstract class BaseHttpService {
 		this._setToken = cb;
 	}
 
-	protected _convertParamsToQueryString: <K extends object | any[]>(params: K) => URLSearchParams = convertParamsToQueryString;
-	public setConvertParamsToQueryString(cb: typeof convertParamsToQueryString) {
-		this._convertParamsToQueryString = cb;
-	}
-
 	public async request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
 		const _config = await normalizeRequest(
 			config as NormalizeRequestConfig,
@@ -156,7 +151,7 @@ export abstract class BaseHttpService {
 		const _url = createUrl(url, this.baseUrl);
 
 		if ( params ) {
-			const urlSearchParams = this._convertParamsToQueryString(params);
+			const urlSearchParams = convertParamsToQueryString(params);
 
 			urlSearchParams.sort();
 

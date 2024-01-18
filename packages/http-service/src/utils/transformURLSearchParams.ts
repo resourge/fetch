@@ -44,9 +44,12 @@ const convertValue = (key: string, value: any): any[] => {
 	if ( Array.isArray(value) ) {
 		return transformURLSearchParamsFromArray(value, key)
 	}
-	if ( typeof value === 'object' ) {
+	if ( value && typeof value === 'object' ) {
 		return transformURLSearchParamsFromObject(value, key)
-	}	
+	}
+	if ( value == null ) {
+		return []
+	}
 
 	return [key, value]
 }
