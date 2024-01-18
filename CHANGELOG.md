@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/resourge/fetch/compare/v1.24.0...v1.25.0) (2024-01-18)
+
+
+### Features
+
+* **add _convertparamstoquery set:** add _convertParamsToQuery setter ([7046416](https://github.com/resourge/fetch/commit/704641679be05e8d5be096e053126676ea70f449))
+
 # [1.24.0](https://github.com/resourge/fetch/compare/v1.23.1...v1.24.0) (2023-11-03)
 
 
