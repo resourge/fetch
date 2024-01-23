@@ -1,3 +1,10 @@
+## [1.25.2](https://github.com/resourge/fetch/compare/v1.25.1...v1.25.2) (2024-01-23)
+
+
+### Bug Fixes
+
+* **upload method for formdatakey:** added custom formdatakey for upload request ([f31a938](https://github.com/resourge/fetch/commit/f31a9385f80e33512f7a14eb99a27948de1266e0))
+
 ## [1.25.1](https://github.com/resourge/fetch/compare/v1.25.0...v1.25.1) (2024-01-18)
 
 
