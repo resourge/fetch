@@ -29,6 +29,7 @@ const convertModelToFormData = <K>(model: K, formData: FormData, namespace: stri
  * Convert model to formData.
  * @param files {Files}
  * @param model {any}
+ * @param formDataKey {string} - formData key (default: 'formFiles')
  */
 export const formatToFormData = <K>(files: File[], model: K, formDataKey?: string): FormData => {
 	const formData: FormData = new FormData();
