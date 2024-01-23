@@ -255,13 +255,14 @@ export abstract class BaseHttpService {
 		url: string,
 		files: File[],
 		data?: K,
-		config?: Omit<MethodConfig, 'method'>
+		config?: Omit<MethodConfig, 'method'>,
+		formDataKey?: string
 	): Promise<R> {
 		const _config: RequestConfig = {
 			...config,
 			method,
 			url,
-			data: formatToFormData(files, data)
+			data: formatToFormData(files, data, formDataKey)
 		}
 
 		return this.request<T, R>(_config);

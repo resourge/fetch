@@ -30,12 +30,12 @@ const convertModelToFormData = <K>(model: K, formData: FormData, namespace: stri
  * @param files {Files}
  * @param model {any}
  */
-export const formatToFormData = <K>(files: File[], model: K): FormData => {
+export const formatToFormData = <K>(files: File[], model: K, formDataKey?: string): FormData => {
 	const formData: FormData = new FormData();
 
 	if ( files && files.length ) {
 		files.forEach((file: File) => {
-			formData.append('formFiles', file);
+			formData.append(formDataKey ?? 'formFiles', file);
 		});
 	}
 
