@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import mergeDirs from 'recursive-copy';
 
-async function getFiles(dir: string): Promise<string[]> {
+async function getFiles(dir) {
 	const dirFiles = await fs.promises.readdir(dir, {
 		withFileTypes: true 
 	});
@@ -35,7 +35,7 @@ async function getFiles(dir: string): Promise<string[]> {
 
 			const mat = content.match(/import (.*) from '.*http-service\/.*';/g) ?? [];
 
-			const contentImports: any[] = [];
+			const contentImports = [];
 
 			if ( mat.length && !fileName.includes('.js.map')) {
 				const firstIndex = content.indexOf(mat[0] || '')
@@ -43,7 +43,7 @@ async function getFiles(dir: string): Promise<string[]> {
 				mat
 				.forEach((found) => {
 					const matImports = (found.match(/import\s(.*)\sfrom/g) ?? [])
-					.map((matImport: any) => {
+					.map((matImport) => {
 						matImport = matImport.replace('import ', '')
 						matImport = matImport.replace(' from', '')
 						matImport = matImport.replace('{ ', '')
@@ -60,14 +60,14 @@ async function getFiles(dir: string): Promise<string[]> {
 				})
 
 				const newHttpService = contentImports
-				.filter((imp, index, arr: any[]) => arr.findIndex((val) => val === imp) === index)
+				.filter((imp, index, arr) => arr.findIndex((val) => val === imp) === index)
 				.flat()
 				.join(', ');
 
 				content = content.slice(0, firstIndex) + `import { ${newHttpService} } from '@resourge/http-service';` + content.slice(firstIndex);
 			}
 
-			return await fs.promises.writeFile(fileName, content, 'utf-8')
+			await fs.promises.writeFile(fileName, content, 'utf-8');
 		})
 	)
 })();

@@ -1,104 +1,104 @@
 {
-  "name": "@resourge/fetch",
-  "description": "This is a set of small packages aiming to simplify the pagination process.",
-  "private": false,
-  "version": "0.0.0-development",
-  "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
-  "keywords": [
-    "javascript",
-    "fetch",
-    "api",
-    "throttle",
-    "react",
-    "hooks",
-    "react-fetch"
-  ],
-  "files": [
-    "dist"
-  ],
-  "author": "resourge",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/resourge/fetch.git"
-  },
-  "scripts": {
-    "commit": "git pull && git add . && git-cz",
-    "lint": "eslint \"./src/**/*.{ts,tsx}\"",
-    "lint:prod": "cross-env NODE_ENV=production npm run lint",
-    "dev": "vite",
-    "build:vite": "vite build",
-    "injectBannerIntoDeclarations": "ts-node-esm ./scripts/injectBannerIntoDeclarations.ts",
-    "fixReactFetch": "ts-node-esm ./scripts/fixReactFetch.ts",
-    "build": "rollup -c",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "coverage": "vitest run --coverage",
-    "semantic-release": "semantic-release"
-  },
-  "peerDependencies": {
-    "react": ">=17.0.0"
-  },
-  "dependencies": {
-    "use-sync-external-store": "^1.2.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.22.20",
-    "@babel/preset-react": "^7.22.15",
-    "@babel/preset-typescript": "^7.23.0",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-node-resolve": "^15.2.1",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/exec": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
-    "@testing-library/jest-dom": "^6.1.3",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.5.1",
-    "@types/jest": "^29.5.5",
-    "@types/react": "^18.2.23",
-    "@types/react-dom": "^18.2.8",
-    "@types/react-native": "^0.72.3",
-    "@types/use-sync-external-store": "^0.0.4",
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@vitejs/plugin-react": "^4.1.0",
-    "babel-plugin-dev-expression": "^0.2.3",
-    "cross-env": "^7.0.3",
-    "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^8.50.0",
-    "eslint-config-standard-with-typescript": "^39.1.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-import-newlines": "^1.3.4",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-n": "^16.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-testing-library": "^6.0.2",
-    "eslint-plugin-typescript-sort-keys": "^3.0.0",
-    "fast-glob": "^3.3.1",
-    "jsdom": "^22.1.0",
-    "minimist": "^1.2.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "recursive-copy": "^2.0.14",
-    "rollup": "^3.29.3",
-    "rollup-plugin-filesize": "^10.0.0",
-    "rollup-plugin-shell": "^1.0.9",
-    "semantic-release": "^22.0.5",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.5",
-    "vite": "^4.4.9",
-    "vite-plugin-checker": "^0.6.2",
-    "vite-tsconfig-paths": "^4.2.1",
-    "vitest": "^0.34.3"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  }
+	"name": "@resourge/fetch",
+	"description": "This is a set of small packages aiming to simplify the pagination process.",
+	"private": false,
+	"version": "0.0.0-development",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"keywords": [
+		"javascript",
+		"fetch",
+		"api",
+		"throttle",
+		"react",
+		"hooks",
+		"react-fetch"
+	],
+	"files": [
+		"dist"
+	],
+	"author": "resourge",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/resourge/fetch.git"
+	},
+	"scripts": {
+		"commit": "git pull && git add . && git-cz",
+		"lint": "eslint \"./src/**/*.{ts,tsx}\"",
+		"lint:prod": "cross-env NODE_ENV=production npm run lint",
+		"dev": "vite",
+		"build:vite": "vite build",
+		"injectBannerIntoDeclarations": "node ./scripts/injectBannerIntoDeclarations.js",
+		"fixReactFetch": "node ./scripts/fixReactFetch.js",
+		"build": "rollup -c",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"coverage": "vitest run --coverage",
+		"semantic-release": "semantic-release"
+	},
+	"peerDependencies": {
+		"react": ">=17.0.0"
+	},
+	"dependencies": {
+		"use-sync-external-store": "^1.2.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.23.0",
+		"@babel/preset-env": "^7.22.20",
+		"@babel/preset-react": "^7.22.15",
+		"@babel/preset-typescript": "^7.23.0",
+		"@rollup/plugin-babel": "^6.0.3",
+		"@rollup/plugin-node-resolve": "^15.2.1",
+		"@semantic-release/changelog": "^6.0.3",
+		"@semantic-release/exec": "^6.0.3",
+		"@semantic-release/git": "^10.0.1",
+		"@testing-library/jest-dom": "^6.1.3",
+		"@testing-library/react": "^14.0.0",
+		"@testing-library/user-event": "^14.5.1",
+		"@types/jest": "^29.5.5",
+		"@types/react": "^18.2.23",
+		"@types/react-dom": "^18.2.8",
+		"@types/react-native": "^0.72.3",
+		"@types/use-sync-external-store": "^0.0.4",
+		"@typescript-eslint/eslint-plugin": "^6.7.3",
+		"@vitejs/plugin-react": "^4.1.0",
+		"babel-plugin-dev-expression": "^0.2.3",
+		"cross-env": "^7.0.3",
+		"cz-conventional-changelog": "^3.3.0",
+		"eslint": "^8.50.0",
+		"eslint-config-standard-with-typescript": "^39.1.0",
+		"eslint-plugin-import": "^2.28.1",
+		"eslint-plugin-import-newlines": "^1.3.4",
+		"eslint-plugin-jsx-a11y": "^6.7.1",
+		"eslint-plugin-n": "^16.1.0",
+		"eslint-plugin-promise": "^6.1.1",
+		"eslint-plugin-react": "^7.33.2",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"eslint-plugin-testing-library": "^6.0.2",
+		"eslint-plugin-typescript-sort-keys": "^3.0.0",
+		"fast-glob": "^3.3.1",
+		"jsdom": "^22.1.0",
+		"minimist": "^1.2.8",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"recursive-copy": "^2.0.14",
+		"rollup": "^3.29.3",
+		"rollup-plugin-filesize": "^10.0.0",
+		"rollup-plugin-shell": "^1.0.9",
+		"semantic-release": "^22.0.5",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.9.5",
+		"vite": "^4.4.9",
+		"vite-plugin-checker": "^0.6.2",
+		"vite-tsconfig-paths": "^4.2.1",
+		"vitest": "^0.34.3"
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
+	}
 }

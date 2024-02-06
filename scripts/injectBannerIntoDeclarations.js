@@ -4,7 +4,7 @@ import path from 'path';
 
 const myArgs = minimist(process.argv.slice(2));
 
-async function getFiles(dir: string): Promise<string[]> {
+async function getFiles(dir) {
 	const dirFiles = await fs.promises.readdir(dir, {
 		withFileTypes: true 
 	});
@@ -22,7 +22,7 @@ async function getFiles(dir: string): Promise<string[]> {
 		declarationFiles.map(async (fileName) => {
 			const content = await fs.promises.readFile(fileName, 'utf-8');
 
-			return await fs.promises.writeFile(fileName, [myArgs.text, content].join('\n'), 'utf-8')
+			await fs.promises.writeFile(fileName, [myArgs.text, content].join('\n'), 'utf-8');
 		})
 	)
 })();

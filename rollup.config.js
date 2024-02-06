@@ -206,7 +206,6 @@ export default function rollup() {
 		{
 			input: './empty.js',
 			plugins: [
-
 				execute({
 					commands: ['npm run fixReactFetch'],
 					sync: true,
