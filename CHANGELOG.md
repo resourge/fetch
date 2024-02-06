@@ -1,3 +1,10 @@
+## [1.25.3](https://github.com/resourge/fetch/compare/v1.25.2...v1.25.3) (2024-02-06)
+
+
+### Bug Fixes
+
+* **react-fetch:** fix build ([4560989](https://github.com/resourge/fetch/commit/4560989474584429c3ab7b9fb4e71f8a4c3c0b88))
+
 ## [1.25.2](https://github.com/resourge/fetch/compare/v1.25.1...v1.25.2) (2024-01-23)
 
 
