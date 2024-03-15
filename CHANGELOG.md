@@ -1,3 +1,10 @@
+## [1.25.5](https://github.com/resourge/fetch/compare/v1.25.4...v1.25.5) (2024-03-15)
+
+
+### Bug Fixes
+
+* **basehttpservice:** add .location to validation ([e532cfa](https://github.com/resourge/fetch/commit/e532cfa34b9d32d7ca9ff09ce8d2cf25816d9826))
+
 ## [1.25.4](https://github.com/resourge/fetch/compare/v1.25.3...v1.25.4) (2024-03-15)
 
 
