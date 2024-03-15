@@ -1,3 +1,10 @@
+## [1.25.4](https://github.com/resourge/fetch/compare/v1.25.3...v1.25.4) (2024-03-15)
+
+
+### Bug Fixes
+
+* **react-native:** fix useFetch not working on react-native ([45e1c81](https://github.com/resourge/fetch/commit/45e1c81372fc7acf6569e6b6b14d5a60aee84543))
+
 ## [1.25.3](https://github.com/resourge/fetch/compare/v1.25.2...v1.25.3) (2024-02-06)
 
 
