@@ -50,7 +50,7 @@ export type HttpServiceConfig = {
  * and the upload method.
  */
 export abstract class BaseHttpService {
-	public baseUrl: string = typeof globalThis.window !== 'undefined' && globalThis.window ? window.location.origin : '/';
+	public baseUrl: string = typeof globalThis.window !== 'undefined' && globalThis.window.location ? window.location.origin : '/';
 
 	/**
 	 * Default config of HttpService
