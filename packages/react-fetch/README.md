@@ -28,6 +28,16 @@ or NPM:
 npm install @resourge/react-fetch --save
 ```
 
+## React-native
+
+To use in react-native, it requires to use [react-native-url-polyfill](https://www.npmjs.com/package/react-native-url-polyfill)
+
+```Typescript
+// index.js
+// Add
+import 'react-native-url-polyfill/auto';
+```
+
 ## Usage
 
 ```JSX

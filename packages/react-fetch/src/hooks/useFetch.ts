@@ -178,14 +178,15 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const defaultConfig = getFetchDefaultConfig()
+	const _config: UseFetchEffectConfig = config ?? {};
 
-	const deps = (config as UseFetchEffectConfig)?.deps ?? [];
-	const onWindowFocus = (config as UseFetchStateConfig<Result>)?.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true;
-	const scrollRestoration = (config as UseFetchEffectConfig)?.scrollRestoration;
-	const useLoadingService = config?.useLoadingService ?? defaultConfig.useLoadingService;
-	const silent = config?.silent ?? defaultConfig.silent ?? false;
-	const noEmitError = config?.noEmitError ?? defaultConfig.noEmitError; 
-	const enable = config?.enable ?? defaultConfig.enable ?? true; 
+	const deps = _config.deps ?? [];
+	const onWindowFocus = (_config as UseFetchStateConfig<Result>).onWindowFocus ?? defaultConfig?.onWindowFocus ?? true;
+	const scrollRestoration = _config.scrollRestoration;
+	const useLoadingService = _config.useLoadingService ?? defaultConfig.useLoadingService;
+	const silent = _config.silent ?? defaultConfig.silent ?? false;
+	const noEmitError = _config.noEmitError ?? defaultConfig.noEmitError; 
+	const enable = _config.enable ?? defaultConfig.enable ?? true; 
 
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig<Result>)?.initialState,
@@ -272,7 +273,7 @@ export function useFetch<Result, T extends any[]>(
 			return await request(...(args ?? []) as T);
 		}
 		catch (e) {
-			if ( !(e instanceof DOMException && e.name === 'AbortError') ) {
+			if ( !(e && typeof e === 'object' && (e as { name: string }).name === 'AbortError') ) {
 				currentData.current = {
 					...currentData.current
 				}

@@ -67,6 +67,8 @@ async function getFiles(dir) {
 				content = content.slice(0, firstIndex) + `import { ${newHttpService} } from '@resourge/http-service';` + content.slice(firstIndex);
 			}
 
+			content = content.replace(/.js';/g, "';")
+
 			await fs.promises.writeFile(fileName, content, 'utf-8');
 		})
 	)

@@ -24,16 +24,16 @@ type InterceptorRequest = {
 	}>
 }
 
-export type InterceptorOnResponse = <D>(data: HttpResponse<D>) => any | Promise<any>
+export type InterceptorOnResponse<D> = (data: HttpResponse<D>) => any | Promise<any>
 export type InterceptorOnResponseError = <E = any>(config: HttpResponseError<E>) => Promise<HttpResponseError<E>>
 
 type InterceptorResponse = {
-	use: (
-		onResponse: InterceptorOnResponse,
+	use: <D>(
+		onResponse: InterceptorOnResponse<D>,
 		onResponseError?: InterceptorOnResponseError
 	) => () => void
 	values: Array<{
-		onResponse: InterceptorOnResponse
+		onResponse: InterceptorOnResponse<any>
 		onResponseError?: InterceptorOnResponseError
 	}>
 }
@@ -65,8 +65,8 @@ export class Interceptor {
 		}
 		this.response = {
 			values: [],
-			use: function (
-				onResponse: InterceptorOnResponse,
+			use: function <D>(
+				onResponse: InterceptorOnResponse<D>,
 				onResponseError?: InterceptorOnResponseError
 			) {
 				const obj = {
