@@ -47,8 +47,9 @@ export const normalizeBody = (
 			config.data instanceof FormData ||
 			config.data instanceof Blob ||
 			config.data instanceof URLSearchParams ||
-			config.data instanceof ArrayBuffer ||
-			config.data instanceof ReadableStream
+			config.data instanceof ArrayBuffer || (
+				globalThis.ReadableStream !== undefined && config.data instanceof ReadableStream
+			)
 		) {
 			return config.data
 		}
