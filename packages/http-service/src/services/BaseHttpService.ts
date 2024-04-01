@@ -10,7 +10,7 @@ import { createUrl } from '../utils/utils';
 
 import QueueKingSystem from './QueueKingSystem';
 
-export type MethodConfig = Omit<RequestConfig, 'url'> & {
+export type MethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 	method?: string
 }
 

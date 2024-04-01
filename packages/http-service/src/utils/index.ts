@@ -6,6 +6,7 @@ import type {
 	InterceptorOnResponse,
 	InterceptorOnResponseError
 } from './Interceptors'
+import { getCacheKey } from './getCacheKey'
 import { isBrowser } from './utils'
 
 export {
@@ -18,5 +19,7 @@ export {
 
 	isBrowser,
 	HttpResponse,
-	HttpResponseError
+	HttpResponseError,
+
+	getCacheKey
 }
