@@ -16,7 +16,13 @@
     "url": "https://github.com/resourge/fetch.git"
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "@react-native-community/netinfo": "*"
+  },
+  "peerDependenciesMeta": {
+    "@react-native-community/netinfo": {
+      "optional": true
+    }
   },
   "dependencies": {
     "use-sync-external-store": "^1.2.0",

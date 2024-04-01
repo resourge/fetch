@@ -10,6 +10,7 @@ import NotificationService from '../services/NotificationService';
 import { getFetchDefaultConfig } from '../utils/defaultConfig';
 import { useId } from '../utils/useIdShim';
 
+import { useIsOnline } from './useIsOnline/useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
 
 type UseFetchError = HttpResponseError | FetchError | Error | null | any
@@ -188,6 +189,7 @@ export function useFetch<Result, T extends any[]>(
 	const noEmitError = _config.noEmitError ?? defaultConfig.noEmitError; 
 	const enable = _config.enable ?? defaultConfig.enable ?? true; 
 
+	const isOnline = useIsOnline();
 	const currentData = useRef<State<Result>>({
 		data: (config as UseFetchStateConfig<Result>)?.initialState,
 		isLoading: isFetchEffect || isFetchEffectWithData,
@@ -330,7 +332,7 @@ export function useFetch<Result, T extends any[]>(
 
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			if ( enable ) {
+			if ( enable && isOnline ) {
 				QueueKingSystem.isThresholdEnabled = true;
 
 				const _config = (config as UseFetchEffectConfig);
@@ -350,7 +352,7 @@ export function useFetch<Result, T extends any[]>(
 				});
 			}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, deps)
+		}, [isOnline, ...deps])
 
 		// This is to make sure onFocus will only trigger if the hook commands the data,
 		// Otherwise it can lead to errors

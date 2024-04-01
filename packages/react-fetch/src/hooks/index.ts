@@ -6,11 +6,13 @@ import type {
 	UseFetchStateConfig
 } from './useFetch'
 import { useFetchOnDependencyUpdate } from './useFetchOnDependencyUpdate';
+import { useIsOnline } from './useIsOnline/useIsOnline';
 import { useScrollRestoration } from './useScrollRestoration';
 
 export {
 	type UseFetchConfig, type UseFetchEffect, type UseFetchEffectConfig, type UseFetchStateConfig,
 	useFetch,
 	useScrollRestoration,
-	useFetchOnDependencyUpdate
+	useFetchOnDependencyUpdate,
+	useIsOnline
 }
