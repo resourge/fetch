@@ -1,3 +1,17 @@
+# [1.26.0](https://github.com/resourge/fetch/compare/v1.25.6...v1.26.0) (2024-04-01)
+
+
+### Bug Fixes
+
+* **basehttpservice:** small fix and tweaks ([372c43e](https://github.com/resourge/fetch/commit/372c43e7ca31f1207579fd822f71ad3854ea6622))
+* **getcachekey:** add headers to cache key for get method ([f0a5012](https://github.com/resourge/fetch/commit/f0a5012cfe8bc89a58769c2dcd01c161415e4b81))
+
+
+### Features
+
+* **usefetch:** add some functions to add functionality ([2c772cd](https://github.com/resourge/fetch/commit/2c772cd80b4b3e38edf79e0ea10e8b2268922044))
+* **useisonline:** add useIsOnline for react and react-native ([4ca7bea](https://github.com/resourge/fetch/commit/4ca7bea90094b66b286ec02ed1b5e1589748c52e))
+
 ## [1.25.6](https://github.com/resourge/fetch/compare/v1.25.5...v1.25.6) (2024-04-01)
 
 
