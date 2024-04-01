@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import NetInfo from '@react-native-community/netinfo';
 
-let globalState = false;
+let globalState = true;
 
 NetInfo.fetch()
 .then((state) => {
@@ -14,7 +14,7 @@ export const useIsOnline = () => {
 
 	useEffect(() => {
 		const remove = NetInfo.addEventListener((state) => {
-			setIsConnected(Boolean(state.isConnected));
+			setIsConnected(state.isConnected === true);
 		})
 
 		return () => {

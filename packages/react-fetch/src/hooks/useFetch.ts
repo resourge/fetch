@@ -86,9 +86,9 @@ export type UseFetchEffectConfig = UseFetchConfig & {
 	*/
 	initialState?: never
 	/**
-	 * Trigger when deps change
-	 */
-	onDepsChange?: () => void
+	* Function that executes only on useEffect finally
+	*/
+	onEffectEnd?: () => void
 	/**
 	 * Serves to restore scroll position
 	 */
@@ -99,7 +99,11 @@ export type UseFetchStateConfig<T> = Omit<UseFetchEffectConfig, 'initialState'> 
 	/**
 	* Default data values.
 	*/
-	initialState: T
+	initialState: T | (() => T)
+	/**
+	* On Data Change
+	*/
+	onDataChange?: (value: T) => void
 	/**
 	 * Fetch on window focus
 	 * @default true when initialState is defined.
@@ -179,24 +183,32 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const defaultConfig = getFetchDefaultConfig()
-	const _config: UseFetchEffectConfig = config ?? {};
+	const _config: UseFetchStateConfig<Result> = (config ?? {}) as UseFetchStateConfig<Result>;
 
-	const deps = _config.deps ?? [];
-	const onWindowFocus = (_config as UseFetchStateConfig<Result>).onWindowFocus ?? defaultConfig?.onWindowFocus ?? true;
-	const scrollRestoration = _config.scrollRestoration;
 	const useLoadingService = _config.useLoadingService ?? defaultConfig.useLoadingService;
-	const silent = _config.silent ?? defaultConfig.silent ?? false;
-	const noEmitError = _config.noEmitError ?? defaultConfig.noEmitError; 
-	const enable = _config.enable ?? defaultConfig.enable ?? true; 
 
 	const isOnline = useIsOnline();
 	const currentData = useRef<State<Result>>({
-		data: (config as UseFetchStateConfig<Result>)?.initialState,
+		data: (
+			typeof _config.initialState === 'function' 
+				? '_function_initial_state_' 
+				: _config.initialState
+		) as Result,
 		isLoading: isFetchEffect || isFetchEffectWithData,
 		error: null
 	});
 
+	if ( 
+		_config.initialState && 
+		typeof _config.initialState === 'function' && 
+		currentData.current.data === '_function_initial_state_' 
+	) {
+		currentData.current.data = (_config.initialState as () => Result)();
+	}
+
 	const setLoading = (isLoading: boolean) => { 
+		const silent = _config.silent ?? defaultConfig.silent ?? false;
+
 		if ( useLoadingService ) {
 			if ( !silent ) {
 				if ( Array.isArray(useLoadingService) ) {
@@ -231,6 +243,8 @@ export function useFetch<Result, T extends any[]>(
 			data
 		}
 
+		_config.onDataChange && _config.onDataChange(data)
+
 		NotificationService.notify(id);
 	}
 
@@ -259,6 +273,8 @@ export function useFetch<Result, T extends any[]>(
 					...currentData.current,
 					data
 				}
+
+				_config.onDataChange && _config.onDataChange(data)
 			}
 
 			return data;
@@ -279,7 +295,7 @@ export function useFetch<Result, T extends any[]>(
 				currentData.current = {
 					...currentData.current
 				}
-				if ( !noEmitError ) {
+				if ( !(_config.noEmitError ?? defaultConfig.noEmitError) ) {
 					currentData.current.error = e;
 				}
 			}
@@ -319,10 +335,8 @@ export function useFetch<Result, T extends any[]>(
 		}
 	);
 
-	const _isLoading = useLoadingService ? false : currentData.current.isLoading;
-
 	const result: any = {
-		isLoading: _isLoading,
+		isLoading: useLoadingService ? false : currentData.current.isLoading,
 		error: currentData.current.error,
 		fetch
 	};
@@ -332,27 +346,25 @@ export function useFetch<Result, T extends any[]>(
 
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			if ( enable && isOnline ) {
+			if ( (_config.enable ?? defaultConfig.enable ?? true) && isOnline ) {
 				QueueKingSystem.isThresholdEnabled = true;
-
-				const _config = (config as UseFetchEffectConfig);
-				_config.onDepsChange && _config.onDepsChange();
 				
 				result.fetch()
 				.finally(() => {
-					if ( scrollRestoration ) {
-						if ( Array.isArray(scrollRestoration) ) {
-							scrollRestoration.forEach((method) => {
+					if ( _config.scrollRestoration ) {
+						if ( Array.isArray(_config.scrollRestoration) ) {
+							_config.scrollRestoration.forEach((method) => {
 								method(); 
 							});
 							return;
 						}
-						scrollRestoration();
+						_config.scrollRestoration();
 					}
+					_config.onEffectEnd && _config.onEffectEnd();
 				});
 			}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [isOnline, ...deps])
+		}, [isOnline, ...(_config.deps ?? [])])
 
 		// This is to make sure onFocus will only trigger if the hook commands the data,
 		// Otherwise it can lead to errors
@@ -363,7 +375,7 @@ export function useFetch<Result, T extends any[]>(
 					await (noLoadingFetch as () => Promise<any>)();
 					NotificationService.notify(id);
 				},
-				onWindowFocus
+				_config.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true
 			);
 
 			result.data = currentData.current.data;
