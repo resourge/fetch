@@ -1,3 +1,10 @@
+# [1.28.0](https://github.com/resourge/fetch/compare/v1.27.0...v1.28.0) (2024-04-02)
+
+
+### Features
+
+* **usefetch:** add the current state to the method inserted in useFetch ([0332a23](https://github.com/resourge/fetch/commit/0332a23dc4789e477b1b18bf8c551ec72e704529))
+
 # [1.27.0](https://github.com/resourge/fetch/compare/v1.26.0...v1.27.0) (2024-04-02)
 
 
