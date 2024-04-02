@@ -1,3 +1,10 @@
+# [1.27.0](https://github.com/resourge/fetch/compare/v1.26.0...v1.27.0) (2024-04-02)
+
+
+### Features
+
+* **usefetch:** add ability to change useFetch id ([e77dd35](https://github.com/resourge/fetch/commit/e77dd355d6c9c676144fc64aa5a85c31180e5037))
+
 # [1.26.0](https://github.com/resourge/fetch/compare/v1.25.6...v1.26.0) (2024-04-01)
 
 
