@@ -82,6 +82,10 @@ export type UseFetchEffectConfig = UseFetchConfig & {
 	 */
 	deps?: readonly any[]
 	/**
+	* Fetch id
+	*/
+	id?: string
+	/**
 	* Default data values.
 	*/
 	initialState?: never
@@ -170,7 +174,6 @@ export function useFetch<Result, T extends any[]>(
 	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig<Result>
 ): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
 	const controllers = useRef<Set<AbortController>>(new Set())
-	const id = useId();
 
 	let isFetchEffect = false;
 	let isFetchEffectWithData = false;
@@ -185,6 +188,9 @@ export function useFetch<Result, T extends any[]>(
 	const defaultConfig = getFetchDefaultConfig()
 	const _config: UseFetchStateConfig<Result> = (config ?? {}) as UseFetchStateConfig<Result>;
 
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	const id = _config?.id ?? useId();
+	
 	const useLoadingService = _config.useLoadingService ?? defaultConfig.useLoadingService;
 
 	const isOnline = useIsOnline();
