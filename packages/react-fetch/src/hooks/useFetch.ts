@@ -156,9 +156,10 @@ type State<T> = {
   );
 ```
  */
+type NoUndefinedField<T> = { [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>> };
 
 export function useFetch<Result, T extends any[]>(
-	method: (this: State<Result>, ...args: Partial<T>) => Promise<Result>,
+	method: (this: NoUndefinedField<State<Result>>, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchStateConfig<Result>
 ): UseFetchState<Result, T>
 export function useFetch<Result, T extends any[]>(
