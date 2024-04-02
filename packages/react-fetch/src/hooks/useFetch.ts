@@ -65,13 +65,9 @@ export type UseFetchConfig = {
 
 	/**
 	 * Instead of triggering a local loading, this make it so LoadingService does it.
-	 * When:
-	 * 	[true] - Will trigger GlobalLoading loading;
-	 *  [string] - Will trigger loaderId Loading ("<Loader loaderId="">") 
-	 *  [string[]] - Will trigger all loaderId Loading ("<Loader loaderId="">") 
 	 * @default undefined
 	 */
-	useLoadingService?: boolean | string | string[]
+	useLoadingService?: boolean
 }
 
 export type UseFetchEffectConfig = UseFetchConfig & {
@@ -216,31 +212,22 @@ export function useFetch<Result, T extends any[]>(
 	const setLoading = (isLoading: boolean) => { 
 		const silent = _config.silent ?? defaultConfig.silent ?? false;
 
-		if ( useLoadingService ) {
-			if ( !silent ) {
-				if ( Array.isArray(useLoadingService) ) {
-					useLoadingService.forEach((name) => {
-						// @ts-expect-error Its protected because I don't want it to be visible to others
-						LoadingService.setLoading(name, isLoading);
-					})
-	
-					return;
-				}
+		if ( !silent ) {
+			if ( useLoadingService ) {
 				// @ts-expect-error Its protected because I don't want it to be visible to others
 				LoadingService.setLoading(typeof useLoadingService === 'string' ? useLoadingService : '', isLoading)
 			}
-			if ( !isLoading ) {
-				NotificationService.notifyAll();
-			}
 		}
 		else {
-			if ( !silent ) {
-				currentData.current = {
-					...currentData.current,
-					isLoading
-				}
-				NotificationService.notifyAll();
+			currentData.current = {
+				...currentData.current,
+				isLoading
 			}
+			NotificationService.notifyAll();
+		}
+
+		if ( useLoadingService && !isLoading ) {
+			NotificationService.notifyAll();
 		}
 	}
 
@@ -257,12 +244,8 @@ export function useFetch<Result, T extends any[]>(
 
 	const controllerSystem = () => {
 		return QueueKingSystem.add(
-			(controller) => {
-				controllers.current.add(controller)
-			},
-			(controller) => {
-				controllers.current.delete(controller)
-			}
+			(controller) => controllers.current.add(controller),
+			(controller) => controllers.current.delete(controller)
 		)
 	}
 
