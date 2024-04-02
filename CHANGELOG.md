@@ -1,3 +1,10 @@
+## [1.28.1](https://github.com/resourge/fetch/compare/v1.28.0...v1.28.1) (2024-04-02)
+
+
+### Bug Fixes
+
+* **usefetch:** make useFetch with initialState have data not undefined ([ae3344d](https://github.com/resourge/fetch/commit/ae3344da92095607af9cbfb88ec50dc7000c3523))
+
 # [1.28.0](https://github.com/resourge/fetch/compare/v1.27.0...v1.28.0) (2024-04-02)
 
 
