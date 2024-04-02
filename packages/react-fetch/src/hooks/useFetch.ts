@@ -158,19 +158,19 @@ type State<T> = {
  */
 
 export function useFetch<Result, T extends any[]>(
-	method: (...args: Partial<T>) => Promise<Result>,
+	method: (this: State<Result>, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchStateConfig<Result>
 ): UseFetchState<Result, T>
 export function useFetch<Result, T extends any[]>(
-	method: (...args: Partial<T>) => Promise<Result>,
+	method: (this: State<Result>, ...args: Partial<T>) => Promise<Result>,
 	config: UseFetchEffectConfig
 ): UseFetchEffect<Result, T>
 export function useFetch<Result, T extends any[]>(
-	method: (...args: T) => Promise<Result>,
+	method: (this: State<Result>, ...args: T) => Promise<Result>,
 	config?: UseFetchConfig
 ): UseFetch<Result, T> 
 export function useFetch<Result, T extends any[]>(
-	method: ((...args: T) => Promise<Result>) | ((...args: Partial<T>) => Promise<Result>),
+	method: ((this: State<Result>, ...args: T) => Promise<Result>) | ((this: State<Result>, ...args: Partial<T>) => Promise<Result>),
 	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig<Result>
 ): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
 	const controllers = useRef<Set<AbortController>>(new Set())
@@ -269,7 +269,7 @@ export function useFetch<Result, T extends any[]>(
 		? async (...args: Partial<T>) => {
 			const remove = controllerSystem();
 
-			const data = await method(...(args ?? []) as T)
+			const data = await method.call(currentData.current, ...(args ?? []) as T)
 			.finally(() => {
 				remove();
 			});
@@ -287,7 +287,7 @@ export function useFetch<Result, T extends any[]>(
 		} : (...args: T): Promise<Result> => {
 			const remove = controllerSystem();
 
-			return method(...args).finally(() => {
+			return method.call(currentData.current, ...args).finally(() => {
 				remove()
 			});
 		}
