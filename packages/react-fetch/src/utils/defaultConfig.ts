@@ -1,11 +1,13 @@
 import { type UseFetchStateConfig } from '../hooks';
 
-export type FetchContextConfig = Omit<UseFetchStateConfig<any>, 'initialState' | 'deps' | 'scrollRestoration' | 'fetchId'>
+export type FetchContextConfig = Pick<
+	UseFetchStateConfig<any>, 
+	'loadingService'
+	| 'onWindowFocus'
+	| 'enable'
+>
 
-const defaultConfig: FetchContextConfig = {
-	useLoadingService: true,
-	noEmitError: true
-}
+const defaultConfig: FetchContextConfig = {}
 
 export function setFetchDefaultConfig(newDefaultConfig: FetchContextConfig) {
 	Object.entries(newDefaultConfig)

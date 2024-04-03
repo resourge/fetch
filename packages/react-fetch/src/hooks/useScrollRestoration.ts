@@ -60,12 +60,7 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 	});
 
 	useEffect(() => {
-		if ( action === 'pop' ) {
-			canRestore.current = true;
-		}
-		else {
-			canRestore.current = false;
-		}
+		canRestore.current = action === 'pop';
 	}, [action])
 
 	useEffect(() => {

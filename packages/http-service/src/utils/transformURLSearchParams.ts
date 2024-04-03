@@ -1,4 +1,4 @@
-export const transformURLSearchParamsFromArray = <K extends any[]>(
+const transformURLSearchParamsFromArray = <K extends any[]>(
 	params: K,
 	baseKey: string = ''
 ): any[] => {
@@ -19,7 +19,7 @@ export const transformURLSearchParamsFromArray = <K extends any[]>(
 	}, [])
 }
 
-export const transformURLSearchParamsFromObject = <K extends object>(
+const transformURLSearchParamsFromObject = <K extends object>(
 	params: K,
 	baseKey: string = ''
 ): any[] => {

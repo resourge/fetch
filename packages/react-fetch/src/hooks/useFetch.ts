@@ -52,22 +52,12 @@ export type UseFetchConfig = {
 	 * @default true
 	 */
 	enable?: boolean
-	/**
-	 * When false makes it so no error is emitted
-	 * @default false
-	 */
-	noEmitError?: boolean
-	/**
-	 * Doesn't trigger any Loading
-	 * @default false
-	 */
-	silent?: boolean
 
 	/**
-	 * Instead of triggering a local loading, this make it so LoadingService does it.
-	 * @default undefined
+	 * Instead of triggering global LoadingService, load a specific LoadingService.
+	 * @default string
 	 */
-	useLoadingService?: boolean
+	loadingService?: string
 }
 
 export type UseFetchEffectConfig = UseFetchConfig & {
@@ -140,7 +130,7 @@ type State<T> = {
           initialState: []
       }
   );
-  // Fetch without useEffect or with useEffect
+  // Fetch without useEffect
   // const {
   //    error,
   //    fetch,
@@ -187,10 +177,11 @@ export function useFetch<Result, T extends any[]>(
 
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const id = _config?.id ?? useId();
-	
-	const useLoadingService = _config.useLoadingService ?? defaultConfig.useLoadingService;
 
 	const isOnline = useIsOnline();
+
+	const isErrorUsedRef = useRef<boolean>(false);
+	const isLoadingUsedRef = useRef<boolean>(false);
 	const currentData = useRef<State<Result>>({
 		data: (
 			typeof _config.initialState === 'function' 
@@ -210,23 +201,19 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const setLoading = (isLoading: boolean) => { 
-		const silent = _config.silent ?? defaultConfig.silent ?? false;
-
-		if ( !silent ) {
-			if ( useLoadingService ) {
-				// @ts-expect-error Its protected because I don't want it to be visible to others
-				LoadingService.setLoading(typeof useLoadingService === 'string' ? useLoadingService : '', isLoading)
-			}
-		}
-		else {
+		if ( isLoadingUsedRef.current ) {
 			currentData.current = {
 				...currentData.current,
 				isLoading
 			}
-			NotificationService.notifyAll();
+		}
+		else {
+			const loadingService = _config.loadingService ?? defaultConfig.loadingService;
+			// @ts-expect-error Its protected because I don't want it to be visible to others
+			LoadingService.setLoading(loadingService, isLoading)
 		}
 
-		if ( useLoadingService && !isLoading ) {
+		if ( !isLoading ) {
 			NotificationService.notifyAll();
 		}
 	}
@@ -242,51 +229,41 @@ export function useFetch<Result, T extends any[]>(
 		NotificationService.notify(id);
 	}
 
-	const controllerSystem = () => {
-		return QueueKingSystem.add(
+	const request = async (...args: Partial<T>) => {
+		const remove = QueueKingSystem.add(
 			(controller) => controllers.current.add(controller),
 			(controller) => controllers.current.delete(controller)
-		)
-	}
+		);
 
-	const request = isFetchEffect 
-		? async (...args: Partial<T>) => {
-			const remove = controllerSystem();
+		const data = await method.call(currentData.current, ...(args ?? []) as T)
+		.finally(() => {
+			remove();
+		});
 
-			const data = await method.call(currentData.current, ...(args ?? []) as T)
-			.finally(() => {
-				remove();
-			});
-
-			if ( isFetchEffectWithData ) {
-				currentData.current = {
-					...currentData.current,
-					data
-				}
-
-				_config.onDataChange && _config.onDataChange(data)
+		if ( isFetchEffect && isFetchEffectWithData ) {
+			currentData.current = {
+				...currentData.current,
+				data
 			}
 
-			return data;
-		} : (...args: T): Promise<Result> => {
-			const remove = controllerSystem();
-
-			return method.call(currentData.current, ...args).finally(() => {
-				remove()
-			});
+			_config.onDataChange && _config.onDataChange(data)
 		}
+
+		return data;
+	}
 
 	const noLoadingFetch = async (...args: Partial<T>) => {
 		try {
 			return await request(...(args ?? []) as T);
 		}
 		catch (e) {
-			if ( !(e && typeof e === 'object' && (e as { name: string }).name === 'AbortError') ) {
+			if ( 
+				isErrorUsedRef.current &&
+				!(e && typeof e === 'object' && (e as { name: string }).name === 'AbortError')
+			) {
 				currentData.current = {
-					...currentData.current
-				}
-				if ( !(_config.noEmitError ?? defaultConfig.noEmitError) ) {
-					currentData.current.error = e;
+					...currentData.current,
+					error: e
 				}
 			}
 			return await Promise.reject(e);
@@ -307,8 +284,8 @@ export function useFetch<Result, T extends any[]>(
 			setLoading(false);
 		}
 	}
-	const fetchRef = useRef<() => any>(() => {});
 
+	const fetchRef = useRef<() => any>(() => {});
 	fetchRef.current = () => {}
 
 	useSyncExternalStoreWithSelector(
@@ -326,8 +303,16 @@ export function useFetch<Result, T extends any[]>(
 	);
 
 	const result: any = {
-		isLoading: useLoadingService ? false : currentData.current.isLoading,
-		error: currentData.current.error,
+		get isLoading() {
+			isLoadingUsedRef.current = true;
+
+			return currentData.current.isLoading
+		},
+		get error() {
+			isErrorUsedRef.current = true;
+
+			return currentData.current.error
+		},
 		fetch
 	};
 
@@ -363,7 +348,7 @@ export function useFetch<Result, T extends any[]>(
 			useOnFocusFetch(
 				async () => {
 					await (noLoadingFetch as () => Promise<any>)();
-					NotificationService.notify(id);
+					NotificationService.notifyAll();
 				},
 				_config.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true
 			);

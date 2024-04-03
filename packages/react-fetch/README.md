@@ -13,6 +13,7 @@ Provides useFetch, useScrollRestoration, FetchProvider, HttpService, LoadingServ
 - Centralize request into a unique place, with HttpService.
 - Together with @resourge/http-service it will also abort request on component unmount. (@resourge/http-service is not mandatory but otherwise this functionality will need the developer to do it)
 - Global, local components and LoadingService to centralize showing Loaders.
+- Online, it will make sure to request only when is online.
 
 ## Installation
 
@@ -48,8 +49,6 @@ import {
 } from '@resourge/react-fetch'
 
 function FooComponent() {
-  // const [products, fetch, isLoading, error] = useFetch(
-  // or
   const { data: products, isLoading, error } = useFetch(
 	() => {
       return // Axios/fetch/HttpService
@@ -84,42 +83,28 @@ export default App
 ## useFetch
 
 Hook to fetch and set data.
-It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch's.
-
+It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch's. <br />
+_Note: By default it will always try to trigger the Global loader, unless the isLoading is being used._ <br />
 `useFetch` has 2 modes.
  - When initialState is not set in the config, useEffect is simply a hook that returns a method that trigger's loading, error and the promise.
  - When initialState is set in the config, it will also do everything in the previous mode plus will trigger an useEffect and useOnFocusFetch and will also return `data`.
 
 ```JSX
-// Fetch with useEffect 
+// Fetch with useEffect and useState
 // const {
 //	data,
 //    error,
 //    fetch,
 //    isLoading,
-//    noLoadingFetch,
-//    setData
+//    setFetchState
 // } = useFetch(
 // or 
-const [data, fetch, error, isLoading] = useFetch(
+const { data, isLoading, error } = useFetch(
   async () => {
     return // Axios/fetch/HttpService
   }, 
   {
     initialState: []
-  }
-);
-// Fetch without useEffect, no data is returned or no useEffect will be triggered
-// const {
-//    error,
-//    fetch,
-//    isLoading,
-//    noLoadingFetch
-// } = useFetch(
-// or 
-const [fetch, error, isLoading] = useFetch(
-  async () => {
-    return // Axios/fetch/HttpService
   }
 );
 ```
@@ -131,9 +116,7 @@ const [fetch, error, isLoading] = useFetch(
 | **initialState** | `any` | true for useEffect trigger, otherwise no | Default data values. |
 | **deps** | `React.DependencyList` | false | useEffect dependencies. Basically works on useEffect dependencies. _Note: Only with initialState set_ |
 | **enable** | `boolean` | true | When false useEffect will not trigger fetch  |
-| **noEmitError** | `boolean` | false | When false makes it so no error is emitted.  |
-| **silent** | `boolean` | false | Doesn't trigger any Loading. (default: false) |
-| **useLoadingService** | `boolean, string or string[]` | false | Instead of triggering a local loading, this make it so LoadingService does it. [see more](#useLoadingService) |
+| **loadingService** | `string | undefined` | undefined | Instead of triggering global LoadingService, load a specific LoadingService. [see more](#LoadingService) |
 | **onWindowFocus** | `boolean` | false | Fetch on window focus (default: true). _Note: Only with initialState set_ |
 | **scrollRestoration** | `method or array of method` | false | Serves to restore scroll position. [see how its done](#scrollRestoration). _Note: Only with initialState set_ |
 
@@ -181,14 +164,19 @@ function App() {
 }
 ```
 
-#### useLoadingService
+#### LoadingService
 
-Instead of triggering a local loading, this make it so LoadingService does it.
-It can be a boolean, string or array of strings. <br />
+Instead of triggering global LoadingService, load a specific LoadingService. <br />
 When:
-*  true - Will trigger GlobalLoading loading;
-*  string - Will trigger loaderId Loading ("``` <Loader loaderId="">```") 
-*  string[] - Will trigger all loaderId Loading ("``` <Loader loaderId="">```") 
+*  string - Will trigger loaderId Loader ("``` <Loader loaderId="">```") 
+
+## useIsOnline
+
+`useIsOnline` is a hook that returns true or false depending on if there is internet.
+
+```JSX
+const isOnline = useIsOnline();
+```
 
 ## Loader
 
@@ -203,13 +191,13 @@ import {
 } from '@resourge/react-fetch'
 
 function Bar() {
-  const [data, fetch, error, isLoading] = useFetch(
+  const { data, isLoading, error } = useFetch(
     async () => {
       return // Axios/fetch/HttpService
     }, 
     {
       initialState: [],
-	  useLoadingService: "Loading one" // Will trigger Loader loaderId="Loading one"
+	  loadingService: "Loading one" // Will trigger Loader loaderId="Loading one"
     }
   );
 
@@ -249,13 +237,12 @@ import {
 } from '@resourge/react-fetch'
 
 function Foo() {
-  const [data, fetch, error, isLoading] = useFetch(
+  const { data: products, isLoading, error } = useFetch(
     async () => {
       return // Axios/fetch/HttpService
     }, 
     {
-      initialState: [],
-	  useLoadingService: true // Will trigger GlobalLoader
+      initialState: []
     }
   );
 

@@ -145,9 +145,9 @@ export abstract class BaseHttpService {
 	public get<T = any, R = HttpResponse<T>>(url: string): Promise<R>;
 	public get<T = any, R = HttpResponse<T>>(url: string, params: undefined, config: GetMethodConfig): Promise<R>;
 	public get<T = any, R = HttpResponse<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
-	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K): Promise<R>;
-	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params: K, config: GetMethodConfig): Promise<R>;
-	public get<T = any, K extends object | any[] = any, R = HttpResponse<T>>(url: string, params?: K, config?: GetMethodConfig): Promise<R> {
+	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params: P): Promise<R>;
+	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params: P, config: GetMethodConfig): Promise<R>;
+	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params?: P, config?: GetMethodConfig): Promise<R> {
 		const _url = createUrl(url, this.baseUrl);
 
 		if ( params ) {
@@ -190,9 +190,9 @@ export abstract class BaseHttpService {
 		);
 	}
 
-	public post<T = any, K = any, R = HttpResponse<T>>(
+	public post<T = any, R = HttpResponse<T>, D = any>(
 		url: string,
-		data?: K,
+		data?: D,
 		config?: MethodConfig
 	): Promise<R> {
 		const _config: RequestConfig = {
@@ -205,9 +205,9 @@ export abstract class BaseHttpService {
 		return this.request<T, R>(_config);
 	}
 
-	public put<T = any, K = any, R = HttpResponse<T>>(
+	public put<T = any, R = HttpResponse<T>, D = any>(
 		url: string,
-		data?: K,
+		data?: D,
 		config?: MethodConfig
 	): Promise<R> {
 		const _config: RequestConfig = {
@@ -220,9 +220,9 @@ export abstract class BaseHttpService {
 		return this.request<T, R>(_config);
 	}
 
-	public delete<T = any, K = any, R = HttpResponse<T>>(
+	public delete<T = any, R = HttpResponse<T>, D = any>(
 		url: string,
-		data?: K,
+		data?: D,
 		config?: MethodConfig
 	): Promise<R> {
 		const _config: RequestConfig = {
@@ -235,9 +235,9 @@ export abstract class BaseHttpService {
 		return this.request<T, R>(_config);
 	}
 
-	public patch<T = any, K = any, R = HttpResponse<T>>(
+	public patch<T = any, R = HttpResponse<T>, D = any>(
 		url: string,
-		data?: K,
+		data?: D,
 		config?: MethodConfig
 	): Promise<R> {
 		const _config: RequestConfig = {
@@ -250,11 +250,11 @@ export abstract class BaseHttpService {
 		return this.request<T, R>(_config);
 	}
 
-	public upload<T = any, K = any, R = HttpResponse<T>>(
+	public upload<T = any, R = HttpResponse<T>, D = any>(
 		method: 'POST' | 'PUT',
 		url: string,
 		files: File[],
-		data?: K,
+		data?: D,
 		config?: Omit<MethodConfig, 'method'>,
 		formDataKey?: string
 	): Promise<R> {

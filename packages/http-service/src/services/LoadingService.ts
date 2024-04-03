@@ -83,10 +83,7 @@ class LoadingService {
 	protected setLoading(loaderId: string = '', isLoading: boolean) {
 		const event = this.events.get(loaderId);
 		if ( event ) {
-			let {
-				nFetch, emits
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			} = event;
+			let { nFetch, emits } = event;
 
 			if ( isLoading ) {
 				if ( nFetch <= 0 ) {
