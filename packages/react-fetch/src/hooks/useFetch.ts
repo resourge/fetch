@@ -1,19 +1,16 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
-import { QueueKingSystem } from 'packages/http-service/src/index';
-
-import { LoadingService, type FetchError, type HttpResponseError } from '../../../http-service/src'
-import NotificationService from '../services/NotificationService';
+import { LoadingService, QueueKingSystem } from '../../../http-service/src';
+import NotificationService, { type State, type UseFetchError } from '../services/NotificationService';
 import { getFetchDefaultConfig } from '../utils/defaultConfig';
 import { useId } from '../utils/useIdShim';
 
-import { useIsOnline } from './useIsOnline/useIsOnline';
+import { useIsOnline } from './useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
-
-type UseFetchError = HttpResponseError | FetchError | Error | null | any
+import { useRefMemo } from './useRefMemo';
 
 type UseBaseFetch = {
 	error: UseFetchError
@@ -101,12 +98,6 @@ export type UseFetchStateConfig<T> = Omit<UseFetchEffectConfig, 'initialState'> 
 	onWindowFocus?: boolean
 }
 
-type State<T> = {
-	data: T | undefined
-	error: UseFetchError
-	isLoading: boolean
-}
-
 /**
  * Hook to fetch and set data.
  * It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
@@ -182,30 +173,12 @@ export function useFetch<Result, T extends any[]>(
 
 	const isErrorUsedRef = useRef<boolean>(false);
 	const isLoadingUsedRef = useRef<boolean>(false);
-	const currentData = useRef<State<Result>>({
-		data: (
-			typeof _config.initialState === 'function' 
-				? '_function_initial_state_' 
-				: _config.initialState
-		) as Result,
-		isLoading: isFetchEffect || isFetchEffectWithData,
-		error: null
-	});
-
-	if ( 
-		_config.initialState && 
-		typeof _config.initialState === 'function' && 
-		currentData.current.data === '_function_initial_state_' 
-	) {
-		currentData.current.data = (_config.initialState as () => Result)();
-	}
 
 	const setLoading = (isLoading: boolean) => { 
 		if ( isLoadingUsedRef.current ) {
-			currentData.current = {
-				...currentData.current,
+			NotificationService.setState(id, {
 				isLoading
-			}
+			});
 		}
 		else {
 			const loadingService = _config.loadingService ?? defaultConfig.loadingService;
@@ -219,14 +192,13 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const setFetchState = (data: Result) => {
-		currentData.current = {
-			...currentData.current,
+		NotificationService.setState(id, {
 			data
-		}
+		});
 
 		_config.onDataChange && _config.onDataChange(data)
 
-		NotificationService.notify(id);
+		NotificationService.notifyAll();
 	}
 
 	const request = async (...args: Partial<T>) => {
@@ -235,16 +207,15 @@ export function useFetch<Result, T extends any[]>(
 			(controller) => controllers.current.delete(controller)
 		);
 
-		const data = await method.call(currentData.current, ...(args ?? []) as T)
+		const data = await method.call(currentData, ...(args ?? []) as T)
 		.finally(() => {
 			remove();
-		});
+		})
 
 		if ( isFetchEffect && isFetchEffectWithData ) {
-			currentData.current = {
-				...currentData.current,
+			NotificationService.setState(id, {
 				data
-			}
+			});
 
 			_config.onDataChange && _config.onDataChange(data)
 		}
@@ -261,10 +232,12 @@ export function useFetch<Result, T extends any[]>(
 				isErrorUsedRef.current &&
 				!(e && typeof e === 'object' && (e as { name: string }).name === 'AbortError')
 			) {
-				currentData.current = {
-					...currentData.current,
-					error: e
-				}
+				NotificationService.setState(
+					id, 
+					{
+						error: e
+					}
+				);
 			}
 			return await Promise.reject(e);
 		}
@@ -286,32 +259,63 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const fetchRef = useRef<() => any>(() => {});
-	fetchRef.current = () => {}
 
-	useSyncExternalStoreWithSelector(
-		useCallback((a) => NotificationService.subscribe(id, a, () => fetchRef.current()), [id]),
-		() => currentData.current,
-		() => currentData.current,
-		(selection) => selection,
-		(previousState, newState) => {
+	const {
+		getSnapshot,
+		selector,
+		isEqual
+	} = useRefMemo(() => {
+		NotificationService.startNotification<Result>(
+			id, 
+			{
+				initialState: _config.initialState,
+				isFetchEffect,
+				isFetchEffectWithData,
+				request: () => fetchRef.current()
+			}
+		);
+
+		const getSnapshot = () => NotificationService.getData<Result>(id).data
+		const selector = (selection: State<Result>) => selection
+		const isEqual = (previousState: State<Result>, newState: State<Result>) => {
 			return (
 				`${String(previousState.isLoading)}` === `${String(newState.isLoading)}` &&
 				previousState.data === newState.data &&
 				previousState.error === newState.error
 			)
+		};
+
+		return {
+			getSnapshot,
+			selector,
+			isEqual
 		}
+	});
+
+	useEffect(() => {
+		return () => {
+			NotificationService.finishRequest(id); 
+		}
+	}, [id])
+
+	const currentData = useSyncExternalStoreWithSelector(
+		NotificationService.subscribe,
+		getSnapshot,
+		getSnapshot,
+		selector,
+		isEqual
 	);
 
 	const result: any = {
 		get isLoading() {
 			isLoadingUsedRef.current = true;
 
-			return currentData.current.isLoading
+			return currentData.isLoading
 		},
 		get error() {
 			isErrorUsedRef.current = true;
 
-			return currentData.current.error
+			return currentData.error
 		},
 		fetch
 	};
@@ -353,7 +357,7 @@ export function useFetch<Result, T extends any[]>(
 				_config.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true
 			);
 
-			result.data = currentData.current.data;
+			result.data = currentData.data;
 			result.setFetchState = setFetchState;
 		}
 	}
