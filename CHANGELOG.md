@@ -1,3 +1,10 @@
+## [1.29.1](https://github.com/resourge/fetch/compare/v1.29.0...v1.29.1) (2024-04-03)
+
+
+### Performance Improvements
+
+* **usefetch:** simplify code, change to use useSyncExternalStoreWithS lector to work better with id ([072f96a](https://github.com/resourge/fetch/commit/072f96aaf98501eb9fa8a68c03e7a5a4b491811c))
+
 # [1.29.0](https://github.com/resourge/fetch/compare/v1.28.1...v1.29.0) (2024-04-03)
 
 
