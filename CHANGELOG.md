@@ -1,3 +1,15 @@
+# [1.29.0](https://github.com/resourge/fetch/compare/v1.28.1...v1.29.0) (2024-04-03)
+
+
+### Features
+
+* **usefetch:** clear and improve code, and automate the use of LoadingService/isLoading and errors ([4bae799](https://github.com/resourge/fetch/commit/4bae799311934abfc408fde133230ee176d3f986))
+
+
+### Performance Improvements
+
+* **usefetch:** improve fetch function ([9aef2a0](https://github.com/resourge/fetch/commit/9aef2a04630a21d8f42cb0255bd880150d6bf3ce))
+
 ## [1.28.1](https://github.com/resourge/fetch/compare/v1.28.0...v1.28.1) (2024-04-02)
 
 
