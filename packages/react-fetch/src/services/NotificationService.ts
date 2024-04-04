@@ -39,9 +39,6 @@ const NotificationService = {
 	finishRequest(id: string) {
 		requestNotification.delete(id);
 	},
-	finishNotification(id: string) {
-		fetchData.delete(id);
-	},
 
 	startNotification<Result>(
 		id: string,
@@ -66,6 +63,9 @@ const NotificationService = {
 		);
 
 		return newNotification;
+	},
+	finishNotification(id: string) {
+		fetchData.delete(id);
 	},
 
 	getData<Result, >(

@@ -292,13 +292,6 @@ export function useFetch<Result, T extends any[]>(
 		}
 	});
 
-	useEffect(() => {
-		return () => {
-			NotificationService.finishRequest(id); 
-			NotificationService.finishNotification(id); 
-		}
-	}, [id])
-
 	const currentData = useSyncExternalStoreWithSelector(
 		NotificationService.subscribe,
 		getSnapshot,
@@ -365,6 +358,8 @@ export function useFetch<Result, T extends any[]>(
 
 	useEffect(() => {
 		return () => {
+			NotificationService.finishRequest(id); 
+			NotificationService.finishNotification(id); 
 			if ( controllers.current.size ) {
 				// eslint-disable-next-line react-hooks/exhaustive-deps
 				controllers.current.forEach((controller) => {
