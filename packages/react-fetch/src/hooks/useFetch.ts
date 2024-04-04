@@ -295,6 +295,7 @@ export function useFetch<Result, T extends any[]>(
 	useEffect(() => {
 		return () => {
 			NotificationService.finishRequest(id); 
+			NotificationService.finishNotification(id); 
 		}
 	}, [id])
 
