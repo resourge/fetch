@@ -1,3 +1,10 @@
+## [1.29.2](https://github.com/resourge/fetch/compare/v1.29.1...v1.29.2) (2024-04-04)
+
+
+### Bug Fixes
+
+* **notificationservice:** remove fetchData on useFetch unmount ([db8d9f5](https://github.com/resourge/fetch/commit/db8d9f50c1aac2b65a3ff24a2d4854d57931905d))
+
 ## [1.29.1](https://github.com/resourge/fetch/compare/v1.29.0...v1.29.1) (2024-04-03)
 
 
