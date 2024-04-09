@@ -1,3 +1,10 @@
+## [1.30.1](https://github.com/resourge/fetch/compare/v1.30.0...v1.30.1) (2024-04-09)
+
+
+### Bug Fixes
+
+* **usefetch:** fix on hotreload ([aa2b3eb](https://github.com/resourge/fetch/commit/aa2b3eb46f2a12343376354d71051c070950f043))
+
 # [1.30.0](https://github.com/resourge/fetch/compare/v1.29.3...v1.30.0) (2024-04-09)
 
 
