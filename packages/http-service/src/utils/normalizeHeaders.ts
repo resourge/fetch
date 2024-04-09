@@ -42,6 +42,11 @@ export const normalizeHeaders = (config: InterceptorRequestConfig) => {
 export const normalizeBody = (
 	config: InterceptorRequestConfig
 ) => {
+	const key = Object.keys(config.headers).find((key) => key.toLowerCase() === 'content-type');
+	if ( key ) {
+		config.headers['Content-Type'] = config.headers[key];
+	}
+
 	if ( config.data ) {
 		if ( 
 			config.data instanceof FormData ||
@@ -61,11 +66,6 @@ export const normalizeBody = (
 				config.data.byteOffset != null
 			) {
 				return config.data
-			}
-
-			const key = Object.keys(config.headers).find((key) => key.toLowerCase() === 'content-type');
-			if ( key ) {
-				config.headers['Content-Type'] = config.headers[key];
 			}
 			
 			if ( !config.headers['Content-Type'] ) {
