@@ -1,3 +1,15 @@
+## [1.29.3](https://github.com/resourge/fetch/compare/v1.29.2...v1.29.3) (2024-04-09)
+
+
+### Bug Fixes
+
+* **normalizeheaders:** fix Content-Type headers not working ([2874725](https://github.com/resourge/fetch/commit/2874725421551976fefe6a4d5a69d7966f9e4014))
+
+
+### Performance Improvements
+
+* **usefetch:** remove unnecessary code ([f69c95f](https://github.com/resourge/fetch/commit/f69c95f79329cd293d38832a0d2f721e621f5e1e))
+
 ## [1.29.2](https://github.com/resourge/fetch/compare/v1.29.1...v1.29.2) (2024-04-04)
 
 
