@@ -1,3 +1,10 @@
+# [1.30.0](https://github.com/resourge/fetch/compare/v1.29.3...v1.30.0) (2024-04-09)
+
+
+### Features
+
+* **basehttpservice:** add default headers to BaseHttpService ([95607e5](https://github.com/resourge/fetch/commit/95607e56173ddaa66f2bdc136876c14fb13cd617))
+
 ## [1.29.3](https://github.com/resourge/fetch/compare/v1.29.2...v1.29.3) (2024-04-09)
 
 
