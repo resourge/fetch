@@ -42,6 +42,7 @@ export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 
 export type HttpServiceConfig = {
 	baseUrl?: string
+	headers?: Record<string, string>
 }
 
 /**
@@ -50,7 +51,8 @@ export type HttpServiceConfig = {
  * and the upload method.
  */
 export abstract class BaseHttpService {
-	public baseUrl: string = typeof globalThis.window !== 'undefined' && globalThis.window.location ? window.location.origin : '/';
+	public baseUrl: string;
+	public defaultHeaders: Record<string, string>;
 
 	/**
 	 * Default config of HttpService
@@ -62,8 +64,12 @@ export abstract class BaseHttpService {
 
 	public interceptors = new Interceptor();
 
-	constructor(config?: HttpServiceConfig) {
-		this.baseUrl = config?.baseUrl ?? this.baseUrl;
+	constructor({ 
+		baseUrl = typeof globalThis.window !== 'undefined' && globalThis.window.location ? window.location.origin : '/',
+		headers = {}
+	}: HttpServiceConfig = {}) {
+		this.baseUrl = baseUrl;
+		this.defaultHeaders = headers;
 	}
 
 	private throttleRequest(
@@ -126,6 +132,7 @@ export abstract class BaseHttpService {
 	public async request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
 		const _config = await normalizeRequest(
 			config as NormalizeRequestConfig,
+			this.defaultHeaders,
 			this._setToken,
 			this.interceptors,
 			this.baseUrl
@@ -147,7 +154,8 @@ export abstract class BaseHttpService {
 	public get<T = any, R = HttpResponse<T>>(url: string, params: undefined, config?: GetMethodConfig): Promise<R>;
 	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params: P): Promise<R>;
 	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params: P, config: GetMethodConfig): Promise<R>;
-	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params?: P, config?: GetMethodConfig): Promise<R> {
+	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params: P, config?: GetMethodConfig): Promise<R>;
+	public get<T = any, R = HttpResponse<T>, P extends object | any[] = any, >(url: string, params?: P, config: GetMethodConfig = {}): Promise<R> {
 		const _url = createUrl(url, this.baseUrl);
 
 		if ( params ) {
@@ -158,30 +166,26 @@ export abstract class BaseHttpService {
 			_url.search = urlSearchParams.toString();
 		}
 
-		if ( !config?.signal ) {
+		if ( !config.signal ) {
 			const controller = new AbortController();
-
-			if ( !config ) {
-				config = {}
-			}
 
 			config.signal = controller.signal;
 
 			QueueKingSystem.send(controller)
 		}
 
-		const threshold = (QueueKingSystem.isThresholdEnabled ?? config?.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) 
-			? (config?.threshold ?? this.defaultConfig.threshold) 
+		const threshold = (QueueKingSystem.isThresholdEnabled ?? config.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) 
+			? (config.threshold ?? this.defaultConfig.threshold) 
 			: 0;
 
 		const _config: NormalizeRequestConfig = {
 			...config,
-			method: config?.method ?? 'get',
+			method: config.method ?? 'get',
 			url: _url
 		}
 
 		// Get throttle cache key
-		const cacheKey = config?.throttleKey ?? getCacheKey(_config);
+		const cacheKey = config.throttleKey ?? getCacheKey(_config);
 
 		return this.throttleRequest(
 			cacheKey,
@@ -194,10 +198,15 @@ export abstract class BaseHttpService {
 		url: string,
 		data?: D,
 		config?: MethodConfig
+	): Promise<R>
+	public post<T = any, R = HttpResponse<T>, D = any>(
+		url: string,
+		data?: D,
+		config: MethodConfig = {}
 	): Promise<R> {
 		const _config: RequestConfig = {
 			...config,
-			method: config?.method ?? 'post',
+			method: config.method ?? 'post',
 			url,
 			data
 		}
@@ -209,10 +218,15 @@ export abstract class BaseHttpService {
 		url: string,
 		data?: D,
 		config?: MethodConfig
+	): Promise<R>
+	public put<T = any, R = HttpResponse<T>, D = any>(
+		url: string,
+		data?: D,
+		config: MethodConfig = {}
 	): Promise<R> {
 		const _config: RequestConfig = {
 			...config,
-			method: config?.method ?? 'put',
+			method: config.method ?? 'put',
 			url,
 			data
 		}
@@ -224,10 +238,15 @@ export abstract class BaseHttpService {
 		url: string,
 		data?: D,
 		config?: MethodConfig
+	): Promise<R>
+	public delete<T = any, R = HttpResponse<T>, D = any>(
+		url: string,
+		data?: D,
+		config: MethodConfig = {}
 	): Promise<R> {
 		const _config: RequestConfig = {
 			...config,
-			method: config?.method ?? 'delete',
+			method: config.method ?? 'delete',
 			url,
 			data
 		}
@@ -239,10 +258,15 @@ export abstract class BaseHttpService {
 		url: string,
 		data?: D,
 		config?: MethodConfig
+	): Promise<R>
+	public patch<T = any, R = HttpResponse<T>, D = any>(
+		url: string,
+		data?: D,
+		config: MethodConfig = {}
 	): Promise<R> {
 		const _config: RequestConfig = {
 			...config,
-			method: config?.method ?? 'patch',
+			method: config.method ?? 'patch',
 			url,
 			data
 		}
@@ -256,6 +280,14 @@ export abstract class BaseHttpService {
 		files: File[],
 		data?: D,
 		config?: Omit<MethodConfig, 'method'>,
+		formDataKey?: string
+	): Promise<R>
+	public upload<T = any, R = HttpResponse<T>, D = any>(
+		method: 'POST' | 'PUT',
+		url: string,
+		files: File[],
+		data?: D,
+		config: Omit<MethodConfig, 'method'> = {},
 		formDataKey?: string
 	): Promise<R> {
 		const _config: RequestConfig = {

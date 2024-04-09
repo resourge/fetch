@@ -27,8 +27,14 @@ export const normalizeCookies = (config: RequestConfig) => {
 	}
 }
 
-export const normalizeHeaders = (config: InterceptorRequestConfig) => {
-	config.headers = config.headers ?? {}
+export const normalizeHeaders = (
+	config: InterceptorRequestConfig, 
+	defaultHeaders: Record<string, string>
+) => {
+	config.headers = {
+		...defaultHeaders,
+		...(config.headers ?? {})
+	}
 
 	if ( !config.headers.accept ) {
 		config.headers.accept = 'application/json, text/plain, */*'
@@ -90,6 +96,7 @@ const permittedProtocols = ['http:', 'https:', 'file:'];
  */
 export const normalizeRequest = async (
 	config: NormalizeRequestConfig,
+	defaultHeaders: Record<string, string>,
 	setToken: InterceptorOnRequest,
 	interceptors: Interceptor,
 	baseUrl: string
@@ -106,7 +113,7 @@ export const normalizeRequest = async (
 
 		_config.url.searchParams.sort();
 		
-		normalizeHeaders(_config);
+		normalizeHeaders(_config, defaultHeaders);
 
 		if (
 			config.url.protocol && !permittedProtocols.includes(config.url.protocol)
