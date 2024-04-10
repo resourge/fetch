@@ -16,96 +16,52 @@ export type StateConfig<Result> = {
 	request: () => Promise<any>
 }
 
-type NotificationType<Result> = {
-	data: State<Result>
-	
+type NotificationType = {
+	notification: () => void
 	request: () => Promise<any>
 }
 
 const requestNotification = new Map<string, Promise<any>>();
-let notifications: Array<() => void> = [];
-const fetchData = new Map<string, NotificationType<any>>();
+const notifications = new Map<string, NotificationType>();
 
 const NotificationService = {
-
 	getRequest(id: string) {
 		return requestNotification.get(id);
 	},
-
 	startRequest(id: string, prom: Promise<any>) {
 		requestNotification.set(id, prom);
 	},
-
 	finishRequest(id: string) {
 		requestNotification.delete(id);
 	},
-
-	startNotification<Result>(
-		id: string,
-		stateConfig: StateConfig<Result>
-	) {
-		const newNotification: NotificationType<Result> = {
-			request: stateConfig.request,
-			data: {
-				data: (
-					typeof stateConfig.initialState === 'function' 
-						? (stateConfig.initialState as () => Result)()
-						: stateConfig.initialState
-				),
-				isLoading: stateConfig.isFetchEffect || stateConfig.isFetchEffectWithData,
-				error: null
+	
+	subscribe(id: string, request: () => Promise<any>) {
+		return (notification: () => void) => {
+			notifications.set(id, {
+				notification,
+				request
+			})
+			return () => {
+				notifications.delete(id)
 			}
 		};
-
-		fetchData.set(
-			id, 
-			newNotification
-		);
-
-		return newNotification;
 	},
-	finishNotification(id: string) {
-		fetchData.delete(id);
-	},
-
-	getData<Result, >(
-		id: string
-	): NotificationType<Result> {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		return fetchData.get(id)!;
-	},
-
-	setState(id: string, data: Partial<State<any>>) {
-		const notification = fetchData.get(id);
-
-		if ( notification ) {
-			notification.data = {
-				data: notification.data.data,
-				isLoading: notification.data.isLoading,
-				error: notification.data.error,
-				...data
-			}
-			fetchData.set(id, notification);
-		}
-	},
-	subscribe(notification: () => void) {
-		notifications = [...notifications, notification];
-		return () => {
-			notifications = notifications.filter(l => l !== notification);
-		};
-	},
-
 	notifyAll() {
 		if ( requestNotification.size === 0 ) {
-			notifications.forEach((notification) => {
+			notifications.forEach(({ notification }) => {
 				notification();
 			})
 		}
 	},
-
+	notifyById(id: string) {
+		const notification = notifications.get(id);
+		if ( notification ) {
+			notification.notification();
+		}
+	},
 	requestAllAgain(filter?: (id: string) => boolean) {
-		if ( fetchData.size ) {
-			fetchData.forEach(({ request }, key) => {
+		if ( notifications.size ) {
+			notifications.forEach(({ request }, key) => {
 				if ( !filter || filter(key) ) {
 					request();
 				}

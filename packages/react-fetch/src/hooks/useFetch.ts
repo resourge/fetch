@@ -176,9 +176,7 @@ export function useFetch<Result, T extends any[]>(
 
 	const setLoading = (isLoading: boolean) => { 
 		if ( isLoadingUsedRef.current ) {
-			NotificationService.setState(id, {
-				isLoading
-			});
+			currentDataRef.current.isLoading = isLoading;
 		}
 		else {
 			const loadingService = _config.loadingService ?? defaultConfig.loadingService;
@@ -192,9 +190,7 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const setFetchState = (data: Result) => {
-		NotificationService.setState(id, {
-			data
-		});
+		currentDataRef.current.data = data;
 
 		_config.onDataChange && _config.onDataChange(data)
 
@@ -207,15 +203,13 @@ export function useFetch<Result, T extends any[]>(
 			(controller) => controllers.current.delete(controller)
 		);
 
-		const data = await method.call(currentData, ...(args ?? []) as T)
+		const data = await method.call(currentDataRef.current, ...(args ?? []) as T)
 		.finally(() => {
 			remove();
 		})
 
 		if ( isFetchEffect && isFetchEffectWithData ) {
-			NotificationService.setState(id, {
-				data
-			});
+			currentDataRef.current.data = data;
 
 			_config.onDataChange && _config.onDataChange(data)
 		}
@@ -232,12 +226,7 @@ export function useFetch<Result, T extends any[]>(
 				isErrorUsedRef.current &&
 				!(e && typeof e === 'object' && (e as { name: string }).name === 'AbortError')
 			) {
-				NotificationService.setState(
-					id, 
-					{
-						error: e
-					}
-				);
+				currentDataRef.current.error = e;
 			}
 			return await Promise.reject(e);
 		}
@@ -260,22 +249,33 @@ export function useFetch<Result, T extends any[]>(
 
 	const fetchRef = useRef<() => any>(() => {});
 
-	const {
-		getSnapshot,
-		selector,
-		isEqual
-	} = useRefMemo(() => {
-		NotificationService.startNotification<Result>(
-			id, 
-			{
-				initialState: _config.initialState,
-				isFetchEffect,
-				isFetchEffectWithData,
-				request: () => fetchRef.current()
-			}
-		);
+	const currentDataRef = useRefMemo<State<Result>>(() => {
+		const { initialState } = _config;
+		return {
+			data: (
+				typeof initialState === 'function' 
+					? (initialState as () => Result)()
+					: initialState
+			),
+			isLoading: isFetchEffect || isFetchEffectWithData,
+			error: null
+		}
+	});
 
-		const getSnapshot = () => NotificationService.getData<Result>(id).data
+	const { 
+		current: {
+			subscribe,
+			getSnapshot,
+			selector,
+			isEqual
+		} 
+	} = useRefMemo(() => {
+		const subscribe = NotificationService.subscribe(id, () => fetchRef.current());
+		const getSnapshot = () => ({
+			data: currentDataRef.current.data,
+			isLoading: currentDataRef.current.isLoading,
+			error: currentDataRef.current.error
+		});
 		const selector = (selection: State<Result>) => selection
 		const isEqual = (previousState: State<Result>, newState: State<Result>) => {
 			return (
@@ -286,14 +286,15 @@ export function useFetch<Result, T extends any[]>(
 		};
 
 		return {
+			subscribe,
 			getSnapshot,
 			selector,
 			isEqual
 		}
 	});
 
-	const currentData = useSyncExternalStoreWithSelector(
-		NotificationService.subscribe,
+	useSyncExternalStoreWithSelector(
+		subscribe,
 		getSnapshot,
 		getSnapshot,
 		selector,
@@ -304,12 +305,12 @@ export function useFetch<Result, T extends any[]>(
 		get isLoading() {
 			isLoadingUsedRef.current = true;
 
-			return currentData.isLoading
+			return currentDataRef.current.isLoading
 		},
 		get error() {
 			isErrorUsedRef.current = true;
 
-			return currentData.error
+			return currentDataRef.current.error
 		},
 		fetch
 	};
@@ -351,7 +352,7 @@ export function useFetch<Result, T extends any[]>(
 				_config.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true
 			);
 
-			result.data = currentData.data;
+			result.data = currentDataRef.current.data;
 			result.setFetchState = setFetchState;
 		}
 	}
@@ -359,7 +360,6 @@ export function useFetch<Result, T extends any[]>(
 	useEffect(() => {
 		return () => {
 			NotificationService.finishRequest(id); 
-			NotificationService.finishNotification(id); 
 			if ( controllers.current.size ) {
 				// eslint-disable-next-line react-hooks/exhaustive-deps
 				controllers.current.forEach((controller) => {
