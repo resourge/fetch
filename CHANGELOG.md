@@ -1,3 +1,10 @@
+## [1.30.2](https://github.com/resourge/fetch/compare/v1.30.1...v1.30.2) (2024-04-10)
+
+
+### Bug Fixes
+
+* **usefetch:** fix useFetch hmr ([8980df2](https://github.com/resourge/fetch/commit/8980df2bd74e9d16c93d4e3bb50146553bb5decb))
+
 ## [1.30.1](https://github.com/resourge/fetch/compare/v1.30.0...v1.30.1) (2024-04-09)
 
 
