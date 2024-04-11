@@ -50,7 +50,7 @@ export type HttpServiceConfig = {
  * It's a simple wrapper on Fetch api, adding throttle to get's
  * and the upload method.
  */
-export abstract class BaseHttpService {
+export class BaseHttpService {
 	public baseUrl: string;
 	public defaultHeaders: Record<string, string>;
 
