@@ -133,7 +133,7 @@ const {
     return Http.get("url");
   },
   {
-	deps: []
+    deps: []
   }
 );
 ```
@@ -206,7 +206,7 @@ const {
   {
     initialState: [],
     // Optional, for triggering a specific loader other than the global
-	// loadingService: 'specificLoadingService' // This will trigger a 
+    // loadingService: 'specificLoadingService' // This will trigger a 
   }
 );
 ```
