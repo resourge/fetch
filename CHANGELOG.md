@@ -1,3 +1,10 @@
+## [1.30.3](https://github.com/resourge/fetch/compare/v1.30.2...v1.30.3) (2024-04-23)
+
+
+### Bug Fixes
+
+* **usefetch:** add enable to useEffetch deps ([b36a296](https://github.com/resourge/fetch/commit/b36a29614b60efb88677b79ab51d3513ea6d1232))
+
 ## [1.30.2](https://github.com/resourge/fetch/compare/v1.30.1...v1.30.2) (2024-04-10)
 
 
