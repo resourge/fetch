@@ -174,6 +174,19 @@ export function useFetch<Result, T extends any[]>(
 	const isErrorUsedRef = useRef<boolean>(false);
 	const isLoadingUsedRef = useRef<boolean>(false);
 
+	const currentDataRef = useRefMemo<State<Result>>(() => {
+		const { initialState } = _config;
+		return {
+			data: (
+				typeof initialState === 'function' 
+					? (initialState as () => Result)()
+					: initialState
+			),
+			isLoading: isFetchEffect || isFetchEffectWithData,
+			error: null
+		}
+	});
+
 	const setLoading = (isLoading: boolean) => { 
 		if ( isLoadingUsedRef.current ) {
 			currentDataRef.current.isLoading = isLoading;
@@ -249,19 +262,6 @@ export function useFetch<Result, T extends any[]>(
 
 	const fetchRef = useRef<() => any>(() => {});
 
-	const currentDataRef = useRefMemo<State<Result>>(() => {
-		const { initialState } = _config;
-		return {
-			data: (
-				typeof initialState === 'function' 
-					? (initialState as () => Result)()
-					: initialState
-			),
-			isLoading: isFetchEffect || isFetchEffectWithData,
-			error: null
-		}
-	});
-
 	const { 
 		current: {
 			subscribe,
@@ -318,9 +318,10 @@ export function useFetch<Result, T extends any[]>(
 	if ( isFetchEffect ) {
 		fetchRef.current = fetch;
 
+		const enable = (_config.enable ?? defaultConfig.enable ?? true);
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			if ( (_config.enable ?? defaultConfig.enable ?? true) && isOnline ) {
+			if ( enable && isOnline ) {
 				QueueKingSystem.isThresholdEnabled = true;
 				
 				result.fetch()
@@ -338,7 +339,7 @@ export function useFetch<Result, T extends any[]>(
 				});
 			}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [isOnline, ...(_config.deps ?? [])])
+		}, [isOnline, enable, ...(_config.deps ?? [])])
 
 		// This is to make sure onFocus will only trigger if the hook commands the data,
 		// Otherwise it can lead to errors
