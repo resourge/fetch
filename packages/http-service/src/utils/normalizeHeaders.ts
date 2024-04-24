@@ -1,7 +1,8 @@
 import { FetchError } from '../errors/FetchError';
 import { type RequestConfig } from '../types/RequestConfig';
 
-import { type InterceptorOnRequest, type Interceptor, type InterceptorRequestConfig } from './Interceptors';
+import { type HttpResponseConfig } from './HttpResponse';
+import { type InterceptorOnRequest, type Interceptor } from './Interceptors';
 import {
 	createUrl,
 	isBrowser,
@@ -28,7 +29,7 @@ export const normalizeCookies = (config: RequestConfig) => {
 }
 
 export const normalizeHeaders = (
-	config: InterceptorRequestConfig, 
+	config: HttpResponseConfig, 
 	defaultHeaders: Record<string, string>
 ) => {
 	config.headers = {
@@ -46,7 +47,7 @@ export const normalizeHeaders = (
 }
 
 export const normalizeBody = (
-	config: InterceptorRequestConfig
+	config: HttpResponseConfig
 ) => {
 	const key = Object.keys(config.headers).find((key) => key.toLowerCase() === 'content-type');
 	if ( key ) {
@@ -100,12 +101,12 @@ export const normalizeRequest = async (
 	setToken: InterceptorOnRequest,
 	interceptors: Interceptor,
 	baseUrl: string
-) => {
+): Promise<HttpResponseConfig> => {
 	try {
 		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-		let _config: InterceptorRequestConfig = {
+		let _config: HttpResponseConfig = {
 			...config
-		} as InterceptorRequestConfig;
+		} as HttpResponseConfig;
 
 		_config.method = config.method.toUpperCase();
 

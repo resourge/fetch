@@ -1,5 +1,9 @@
 import { type RequestConfig } from '../types';
 
+export type HttpResponseConfig = Omit<RequestConfig, 'url' | 'headers'> & {
+	url: URL
+} & Required<Pick<RequestConfig, 'headers'>>
+
 export class HttpResponse<T = any> {
 	constructor(
 		public status: number,
@@ -8,7 +12,7 @@ export class HttpResponse<T = any> {
 		public request: Request,
 		public response: Response,
 		public data: T,
-		public config: RequestConfig
+		public config: HttpResponseConfig
 	) {}
 }
 
@@ -18,7 +22,7 @@ export class HttpResponseError<T = any> {
 
 		public request: Request,
 		public data: T,
-		public config: RequestConfig,
+		public config: HttpResponseConfig,
 		public status?: number,
 		public response?: Response
 	) {}

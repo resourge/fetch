@@ -1,5 +1,5 @@
 import { type RequestConfig } from '../types/RequestConfig';
-import { HttpResponse, HttpResponseError } from '../utils/HttpResponse';
+import { HttpResponse, type HttpResponseConfig, HttpResponseError } from '../utils/HttpResponse';
 import { Interceptor, type InterceptorOnRequest } from '../utils/Interceptors';
 import { formatToFormData } from '../utils/formatToFormData';
 import { getCacheKey } from '../utils/getCacheKey';
@@ -80,7 +80,7 @@ export class BaseHttpService {
 		return throttlePromise(cacheKey, cb, threshold)
 	}
 
-	private async generatePromise(request: Request, config: RequestConfig) {
+	private async generatePromise(request: Request, config: HttpResponseConfig) {
 		let _response: Response
 		try {
 			_response = await fetch(request);

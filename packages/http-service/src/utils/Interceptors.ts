@@ -1,16 +1,13 @@
 import { type FetchError } from '../errors/FetchError'
-import { type RequestConfig } from '../types/RequestConfig'
 
-import { type HttpResponse, type HttpResponseError } from './HttpResponse'
+import { type HttpResponseConfig, type HttpResponse, type HttpResponseError } from './HttpResponse'
 
 export type Interceptors<Config, Error = any> = {
 	error: (error: Error) => Promise<Error>
 	on: (config: Config) => Config
 }
 
-export type InterceptorRequestConfig = Omit<RequestConfig, 'headers'> & Required<Pick<RequestConfig, 'headers'>>
-
-export type InterceptorOnRequest = (config: InterceptorRequestConfig) => InterceptorRequestConfig | Promise<InterceptorRequestConfig>;
+export type InterceptorOnRequest = (config: HttpResponseConfig) => HttpResponseConfig | Promise<HttpResponseConfig>;
 export type InterceptorOnRequestError = (error: FetchError) => any;
 
 type InterceptorRequest = {
