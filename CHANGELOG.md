@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/resourge/fetch/compare/v1.30.3...v1.31.0) (2024-04-24)
+
+
+### Features
+
+* **basehttpservice:** simplify response config type ([bf50b20](https://github.com/resourge/fetch/commit/bf50b201d579025286bc89fa996074073035d39c))
+
 ## [1.30.3](https://github.com/resourge/fetch/compare/v1.30.2...v1.30.3) (2024-04-23)
 
 
