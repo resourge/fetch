@@ -2,19 +2,23 @@
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-`react-fetch` is a lightweight and straightforward React package designed to simplify data fetching in React applications. It provides an intuitive way to make HTTP requests and manage the state of the data, loading, and errors within your components.
+`react-fetch` is a lightweight and straightforward react package designed to simplify data fetching in react applications. It provides an intuitive way to make HTTP requests and manage the state of the data, loading, and errors within your components.
 
 ## Table of Contents
 
 - [Installation](#installation)
-- [useFetch](#useFetch)
-- [useScrollRestoration](#useScrollRestoration)
-- [useFetchOnDependencyUpdate](#useFetchOnDependencyUpdate)
-- [useIsOnline](#useIsOnline)
+- [useFetch](#usefetch)
+- [usePagination](#usepagination)
+- [useInfiniteLoading](#useinfiniteloading)
+- [useScrollRestoration](#usescrollrestoration)
+- [useInfiniteScrollRestoration](#useinfinitescrollrestoration)
+- [useFetchOnDependencyUpdate](#usefetchondependencyupdate)
+- [useIsOnline](#useisonline)
 - [Loader Component](#loader)
-- [GlobalLoader Component](#globalLoader)
-- [LoadingFallback Component](#loadingFallback)
-- [LoadingSuspense Component](#loadingSuspense)
+- [GlobalLoader Component](#globalloader)
+- [LoadingFallback Component](#loadingfallback)
+- [LoadingSuspense Component](#loadingsuspense)
+- [RefreshControl Component](#refreshcontrol)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
@@ -46,14 +50,14 @@ import 'react-native-url-polyfill/auto';
 
 # useFetch
 
-`useFetch` is a custom React hook designed to simplify data fetching and state management within functional React components. It handles loading states, errors, data updates, and request aborting. This hook is particularly useful when working with APIs or fetching data from external sources.
+`useFetch` is a custom react hook designed to simplify data fetching and state management within functional react components. It handles loading states, errors, data updates, and request aborting. This hook is particularly useful when working with APIs or fetching data from external sources.
 
 ## Usage
 
-To use useFetch, import it into your React component:
+To use useFetch, import it into your react component:
 
 ```JSX
-import React from 'react'
+import react from 'react'
 
 import {
   useFetch
@@ -87,7 +91,7 @@ const MyComponent = () => {
 
 ### Parameters
 
-useFetch accepts two parameters:
+`useFetch` accepts two parameters:
 
 1. `method`: A function that performs the data fetching. It should return a Promise that resolves with the fetched data.
 2. `config`: An optional configuration object with the following properties:
@@ -212,9 +216,143 @@ const {
 );
 ```
 
+# usePagination
+
+`usePagination` is a custom react hook designed to facilitate managing pagination in react applications. It manages pagination, filtering, sorting, and data fetching, providing a seamless experience for handling large datasets. It's built on top of `useFetch`, so all configurations and methods are the same.
+
+## Usage
+
+```JSX
+import { usePagination } from '@resourge/react-fetch';
+
+const MyComponent = () => {
+  const { 
+    data,
+    isLoading,
+    error,
+    fetch,
+    changeItemsPerPage,
+    changePage,
+    resetPagination,
+    pagination
+  } = usePagination(
+    async (metadata) => {
+      // Implement your logic to fetch data based on metadata
+      const response = await Http.get("url");
+      return { data: response.data, totalItems: response.totalItems };
+    }, 
+    {
+      initialState: [],
+    }
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <div>
+      {/* Render data */}
+      <ul>
+        {data.map((item) => (
+          <li key={item.id}>{/* Render item */}</li>
+        ))}
+      </ul>
+
+      {/* Render loading indicator */}
+      {isLoading && <p>Loading...</p>}
+
+      {/* Render error message */}
+      {error && <p>Error: {error.message}</p>}
+
+      {/* Render pagination controls */}
+      <div>
+        <button onClick={() => changePage(0)}>First Page</button>
+        <button onClick={() => changePage(pagination.totalPages - 1)}>Last Page</button>
+        <button onClick={() => changeItemsPerPage(20)}>Show 20 Items/Page</button>
+      </div>
+
+      {/* Reset pagination */}
+      <button onClick={() => resetPagination()}>Reset Pagination</button>
+    </div>
+  );
+};
+
+export default MyComponent;
+```
+
+### Parameters
+
+`usePagination` accepts two parameters:
+
+1. `method`: A function that performs the data fetching. It should return a Promise that resolves with the fetched data.
+2. `config`: An configuration object with the following properties:
+	- `...config` (object): Same [`useFetch` Parameters](#parameters).
+	- `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
+	- `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
+	- `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
+
+# useInfiniteLoading
+
+`useInfiniteLoading` is a custom react hook designed to facilitate infinite loading in react applications. It manages pagination, filtering, sorting, and data fetching, providing a seamless experience for handling large datasets. It's built on top of `useFetch`, so all configurations and methods are the same.
+
+## Usage
+
+```JSX
+import { useInfiniteLoading } from '@resourge/react-fetch';
+
+const MyComponent = () => {
+  const { data, isLoading, error, loadMore, changeItemsPerPage } = useInfiniteLoading(
+    async (metadata) => {
+      // Implement your logic to fetch data based on metadata
+      const response = await Http.get("url");
+      return { data: response.data, totalItems: response.totalItems };
+    }, 
+    {
+      initialState: [],
+    }
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <div>
+      {data.map(item => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+      <button onClick={loadMore}>Load More</button>
+      <button onClick={() => changeItemsPerPage(20)}>Change Items Per Page</button>
+    </div>
+  );
+};
+
+export default MyComponent;
+```
+
+### Parameters
+
+`useInfiniteLoading` accepts two parameters:
+
+1. `method`: A function that performs the data fetching. It should return a Promise that resolves with the fetched data.
+2. `config`: An configuration object with the following properties:
+	- `...config` (object): Same [`useFetch` Parameters](#parameters).
+	- `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
+	- `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
+	- `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
+
 # useScrollRestoration
 
-`useScrollRestoration` is a custom React hook designed to restore scroll positions when navigating between pages or components. It helps maintain scroll positions and ensuring a seamless user experience.
+`useScrollRestoration` is a custom react hook designed to restore scroll positions when navigating between pages or components. It helps maintain scroll positions and ensuring a seamless user experience.
 
 ## Usage
 
@@ -245,7 +383,7 @@ const MyComponent = () => {
 ### Example
 
 ```Javascript
-import { useScrollRestoration } from '@resourge/react-fetch';
+import { useScrollRestoration, useFetch } from '@resourge/react-fetch';
 // or react-router
 import { useAction } from '@resourge/react-router';
 
@@ -280,9 +418,78 @@ In this example, `useScrollRestoration` is used to manage scroll restoration bas
 _Note: If you choose not to use the `ref` returned by `useScrollRestoration`, the system will use the global `window` `onScroll` event to handle scroll restoration._
 
 
+# useInfiniteScrollRestoration
+
+`useInfiniteScrollRestoration` is a custom react hook designed for restoring scroll positions in infinite scroll components within a react application. It enables seamless restoration of scroll positions when navigating back and forth between pages or components, enhancing the user experience.
+
+## Usage
+
+```javascript
+import { useInfiniteScrollRestoration } from '@resourge/react-fetch';
+
+const MyComponent = () => {
+  // 'action' must be 'pop' for restoration to work;
+  const [scrollRestore, ref, onScroll] = useInfiniteScrollRestoration('pop');
+
+  // Use scrollRestore, ref, and onScroll as needed
+
+  return (
+    <div ref={ref} onScroll={onScroll}>
+      {/* Your JSX */}
+    </div>
+  );
+};
+```
+
+### Parameters
+
+`useInfiniteScrollRestoration` accepts two parameters:
+
+1. `action`: A string specifying the action that triggers scroll restoration. Only `'pop'` will restore the scroll position.
+1. `scrollRestorationId`: An optional unique ID categorizing the current component. It defaults to `window.location.pathname` if not provided.
+
+### Example
+
+```Javascript
+import { useInfiniteScrollRestoration, useInfiniteLoading } from '@resourge/react-fetch';
+// or react-router
+import { useAction } from '@resourge/react-router';
+
+const MyComponent = () => {
+  // 'action' must be 'pop' for restoration to work;
+  const action = useAction();
+  const [scrollRestoration, ref, onScroll] = useInfiniteScrollRestoration(action);
+
+  // Fetch data and trigger scroll restoration
+  // 'scrollRestoration' is a function to restore scroll position
+  const { data, fetch, error } = useInfiniteLoading(
+    async (metadata) => {
+      // Implement your logic to fetch data based on metadata
+      const response = await Http.get("url");
+      return { data: response.data, totalItems: response.totalItems };
+    }, 
+    {
+      initialState: [],
+      scrollRestoration // Pass scrollRestoration to useFetch for scroll restoration
+    }
+  );
+
+  return (
+	// onScroll is optional because ref will do, but for cases where ref can't listen to onScroll the function does the job
+    <div ref={ref} onScroll={onScroll}>
+      {/* Your JSX */}
+    </div>
+  );
+};
+```
+
+In this example, `useInfiniteScrollRestoration` is used to manage scroll restoration based on the action parameter (which should be `'pop'` for restoration to work) and a unique `scrollRestorationId`. It provides a `scrollRestoration` function to restore scroll position and can be used in conjunction with other hooks like `useInfiniteLoading` for seamless scroll restoration during navigation.
+
+_Note: If you choose not to use the `ref` returned by `useScrollRestoration`, the system will use the global `window` `onScroll` event to handle scroll restoration._
+
 # useFetchOnDependencyUpdate
 
-`useFetchOnDependencyUpdate` is a custom React hook designed to trigger all `useFetch` requests in mounted components when specified dependencies change. It helps remove the need to manually update dependencies for each `useFetch` call, providing a centralized way to manage fetch requests based on common dependencies.
+`useFetchOnDependencyUpdate` is a custom react hook designed to trigger all `useFetch` requests in mounted components when specified dependencies change. It helps remove the need to manually update dependencies for each `useFetch` call, providing a centralized way to manage fetch requests based on common dependencies.
 
 ## Usage
 
@@ -332,7 +539,7 @@ const MyComponent = ({ userId }) => {
 
 # useIsOnline
 
-`useIsOnline` is a custom React hook designed to monitor the online status of the application. 
+`useIsOnline` is a custom react hook designed to monitor the online status of the application. 
 
 ### Example
 
@@ -356,7 +563,7 @@ In this example, `useIsOnline` is used to monitor the online status of the appli
 
 # Loader
 
-The `Loader` component is a React component designed to handle loading states within your application. It works in conjunction with `LoadingService` to provide a way for `useFetch` to display loading indicators based on there state.
+The `Loader` component is a react component designed to handle loading states within your application. It works in conjunction with `LoadingService` to provide a way for `useFetch` to display loading indicators based on there state.
 
 ## Props
 
@@ -366,7 +573,7 @@ The `Loader` component is a React component designed to handle loading states wi
 - Description: Unique id to distinguish the Loader from other loaders. When not specified, it is treated as a global loader. 
 
 `loadingElement` or `children`
-- Type: `React.ReactNode`
+- Type: `react.ReactNode`
 - Default: `globalLoading`
 - Description: The loading element to display when the `Loader` is in a loading state. This element will be shown instead of the `children` when `loading` is `true`. <br/>
 
@@ -375,7 +582,7 @@ The `Loader` component is a React component designed to handle loading states wi
 To use the `Loader` component, simply include it in your JSX with the desired `loaderId` and `loadingElement`:
 
 ```javascript
-import React from 'react';
+import react from 'react';
 import { Loader } from '@resourge/react-fetch';
 
 const MyComponent = () => {
@@ -396,7 +603,7 @@ In this example, the `Loader` component is used with a specific `loaderId` ("myL
 If you want to use the `Loader` component as the default loader (without a specific `loaderId`), simply omit the `loaderId` prop:
 
 ```javascript
-import React from 'react';
+import react from 'react';
 import { Loader } from '@resourge/react-fetch';
 
 const MyComponent = () => {
@@ -415,7 +622,7 @@ In this case, the `Loader` component will function as a global loader, meaning i
 
 # GlobalLoader
 
-The `GlobalLoader` component is a React component designed to display a global loading indicator on the entire page. It utilizes the `Loader` component and `createPortal` from React to render the loading element as an overlay on top of the page content.
+The `GlobalLoader` component is a react component designed to display a global loading indicator on the entire page. It utilizes the `Loader` component and `createPortal` from react to render the loading element as an overlay on top of the page content.
 
 ## Props
 
@@ -425,12 +632,12 @@ The `GlobalLoader` component is a React component designed to display a global l
 - Description: Unique id to distinguish the GlobalLoader from other loaders. - When not specified, it functions as a global loader covering the entire page.
 
 `style`
-- Type: `React.CSSProperties`
+- Type: `react.CSSProperties`
 - Default: `{}`
 - Description: Custom styles to apply to the global loading overlay.
 
 `children`
-- Type: `React.ReactNode`
+- Type: `react.ReactNode`
 - Default: `<GlobalLoading color={globalColor} />`
 - Description: The content to display within the global loading overlay. If not - provided, a default loading indicator will be used.
 
@@ -442,7 +649,7 @@ The `GlobalLoader` component is a React component designed to display a global l
 ## Usage
 
 ```javascript
-import React from 'react';
+import react from 'react';
 import { GlobalLoader } from '@resourge/react-fetch';
 
 const MyComponent = () => {
@@ -461,7 +668,7 @@ const MyComponent = () => {
 You can also provide custom loading content to the `GlobalLoader`:
 
 ```javascript
-import React from 'react';
+import react from 'react';
 import { GlobalLoader } from '@resourge/react-fetch';
 import CustomLoadingComponent from 'path/to/CustomLoadingComponent';
 
@@ -478,15 +685,14 @@ const MyComponent = () => {
 };
 ```
 
-
 # LoadingFallback
 
-The `LoadingFallback` component is a React component designed to show a loading indicator on mount and hide it on unmount. It utilizes the `LoadingService` from the `@resourge/http-service` package to manage the loading state.
+The `LoadingFallback` component is a react component designed to show a loading indicator on mount and hide it on unmount. It utilizes the `LoadingService` from the `@resourge/http-service` package to manage the loading state.
 
 ## Usage
 
 ```javascript
-import React from 'react';
+import react from 'react';
 import { LoadingFallback } from '@resourge/react-fetch';
 
 const MyComponent = () => {
@@ -504,15 +710,15 @@ In this example, the `LoadingFallback` component will display a loading indicato
 
 # LoadingSuspense
 
-The `LoadingSuspense` component is a React component designed to show a loading indicator when lazy-loaded components are being loaded. It utilizes React's `Suspense` component to handle the loading state and displays a `LoadingFallback` component as a fallback when the lazy components are loading.
+The `LoadingSuspense` component is a react component designed to show a loading indicator when lazy-loaded components are being loaded. It utilizes react's `Suspense` component to handle the loading state and displays a `LoadingFallback` component as a fallback when the lazy components are loading.
 
 ## Usage
 
 ```javascript
-import React from 'react';
+import react from 'react';
 import { LoadingSuspense } from '@resourge/react-fetch';
 
-const MyLazyComponent = React.lazy(() => import('./MyLazyComponent'));
+const MyLazyComponent = react.lazy(() => import('./MyLazyComponent'));
 
 const MyComponent = () => {
   return (
@@ -529,9 +735,52 @@ const MyComponent = () => {
 
 In this example, the `LoadingSuspense` component will display the `LoadingFallback` component while `MyLazyComponent` is being loaded lazily.
 
+# RefreshControl
+
+`RefreshControl` is a react component designed to facilitate the implementation of infinite scrolling behavior with refresh controls in react applications. It provides a convenient way to manage scroll detection and trigger data loading for infinite scroll components. _Note: Browse only, use FlatList for react-native_
+
+## Usage
+
+```tsx
+import { RefreshControl } from '@resourge/react-fetch';
+
+const MyComponent = ({ context }: { context: InfiniteLoadingReturn }) => {
+  return (
+    <RefreshControl
+      context={context}
+      detectionMargin="100%" // Optional: Set detection margin
+      renderComponent={({ isLastIncomplete, onClick }) => (
+        // Render your custom refresh control component here
+        <div>
+          <button onClick={onClick} disabled={!isLastIncomplete}>
+            Load More
+          </button>
+        </div>
+      )}
+    />
+  );
+};
+
+export default MyComponent;
+```
+
+## Props
+
+`context`
+- Type: `object`
+- Description: Containing the context data provided by the `useInfiniteLoading` hook.
+
+`renderComponent`
+- Type: `function`
+- Description: Renders the custom refresh control component. It receives props indicating whether the last page is incomplete and a function to trigger loading more data.
+
+`detectionMargin`
+- Type: `function`
+- Description: By default, it is set to '100%'. Specifies the detection margin for intersection observer. Can be adjusted to fine-tune scroll detection behavior.
+
 ## Documentation
 
-For comprehensive documentation and usage examples, visit the [React Fetch documentation](https://resourge.vercel.app/docs/fetch/intro).
+For comprehensive documentation and usage examples, visit the [react Fetch documentation](https://resourge.vercel.app/docs/fetch/intro).
 
 ## Contributing
 

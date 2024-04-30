@@ -14,3 +14,4 @@ export type {
 	Pagination, PaginationConfig, PaginationReturn 
 } from './usePagination';
 export { useScrollRestoration } from './useScrollRestoration/useScrollRestoration';
+export { useInfiniteScrollRestoration } from './useScrollRestoration/useInfiniteScrollRestoration';
