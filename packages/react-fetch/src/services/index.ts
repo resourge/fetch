@@ -1,3 +1,1 @@
-import NotificationService from './NotificationService';
-
-export { NotificationService }
+export { default as NotificationService } from './NotificationService';

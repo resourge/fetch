@@ -20,7 +20,8 @@ const external = [
 	'use-sync-external-store/shim/with-selector',
 	'react-native',
 	'@resourge/http-service',
-	'@react-native-community/netinfo'
+	'@react-native-community/netinfo',
+	'@resourge/react-search-params'
 ];
 
 const babelPlugins = [

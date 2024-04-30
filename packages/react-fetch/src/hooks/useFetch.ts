@@ -12,7 +12,7 @@ import { useIsOnline } from './useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
 import { useRefMemo } from './useRefMemo';
 
-type UseBaseFetch = {
+export type UseBaseFetch = {
 	error: UseFetchError
 	/**
 	 * True for when is request something

@@ -1,3 +1,1 @@
-import { setFetchDefaultConfig } from './defaultConfig';
-
-export { setFetchDefaultConfig }
+export { setFetchDefaultConfig } from './defaultConfig';

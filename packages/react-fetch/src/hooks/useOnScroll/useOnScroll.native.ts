@@ -1,9 +1,14 @@
-import { type MutableRefObject, useEffect, useRef } from 'react'
-import { type NativeSyntheticEvent, type NativeScrollEvent, type ScrollView } from 'react-native';
+import { useEffect, useRef, type MutableRefObject } from 'react';
+import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { type ScrollPos } from './types';
 
-export type ElementWithScrollTo = ScrollView
+export type ElementWithScrollTo = {
+	scrollToOffset: (params: {
+		offset: number
+		animated?: boolean | null | undefined
+	}) => void
+}
 
 export const useOnScroll = <T extends ElementWithScrollTo | null>(
 	scrollMethod: (position: ScrollPos) => void

@@ -1,13 +1,5 @@
-import Loader from './Loader';
-import type { LoaderProps } from './Loader';
-import LoadingFallback from './LoadingFallback';
-import LoadingSuspense from './LoadingSuspense';
-import GlobalLoader from './globalLoader/GlobalLoader';
-
-export {
-	Loader,
-	LoadingFallback,
-	LoadingSuspense,
-	type LoaderProps,
-	GlobalLoader
-}
+export { default as LoadingFallback } from './LoadingFallback';
+export { default as LoadingSuspense } from './LoadingSuspense';
+export { default as GlobalLoader } from './globalLoader/GlobalLoader';
+export type { LoaderProps } from './Loader';
+export { default as Loader } from './Loader';

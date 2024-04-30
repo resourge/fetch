@@ -1,15 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-import { ScrollRestorationIdIsUndefined } from '../errors/ScrollRestorationIdIsUndefined';
-
-import { type ElementWithScrollTo, useOnScroll } from './useOnScroll/useOnScroll';
-
-type ScrollPos = {
-	left: number
-	top: number
-}
-
-const visitedUrl = new Map<string, ScrollPos>();
+import { ScrollRestorationIdIsUndefined } from '../../errors/ScrollRestorationIdIsUndefined';
+import { type VisitedUrl } from '../useOnScroll/types';
+import { type ElementWithScrollTo, useOnScroll } from '../useOnScroll/useOnScroll';
 
 /**
  * Method to restore scroll.
@@ -34,7 +27,8 @@ const visitedUrl = new Map<string, ScrollPos>();
 ```
  */
 
-export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
+export const useBaseScrollRestoration = <T extends ElementWithScrollTo | null>(
+	visitedUrl: Map<string, VisitedUrl>,
 	/**
 	 * Action defines if scroll restoration can be executed.
 	 * Only on 'pop' will the scroll be restored.
@@ -53,9 +47,14 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 
 	const canRestore = useRef(false);
 	const [ref, onScroll] = useOnScroll<T>((pos) => {
+		const existingRecord = visitedUrl.get(scrollRestorationId);
+
 		visitedUrl.set(
 			scrollRestorationId, 
-			pos
+			{
+				...existingRecord,
+				pos
+			}
 		);
 	});
 
@@ -65,20 +64,17 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 
 	useEffect(() => {
 		if ( action !== 'pop' ) {
-			visitedUrl.set(scrollRestorationId, {
-				left: 0,
-				top: 0 
-			});
+			visitedUrl.delete(scrollRestorationId);
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, []);
 
 	const scrollRestore = (behavior: ScrollBehavior = 'auto') => {
 		if ( canRestore.current ) {
 			const existingRecord = visitedUrl.get(scrollRestorationId);
 
 			if ( existingRecord !== undefined ) {
-				window.requestAnimationFrame(() => {
+				globalThis.requestAnimationFrame(() => {
 					if ( ref.current ) {
 						ref.current.scrollTo({
 							...existingRecord,
