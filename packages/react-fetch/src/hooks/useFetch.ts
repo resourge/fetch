@@ -49,12 +49,17 @@ export type UseFetchConfig = {
 	 * @default true
 	 */
 	enable?: boolean
-
 	/**
 	 * Instead of triggering global LoadingService, load a specific LoadingService.
 	 * @default string
 	 */
 	loadingService?: string
+
+	/**
+	 * Doesn't trigger any Loading
+	 * @default false
+	 */
+	silent?: boolean
 }
 
 export type UseFetchEffectConfig = UseFetchConfig & {
@@ -188,13 +193,17 @@ export function useFetch<Result, T extends any[]>(
 	});
 
 	const setLoading = (isLoading: boolean) => { 
-		if ( isLoadingUsedRef.current ) {
-			currentDataRef.current.isLoading = isLoading;
-		}
-		else {
-			const loadingService = _config.loadingService ?? defaultConfig.loadingService;
-			// @ts-expect-error Its protected because I don't want it to be visible to others
-			LoadingService.setLoading(loadingService, isLoading)
+		const silent = _config.silent ?? false;
+
+		if ( !silent ) {
+			if ( isLoadingUsedRef.current ) {
+				currentDataRef.current.isLoading = isLoading;
+			}
+			else {
+				const loadingService = _config.loadingService ?? defaultConfig.loadingService;
+				// @ts-expect-error Its protected because I don't want it to be visible to others
+				LoadingService.setLoading(loadingService, isLoading)
+			}
 		}
 
 		if ( !isLoading ) {
