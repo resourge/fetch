@@ -54,7 +54,6 @@ export type UseFetchConfig = {
 	 * @default string
 	 */
 	loadingService?: string
-
 	/**
 	 * Doesn't trigger any Loading
 	 * @default false
