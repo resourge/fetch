@@ -1,3 +1,11 @@
+# [1.32.0](https://github.com/resourge/fetch/compare/v1.31.0...v1.32.0) (2024-04-30)
+
+
+### Features
+
+* **usefetch:** add silent to useFetch config ([6efcb7e](https://github.com/resourge/fetch/commit/6efcb7e9b859961f139bf324ab83f9ed45094a01))
+* **usepagination/useinfiniteloading:** merge @resourge/react-hook-table ([6616bea](https://github.com/resourge/fetch/commit/6616bead091e067bcc13f7f381c17117af701b42))
+
 # [1.31.0](https://github.com/resourge/fetch/compare/v1.30.3...v1.31.0) (2024-04-24)
 
 
