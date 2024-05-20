@@ -1,3 +1,1 @@
-import type { RequestConfig } from './RequestConfig';
-
-export type { RequestConfig }
+export type { RequestConfig } from './RequestConfig';

@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
-import { LoadingService, QueueKingSystem } from '../../../http-service/src';
+import { LoadingService, QueueKingSystem, isAbortedError } from '../../../http-service/src';
 import NotificationService, { type State, type UseFetchError } from '../services/NotificationService';
 import { getFetchDefaultConfig } from '../utils/defaultConfig';
 import { useId } from '../utils/useIdShim';
@@ -245,7 +245,7 @@ export function useFetch<Result, T extends any[]>(
 		catch (e) {
 			if ( 
 				isErrorUsedRef.current &&
-				!(e && typeof e === 'object' && (e as { name: string }).name === 'AbortError')
+				!isAbortedError(e)
 			) {
 				currentDataRef.current.error = e;
 			}
@@ -333,6 +333,7 @@ export function useFetch<Result, T extends any[]>(
 				QueueKingSystem.isThresholdEnabled = true;
 				
 				result.fetch()
+				.catch(() => {})
 				.finally(() => {
 					if ( _config.scrollRestoration ) {
 						if ( Array.isArray(_config.scrollRestoration) ) {

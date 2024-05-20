@@ -1,3 +1,1 @@
-import { FetchError } from './FetchError';
-
-export { FetchError }
+export { FetchError } from './FetchError';

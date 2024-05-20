@@ -1,12 +1,6 @@
-import { BaseHttpService } from './BaseHttpService';
-import type { GetMethodConfig, MethodConfig, BaseRequestConfig } from './BaseHttpService'
-import LoadingService from './LoadingService';
-import QueueKingSystem from './QueueKingSystem';
-
-export {
-	type GetMethodConfig, type MethodConfig, 
-	type BaseRequestConfig as HttpServiceDefaultConfig,
-	BaseHttpService,
-	LoadingService,
-	QueueKingSystem
-}
+export { BaseHttpService } from './BaseHttpService';
+export type {
+	GetMethodConfig, MethodConfig, BaseRequestConfig 
+} from './BaseHttpService'
+export { default as LoadingService } from './LoadingService';
+export { default as QueueKingSystem } from './QueueKingSystem';

@@ -6,7 +6,7 @@ import { getCacheKey } from '../utils/getCacheKey';
 import { normalizeRequest, type NormalizeRequestConfig } from '../utils/normalizeHeaders';
 import { throttlePromise } from '../utils/throttlePromise';
 import { convertParamsToQueryString } from '../utils/transformURLSearchParams';
-import { createUrl } from '../utils/utils';
+import { createUrl, isAbortedError } from '../utils/utils';
 
 import QueueKingSystem from './QueueKingSystem';
 
@@ -141,9 +141,14 @@ export class BaseHttpService {
 		const request = new Request(_config.url, _config);
 
 		let requestPromise = this.generatePromise(request, _config);
-
+		
 		this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
-			requestPromise = requestPromise.then(onResponse, onResponseError)
+			requestPromise = requestPromise.then(onResponse, (e) => {
+				if ( onResponseError && !isAbortedError(e) ) {
+					return onResponseError(e)
+				}
+				return Promise.reject(e)
+			})
 		})
 
 		return await requestPromise as R;

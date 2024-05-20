@@ -61,3 +61,22 @@ export function createUrl(url: URL | string, baseUrl: string): URL {
 	}
 	return url;
 }
+
+/**
+ * Check if error is an AbortError
+ */
+export function isAbortedError(e: any): boolean {
+	return (
+		e &&
+		typeof e === 'object' &&
+		(
+			(
+				(e as { data: { name: string } }).data &&
+				typeof (e as { data: { name: string } }).data === 'object' &&
+				(e as { data: { name: string } }).data.name === 'AbortError'
+			) || (
+				(e as { name: string }).name === 'AbortError'
+			)
+		)
+	)
+}
