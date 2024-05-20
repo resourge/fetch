@@ -1,3 +1,10 @@
+## [1.32.1](https://github.com/resourge/fetch/compare/v1.32.0...v1.32.1) (2024-05-20)
+
+
+### Bug Fixes
+
+* **basehttpservice/usefetch:** prevent error Aborted from showing as error and message ([3c37ab1](https://github.com/resourge/fetch/commit/3c37ab1490fcc3bdabcddfb98265615bc0ff4591))
+
 # [1.32.0](https://github.com/resourge/fetch/compare/v1.31.0...v1.32.0) (2024-04-30)
 
 
