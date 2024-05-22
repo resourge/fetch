@@ -5,7 +5,6 @@ import { type DefaultPaginationType, type FilterType } from '../../types/types';
 
 export type SearchParamsResult<
 	Filter extends Record<string, any> = Record<string, any>,
-	
 > = {
 	getPaginationHref: (page: number) => string
 	params: FilterType<Filter>
@@ -32,7 +31,7 @@ export const useSearchParams = <
 		{
 			...filter, 
 			...pagination,
-			...sort
+			sort
 		} as FilterType<Filter>,
 		{
 			hash

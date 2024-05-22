@@ -1,9 +1,9 @@
 export { useFetch } from './useFetch';
 export type {
-	UseFetchConfig,
-	UseFetchEffect,
-	UseFetchEffectConfig,
-	UseFetchStateConfig
+	FetchConfig,
+	FetchEffect,
+	FetchEffectConfig,
+	FetchStateConfig
 } from './useFetch'
 export { useFetchOnDependencyUpdate } from './useFetchOnDependencyUpdate';
 export { useInfiniteLoading } from './useInfiniteLoading';

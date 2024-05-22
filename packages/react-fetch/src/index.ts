@@ -11,10 +11,10 @@ export {
 	type Pagination,
 	type PaginationConfig,
 	type PaginationReturn,
-	type UseFetchConfig,
-	type UseFetchEffect,
-	type UseFetchEffectConfig,
-	type UseFetchStateConfig,
+	type FetchConfig,
+	type FetchEffect,
+	type FetchEffectConfig,
+	type FetchStateConfig,
 	useFetch,
 	useFetchOnDependencyUpdate,
 	useInfiniteLoading,
@@ -30,6 +30,6 @@ export {
 	type PaginationMetadata,
 	type PaginationSearchParams,
 	type SortCriteria,
-	type UseFilterSearchParamsDefaultValue
+	type FilterSearchParamsDefaultValue
 } from './types'
 export { setFetchDefaultConfig } from './utils';

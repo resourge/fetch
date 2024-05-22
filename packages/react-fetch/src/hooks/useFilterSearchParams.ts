@@ -9,7 +9,17 @@ import {
 
 import { type SearchParamsResult, useSearchParams } from './useSearchParams/useSearchParams';
 
-export type UseFilterSearchParamsReturn<Filter extends Record<string, any>> = {
+type SortTable = {
+	(
+		sort: SortCriteria, 
+	): void
+	(
+		orderBy: OrderByEnum, 
+		orderColumn: string
+	): void
+}
+
+export type FilterSearchParamsReturn<Filter extends Record<string, any>> = {
 	filter: Filter
 	/**
 	 * Method to updates filters.
@@ -18,10 +28,7 @@ export type UseFilterSearchParamsReturn<Filter extends Record<string, any>> = {
 	/**
 	 * Changes which column to order asc/desc.
 	 */
-	sortTable: (
-		orderBy: OrderByEnum, 
-		orderColumn: string
-	) => void
+	sortTable: SortTable
 	sort?: SortCriteria
 }
 
@@ -30,7 +37,7 @@ export const useFilterSearchParams = <
 >(
 	defaultData: DefaultPaginationType<Filter>,
 	hash?: boolean
-): UseFilterSearchParamsReturn<Filter> & SearchParamsResult<Filter> => {
+): FilterSearchParamsReturn<Filter> & SearchParamsResult<Filter> => {
 	const {
 		getPaginationHref,
 		params,
@@ -44,19 +51,13 @@ export const useFilterSearchParams = <
 		perPage,
 		page, 
 
-		orderBy,
-		orderColumn,
+		sort,
 		..._filter
 	} = params;
 
 	// This is to memorize filter and only change when search('?*') change.
 	// eslint-disable-next-line react-hooks/exhaustive-deps 
 	const filter = useMemo(() => _filter as unknown as Filter, [params]);
-
-	const sort = useMemo(() => orderBy && orderColumn ? {
-		orderBy,
-		orderColumn
-	} : undefined, [orderBy, orderColumn]);
 
 	const setFilter = (newFilter: FilterType<Filter>) => {
 		setParams({
@@ -66,13 +67,36 @@ export const useFilterSearchParams = <
 	};
 
 	const sortTable = (
-		orderBy: OrderByEnum, 
+		orderBy: OrderByEnum | SortCriteria, 
 		orderColumn: string
 	) => {
+		if ( Array.isArray(orderBy) ) {
+			setParams({
+				...params,
+				sort: orderBy
+			});
+			return;
+		}
+		const sort = params.sort ?? [];
+
+		const index = sort.findIndex((val) => val.orderColumn === orderColumn);
+
+		if ( index > -1 ) {
+			sort[index] = {
+				orderBy,
+				orderColumn
+			}
+		}
+		else {
+			sort.push({
+				orderBy,
+				orderColumn
+			})
+		}
+
 		setParams({
 			...params,
-			orderBy,
-			orderColumn
+			sort
 		});
 	};
 
@@ -80,7 +104,7 @@ export const useFilterSearchParams = <
 		filter,
 		sort,
 		setFilter,
-		sortTable,
+		sortTable: sortTable as SortTable,
 		getPaginationHref,
 		params,
 		setParams

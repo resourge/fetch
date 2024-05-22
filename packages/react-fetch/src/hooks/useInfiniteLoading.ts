@@ -11,17 +11,17 @@ import {
 } from '../types/types';
 import { calculateTotalPages } from '../utils/utils';
 
-import { type UseFetchState } from './useFetch';
-import { useFilterSearchParams, type UseFilterSearchParamsReturn } from './useFilterSearchParams';
+import { type FetchState } from './useFetch';
+import { useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
 import { type InfiniteScrollRestoration } from './useScrollRestoration/useInfiniteScrollRestoration';
 
-import { useFetch, useIsOnline, type UseFetchStateConfig } from '.';
+import { useFetch, useIsOnline, type FetchStateConfig } from '.';
 
 export type InfiniteLoadingConfig<
 	Data,
 	Filter extends Record<string, any> = Record<string, any>,
 > = DefaultPaginationType<Filter>
-& UseFetchStateConfig<Data> 
+& FetchStateConfig<Data> 
 & {
 	hash?: boolean
 }
@@ -29,7 +29,7 @@ export type InfiniteLoadingConfig<
 export type InfiniteLoadingReturn<
 	Data extends any[],
 	Filter extends Record<string, any> = Record<string, any>,
-> = UseFilterSearchParamsReturn<Filter> & {
+> = FilterSearchParamsReturn<Filter> & {
 	/**
 	 * Changes items per page
 	 */
@@ -49,7 +49,7 @@ export type InfiniteLoadingReturn<
 	 * If last page is incomplete (itemPerPage 10 but the last page got less than 10)
 	 */
 	isLastIncomplete: boolean
-	isLoading: UseFetchState<any, any>['isLoading']
+	isLoading: FetchState<any, any>['isLoading']
 	loadMore: () => void
 	/** 
 	 * Preload method.
@@ -60,7 +60,7 @@ export type InfiniteLoadingReturn<
 	 */
 	reset: (newSearchParams?: Partial<PaginationMetadata<Filter>>) => void
 
-	setPaginationState: UseFetchState<any, any>['setFetchState']
+	setPaginationState: FetchState<any, any>['setFetchState']
 }
 
 const MINUTE_IN_MILLISECOND = 60000
@@ -281,8 +281,7 @@ export const useInfiniteLoading = <
 		};
 
 		setParams({
-			orderBy: sort?.orderBy ?? defaultSort?.orderBy,
-			orderColumn: sort?.orderColumn ?? defaultSort?.orderColumn,
+			sort: sort ?? defaultSort,
 
 			...defaultFilter,
 			...filter

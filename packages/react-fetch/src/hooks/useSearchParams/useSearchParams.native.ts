@@ -16,7 +16,7 @@ export const useSearchParams = <
 	const [params, setParams] = useState<FilterType<Filter>>(() => ({
 		...filter, 
 		...pagination,
-		...sort
+		sort
 	} as FilterType<Filter>))
 
 	const getPaginationHref = (page: number) => {

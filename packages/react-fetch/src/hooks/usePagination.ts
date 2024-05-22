@@ -10,8 +10,8 @@ import {
 } from '../types/types';
 import { calculateTotalPages } from '../utils/utils';
 
-import { useFetch, type UseFetchState, type UseFetchStateConfig } from './useFetch';
-import { useFilterSearchParams, type UseFilterSearchParamsReturn } from './useFilterSearchParams';
+import { useFetch, type FetchState, type FetchStateConfig } from './useFetch';
+import { useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
 
 export type Pagination = PaginationSearchParams & { totalItems: number, totalPages: number }
 
@@ -19,7 +19,7 @@ export type PaginationConfig<
 	Data,
 	Filter extends Record<string, any> = Record<string, any>,
 > = DefaultPaginationType<Filter>
-& UseFetchStateConfig<Data> 
+& FetchStateConfig<Data> 
 & {
 	hash?: boolean
 }
@@ -27,7 +27,7 @@ export type PaginationConfig<
 export type PaginationReturn<
 	Data,
 	Filter extends Record<string, any> = Record<string, any>,
-> = UseFilterSearchParamsReturn<Filter> & {
+> = FilterSearchParamsReturn<Filter> & {
 	/**
 	 * Changes items per page
 	 */
@@ -49,7 +49,7 @@ export type PaginationReturn<
 	 * useFetchPagination Data
 	 */
 	data: Data
-	error: UseFetchState<any, any>['error']
+	error: FetchState<any, any>['error']
 
 	/** 
 	 * Redoes the fetch again.
@@ -59,7 +59,7 @@ export type PaginationReturn<
 	 * Builds href for use on navigation. (usually used with pagination component)
 	 */
 	getPaginationHref: (page: number) => string
-	isLoading: UseFetchState<any, any>['isLoading']
+	isLoading: FetchState<any, any>['isLoading']
 	pagination: Pagination
 	/**
 	 * Resets the pagination, sort and/or filter.
@@ -70,7 +70,7 @@ export type PaginationReturn<
 	 */
 	resetPagination: () => void
 
-	setPaginationState: UseFetchState<any, any>['setFetchState']
+	setPaginationState: FetchState<any, any>['setFetchState']
 } 
 
 export const usePagination = <Data, Filter extends Record<string, any> = Record<string, any>>(
@@ -89,14 +89,15 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		deps = [],
 		...config
 	}: PaginationConfig<Data, Filter>
-) => {
+): PaginationReturn<Data, Filter> => {
 	const {
-		getPaginationHref,
 		params,
-		setParams,
 		filter,
-		setFilter,
 		sort,
+
+		getPaginationHref,
+		setParams,
+		setFilter,
 		sortTable
 	} = useFilterSearchParams<Filter>(
 		{
@@ -196,13 +197,12 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 	const reset = ({
 		filter,
 		pagination = {},
-		sort = {}
+		sort = []
 	}: DeepPartial<PaginationMetadata<Filter>> = {}) => {
 		setParams({
 			page: pagination.page ?? defaultPagination.page,
 			perPage: pagination.perPage ?? defaultPagination.perPage,
-			orderBy: sort.orderBy ?? defaultSort?.orderBy,
-			orderColumn: sort.orderColumn ?? defaultSort?.orderColumn,
+			sort,
 
 			...defaultFilter,
 			...filter

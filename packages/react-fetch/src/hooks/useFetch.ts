@@ -12,7 +12,7 @@ import { useIsOnline } from './useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
 import { useRefMemo } from './useRefMemo';
 
-export type UseBaseFetch = {
+export type BaseFetch = {
 	error: UseFetchError
 	/**
 	 * True for when is request something
@@ -20,21 +20,21 @@ export type UseBaseFetch = {
 	isLoading: boolean
 }
 
-export type UseFetch<Result, T extends any[]> = UseBaseFetch & {
+export type FetchMethod<Result, T extends any[]> = BaseFetch & {
 	/**
 	 * Fetch Method with loading
 	 */
 	fetch: (...args: T) => Promise<Result>
 };
 
-export type UseFetchEffect<Result, T extends any[]> = UseBaseFetch & {
+export type FetchEffect<Result, T extends any[]> = BaseFetch & {
 	/**
 	 * Fetch Method with loading
 	 */
 	fetch: (...args: Partial<T>) => Promise<Result>
 };
 
-export type UseFetchState<Result, T extends any[]> = UseFetchEffect<Result, T> & {
+export type FetchState<Result, T extends any[]> = FetchEffect<Result, T> & {
 	data: Result
 	/**
 	 * To set fetch state manually
@@ -42,7 +42,7 @@ export type UseFetchState<Result, T extends any[]> = UseFetchEffect<Result, T> &
 	setFetchState: (data: Result) => void
 };
 
-export type UseFetchConfig = {	
+export type FetchConfig = {	
 	/**
 	 * When false useEffect will not trigger fetch
 	 * * Note: It is not included in the deps.
@@ -61,7 +61,7 @@ export type UseFetchConfig = {
 	silent?: boolean
 }
 
-export type UseFetchEffectConfig = UseFetchConfig & {
+export type FetchEffectConfig = FetchConfig & {
 	/**
 	 * useEffect dependencies.
 	 * Basically works on useEffect dependencies
@@ -86,7 +86,7 @@ export type UseFetchEffectConfig = UseFetchConfig & {
 	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
 }
 
-export type UseFetchStateConfig<T> = Omit<UseFetchEffectConfig, 'initialState'> & {
+export type FetchStateConfig<T> = Omit<FetchEffectConfig, 'initialState'> & {
 	/**
 	* Default data values.
 	*/
@@ -107,7 +107,7 @@ export type UseFetchStateConfig<T> = Omit<UseFetchEffectConfig, 'initialState'> 
  * It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
  * * Note: When initialState is set, it will also trigger an useEffect, otherwise it's just a method
  * @param method - method to set fetch data
- * @param config {@link UseFetchConfig} - fetch config's. They override default HttpProvider config's.
+ * @param config {@link FetchConfig} - fetch config's. They override default HttpProvider config's.
  * @example
  * ```Typescript
   // Fetch with useState 
@@ -141,26 +141,26 @@ type NoUndefinedField<T> = { [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]
 
 export function useFetch<Result, T extends any[]>(
 	method: (this: NoUndefinedField<State<Result>>, ...args: Partial<T>) => Promise<Result>,
-	config: UseFetchStateConfig<Result>
-): UseFetchState<Result, T>
+	config: FetchStateConfig<Result>
+): FetchState<Result, T>
 export function useFetch<Result, T extends any[]>(
 	method: (this: State<Result>, ...args: Partial<T>) => Promise<Result>,
-	config: UseFetchEffectConfig
-): UseFetchEffect<Result, T>
+	config: FetchEffectConfig
+): FetchEffect<Result, T>
 export function useFetch<Result, T extends any[]>(
 	method: (this: State<Result>, ...args: T) => Promise<Result>,
-	config?: UseFetchConfig
-): UseFetch<Result, T> 
+	config?: FetchConfig
+): FetchMethod<Result, T> 
 export function useFetch<Result, T extends any[]>(
 	method: ((this: State<Result>, ...args: T) => Promise<Result>) | ((this: State<Result>, ...args: Partial<T>) => Promise<Result>),
-	config?: UseFetchConfig | UseFetchEffectConfig | UseFetchStateConfig<Result>
-): UseFetch<Result, T> | UseFetchEffect<Result, T> | UseFetchState<Result, T> {
+	config?: FetchConfig | FetchEffectConfig | FetchStateConfig<Result>
+): FetchMethod<Result, T> | FetchEffect<Result, T> | FetchState<Result, T> {
 	const controllers = useRef<Set<AbortController>>(new Set())
 
 	let isFetchEffect = false;
 	let isFetchEffectWithData = false;
 	if ( config ) {
-		const keys = Object.keys(config) as Array<keyof UseFetchStateConfig<Result>>;
+		const keys = Object.keys(config) as Array<keyof FetchStateConfig<Result>>;
 		
 		isFetchEffect = keys.some((key) => key === 'initialState' || key === 'deps');
 		
@@ -168,7 +168,7 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const defaultConfig = getFetchDefaultConfig()
-	const _config: UseFetchStateConfig<Result> = (config ?? {}) as UseFetchStateConfig<Result>;
+	const _config: FetchStateConfig<Result> = (config ?? {}) as FetchStateConfig<Result>;
 
 	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const id = _config?.id ?? useId();

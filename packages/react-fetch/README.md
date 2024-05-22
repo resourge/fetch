@@ -234,7 +234,8 @@ const MyComponent = () => {
     changeItemsPerPage,
     changePage,
     resetPagination,
-    pagination
+    pagination,
+	sortTable
   } = usePagination(
     async (metadata) => {
       // Implement your logic to fetch data based on metadata
@@ -296,6 +297,84 @@ export default MyComponent;
 	- `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
 	- `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
 
+### Properties
+
+- `filter`: Holds the current filter criteria used to query the data. 
+	```typescript
+	const filter: UserFilter = {
+	  name: "John",
+	  age: 30
+	};
+	```
+- `setFilter`: A method to update the filter criteria
+	```typescript
+    setFilter({
+      page: 1,
+      perPage: 10,
+      sort: [{ orderBy: OrderByEnum.ASC, orderColumn: "name" }],
+      customFilter: "example"
+    });
+	```
+- `sortTable`: Method to change the sorting of the table.
+	```typescript
+	// Using full sorting criteria
+	sortTable([{ orderBy: OrderByEnum.DESC, orderColumn: "date" }]);
+
+	// Using individual column sorting parameters
+	sortTable(OrderByEnum.ASC, "name");
+	```
+- `sort`: Holds the current sorting criteria.
+	```typescript
+	sort: [
+		{ orderBy: OrderByEnum.ASC, orderColumn: "name" },
+		{ orderBy: OrderByEnum.DESC, orderColumn: "date" }
+	]
+	```
+- `changeItemsPerPage`: Method to change the number of items displayed per page.
+	```typescript
+    changeItemsPerPage(20)
+	```
+- `changePage`: Method to change the current page. Optionally accepts the total number of items.
+	```typescript
+    changePage(2)
+	```
+- `changePagination`: Method to change both the current page and the number of items per page.
+	```typescript
+    changePagination(1, 50)
+	```
+- `changeTotalPages`: Method to change the total number of pages based on the total number of items.
+	```typescript
+    changeTotalPages(200);
+	```
+- `data`: The fetched data.
+- `error`: Error state from the fetch operation.
+- `fetch`: Method to refetch the data.
+	```typescript
+    fetch().then(data => {
+      console.log("Fetched data:", data);
+	})
+	```
+- `getPaginationHref`: Method to build an href for pagination navigation.
+	```typescript
+    getPaginationHref(3)
+	```
+- `isLoading`: Loading state of the fetch operation.
+- `pagination`: Current pagination parameters including page, items per page, total items, and total pages.
+- `reset`: Method to reset the pagination, sort, and/or filter to their initial or provided values.
+	```typescript
+    reset()
+
+	reset({ filter: { name: "John" } });
+	```
+- `resetPagination`: Method to reset the pagination to initial/default values.
+	```typescript
+	resetPagination();
+	```
+- `setPaginationState`: Method to manually set the fetch state.
+	```typescript
+    setPaginationState([])
+	```
+
 # useInfiniteLoading
 
 `useInfiniteLoading` is a custom react hook designed to facilitate infinite loading in react applications. It manages pagination, filtering, sorting, and data fetching, providing a seamless experience for handling large datasets. It's built on top of `useFetch`, so all configurations and methods are the same.
@@ -349,6 +428,10 @@ export default MyComponent;
 	- `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
 	- `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
 	- `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
+
+### Properties
+
+[Properties](#properties)
 
 # useScrollRestoration
 
