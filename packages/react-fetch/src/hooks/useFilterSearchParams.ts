@@ -9,34 +9,33 @@ import {
 
 import { type SearchParamsResult, useSearchParams } from './useSearchParams/useSearchParams';
 
-export type UseFilterSearchParamsReturn<Filter extends Record<string, any>, OrderColumn = string> = {
+export type UseFilterSearchParamsReturn<Filter extends Record<string, any>> = {
 	filter: Filter
 	/**
 	 * Method to updates filters.
 	 */
-	setFilter: (newFilter: FilterType<OrderColumn, Filter>) => void
+	setFilter: (newFilter: FilterType<Filter>) => void
 	/**
 	 * Changes which column to order asc/desc.
 	 */
 	sortTable: (
 		orderBy: OrderByEnum, 
-		orderColumn: OrderColumn
+		orderColumn: string
 	) => void
-	sort?: SortCriteria<OrderColumn>
+	sort?: SortCriteria
 }
 
 export const useFilterSearchParams = <
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
 >(
-	defaultData: DefaultPaginationType<Filter, OrderColumn>,
+	defaultData: DefaultPaginationType<Filter>,
 	hash?: boolean
-): UseFilterSearchParamsReturn<Filter, OrderColumn> & SearchParamsResult<Filter, OrderColumn> => {
+): UseFilterSearchParamsReturn<Filter> & SearchParamsResult<Filter> => {
 	const {
 		getPaginationHref,
 		params,
 		setParams
-	} = useSearchParams<Filter, OrderColumn>(
+	} = useSearchParams<Filter>(
 		defaultData,
 		hash
 	);
@@ -59,7 +58,7 @@ export const useFilterSearchParams = <
 		orderColumn
 	} : undefined, [orderBy, orderColumn]);
 
-	const setFilter = (newFilter: FilterType<OrderColumn, Filter>) => {
+	const setFilter = (newFilter: FilterType<Filter>) => {
 		setParams({
 			...params,
 			...newFilter
@@ -68,7 +67,7 @@ export const useFilterSearchParams = <
 
 	const sortTable = (
 		orderBy: OrderByEnum, 
-		orderColumn: OrderColumn
+		orderColumn: string
 	) => {
 		setParams({
 			...params,

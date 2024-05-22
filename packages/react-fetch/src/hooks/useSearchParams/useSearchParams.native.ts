@@ -5,20 +5,19 @@ import { type DefaultPaginationType, type FilterType } from '../../types/types';
 
 export const useSearchParams = <
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
 >(
 	{
 		filter, 
 		pagination,
 		sort
-	}: DefaultPaginationType<Filter, OrderColumn>,
+	}: DefaultPaginationType<Filter>,
 	_hash: boolean
 ) => {
-	const [params, setParams] = useState<FilterType<OrderColumn, Filter>>(() => ({
+	const [params, setParams] = useState<FilterType<Filter>>(() => ({
 		...filter, 
 		...pagination,
 		...sort
-	} as FilterType<OrderColumn, Filter>))
+	} as FilterType<Filter>))
 
 	const getPaginationHref = (page: number) => {
 		throw new Error('\'getPaginationHref\' is not supported in react-native')

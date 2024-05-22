@@ -5,28 +5,27 @@ import { type DefaultPaginationType, type FilterType } from '../../types/types';
 
 export type SearchParamsResult<
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
+	
 > = {
 	getPaginationHref: (page: number) => string
-	params: FilterType<OrderColumn, Filter>
-	setParams: (newParams: FilterType<OrderColumn, Filter>) => void
+	params: FilterType<Filter>
+	setParams: (newParams: FilterType<Filter>) => void
 }
 
 export const useSearchParams = <
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
 >(
 	{
 		filter, 
 		pagination,
 		sort
-	}: DefaultPaginationType<Filter, OrderColumn>,
+	}: DefaultPaginationType<Filter>,
 	hash?: boolean
-): SearchParamsResult<Filter, OrderColumn> => {
+): SearchParamsResult<Filter> => {
 	const [
 		{ params, url }, 
 		setParams
-	] = useRSearchParams<FilterType<OrderColumn, Filter>>(
+	] = useRSearchParams<FilterType<Filter>>(
 		({ url }) => {
 			window.history.replaceState(null, '', url.href); 
 		},
@@ -34,7 +33,7 @@ export const useSearchParams = <
 			...filter, 
 			...pagination,
 			...sort
-		} as FilterType<OrderColumn, Filter>,
+		} as FilterType<Filter>,
 		{
 			hash
 		}

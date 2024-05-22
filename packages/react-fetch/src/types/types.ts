@@ -3,37 +3,34 @@ export enum OrderByEnum {
 	DESC = 2
 }
 
-export type SortCriteria<T = string> = {
+export type SortCriteria = {
 	orderBy: OrderByEnum
-	orderColumn: T extends string ? string : keyof T
+	orderColumn: string
 }
 
 export type PaginationSearchParams = { page: number, perPage: number }
 
 export type FilterType<
-	OrderColumn, 
 	T extends Record<string, any>
-> = PaginationSearchParams & Partial<T & SortCriteria<OrderColumn>>
+> = PaginationSearchParams & Partial<T & SortCriteria>
 
-export type UseFilterSearchParamsDefaultValue<T extends Record<string, any>, OrderColumn = string> = {
+export type UseFilterSearchParamsDefaultValue<T extends Record<string, any>> = {
 	filter?: T
-	sort?: SortCriteria<OrderColumn>
+	sort?: SortCriteria
 }
 
 export type DefaultPaginationType<
-	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
-> = UseFilterSearchParamsDefaultValue<Filter, OrderColumn> & {
+	Filter extends Record<string, any> = Record<string, any>
+> = UseFilterSearchParamsDefaultValue<Filter> & {
 	pagination?: PaginationSearchParams
 } 
 
 export type PaginationMetadata<
-	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string, 
+	Filter extends Record<string, any> = Record<string, any>
 > = {
 	filter: Filter
 	pagination: PaginationSearchParams
-	sort?: SortCriteria<OrderColumn>
+	sort?: SortCriteria
 }
 
 export type DeepPartial<T> = T extends object ? {

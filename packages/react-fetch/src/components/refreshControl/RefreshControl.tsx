@@ -5,9 +5,8 @@ import { type InfiniteLoadingReturn } from '../../hooks';
 type Props<
 	Data extends any[],
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string, 
 > = {
-	context: InfiniteLoadingReturn<Data, Filter, OrderColumn>
+	context: InfiniteLoadingReturn<Data, Filter>
 	renderComponent: (props: { isLastIncomplete: boolean, onClick: () => void }) => ReactNode
 	/**
 	 * By default is 100%
@@ -21,10 +20,9 @@ type Props<
 function RefreshControl<
 	Data extends any[],
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string, 
 >({
 	context, detectionMargin = '100%', renderComponent 
-}: Props<Data, Filter, OrderColumn>) {
+}: Props<Data, Filter>) {
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {

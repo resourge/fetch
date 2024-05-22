@@ -18,8 +18,7 @@ export type Pagination = PaginationSearchParams & { totalItems: number, totalPag
 export type PaginationConfig<
 	Data,
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
-> = DefaultPaginationType<Filter, OrderColumn>
+> = DefaultPaginationType<Filter>
 & UseFetchStateConfig<Data> 
 & {
 	hash?: boolean
@@ -28,8 +27,7 @@ export type PaginationConfig<
 export type PaginationReturn<
 	Data,
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
-> = UseFilterSearchParamsReturn<Filter, OrderColumn> & {
+> = UseFilterSearchParamsReturn<Filter> & {
 	/**
 	 * Changes items per page
 	 */
@@ -66,7 +64,7 @@ export type PaginationReturn<
 	/**
 	 * Resets the pagination, sort and/or filter.
 	 */
-	reset: (newSearchParams?: DeepPartial<PaginationMetadata<Filter, OrderColumn>>) => void
+	reset: (newSearchParams?: DeepPartial<PaginationMetadata<Filter>>) => void
 	/**
 	 * Resets pagination to initial/default values
 	 */
@@ -75,9 +73,9 @@ export type PaginationReturn<
 	setPaginationState: UseFetchState<any, any>['setFetchState']
 } 
 
-export const usePagination = <Data, Filter extends Record<string, any> = Record<string, any>, OrderColumn = string>(
+export const usePagination = <Data, Filter extends Record<string, any> = Record<string, any>>(
 	method: (
-		metadata: PaginationMetadata<Filter, OrderColumn>
+		metadata: PaginationMetadata<Filter>
 	) => Promise<{ data: Data, totalItems?: number }>,
 	{ 
 		initialState,
@@ -90,7 +88,7 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		hash = false,
 		deps = [],
 		...config
-	}: PaginationConfig<Data, Filter, OrderColumn>
+	}: PaginationConfig<Data, Filter>
 ) => {
 	const {
 		getPaginationHref,
@@ -100,7 +98,7 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		setFilter,
 		sort,
 		sortTable
-	} = useFilterSearchParams<Filter, OrderColumn>(
+	} = useFilterSearchParams<Filter>(
 		{
 			filter: defaultFilter,
 			sort: defaultSort,
@@ -199,7 +197,7 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		filter,
 		pagination = {},
 		sort = {}
-	}: DeepPartial<PaginationMetadata<Filter, OrderColumn>> = {}) => {
+	}: DeepPartial<PaginationMetadata<Filter>> = {}) => {
 		setParams({
 			page: pagination.page ?? defaultPagination.page,
 			perPage: pagination.perPage ?? defaultPagination.perPage,
@@ -208,7 +206,7 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 
 			...defaultFilter,
 			...filter
-		} as FilterType<OrderColumn, Filter>);
+		} as FilterType<Filter>);
 	}
 
 	return {

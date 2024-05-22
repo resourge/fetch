@@ -20,8 +20,7 @@ import { useFetch, useIsOnline, type UseFetchStateConfig } from '.';
 export type InfiniteLoadingConfig<
 	Data,
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
-> = DefaultPaginationType<Filter, OrderColumn>
+> = DefaultPaginationType<Filter>
 & UseFetchStateConfig<Data> 
 & {
 	hash?: boolean
@@ -30,13 +29,12 @@ export type InfiniteLoadingConfig<
 export type InfiniteLoadingReturn<
 	Data extends any[],
 	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string, 
-> = UseFilterSearchParamsReturn<Filter, OrderColumn> & {
+> = UseFilterSearchParamsReturn<Filter> & {
 	/**
 	 * Changes items per page
 	 */
 	changeItemsPerPage: (perPage: number) => void
-	readonly context: InfiniteLoadingReturn<Data, Filter, OrderColumn>
+	readonly context: InfiniteLoadingReturn<Data, Filter>
 	data: Data
 	error: UseFetchError
 	/** 
@@ -60,7 +58,7 @@ export type InfiniteLoadingReturn<
 	/**
 	 * Resets the pagination, sort and/or filter.
 	 */
-	reset: (newSearchParams?: Partial<PaginationMetadata<Filter, OrderColumn>>) => void
+	reset: (newSearchParams?: Partial<PaginationMetadata<Filter>>) => void
 
 	setPaginationState: UseFetchState<any, any>['setFetchState']
 }
@@ -86,11 +84,10 @@ type InternalDataRef<Data extends any[]> = {
 
 export const useInfiniteLoading = <
 	Data extends any[],
-	Filter extends Record<string, any> = Record<string, any>,
-	OrderColumn = string
+	Filter extends Record<string, any> = Record<string, any>
 >(
 	method: (
-		metadata: PaginationMetadata<Filter, OrderColumn>
+		metadata: PaginationMetadata<Filter>
 	) => Promise<{ data: Data, totalItems?: number }>,
 	{ 
 		initialState,
@@ -103,8 +100,8 @@ export const useInfiniteLoading = <
 		scrollRestoration,
 		hash,
 		...config 
-	}: InfiniteLoadingConfig<Data, Filter, OrderColumn>
-): InfiniteLoadingReturn<Data, Filter, OrderColumn> => {
+	}: InfiniteLoadingConfig<Data, Filter>
+): InfiniteLoadingReturn<Data, Filter> => {
 	const isOnline = useIsOnline();
 
 	const _scrollRestoration: InfiniteScrollRestoration = scrollRestoration as InfiniteScrollRestoration;
@@ -137,7 +134,7 @@ export const useInfiniteLoading = <
 		setFilter,
 		sort,
 		sortTable
-	} = useFilterSearchParams<Filter, OrderColumn>(
+	} = useFilterSearchParams<Filter>(
 		{
 			filter: defaultFilter,
 			sort: defaultSort
@@ -278,7 +275,7 @@ export const useInfiniteLoading = <
 		filter,
 		pagination,
 		sort
-	}: Partial<PaginationMetadata<Filter, OrderColumn>> = {}) => {
+	}: Partial<PaginationMetadata<Filter>> = {}) => {
 		paginationRef.current.pagination = {
 			...(pagination ?? defaultPagination) 
 		};
@@ -289,10 +286,10 @@ export const useInfiniteLoading = <
 
 			...defaultFilter,
 			...filter
-		} as FilterType<OrderColumn, Filter>);
+		} as FilterType<Filter>);
 	}
 
-	const _context: InfiniteLoadingReturn<Data, Filter, OrderColumn> = {
+	const _context: InfiniteLoadingReturn<Data, Filter> = {
 		preload,
 		isLast: paginationRef.current.pagination.page >= (paginationRef.current.totalPages - 1),
 		isLastIncomplete,
