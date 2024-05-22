@@ -43,14 +43,14 @@
 		"react": ">=17.0.0"
 	},
 	"dependencies": {
-		"use-sync-external-store": "^1.2.0"
+		"use-sync-external-store": "^1.2.2"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.24.3",
-		"@babel/preset-env": "^7.24.3",
+		"@babel/core": "^7.24.5",
+		"@babel/preset-env": "^7.24.5",
 		"@babel/preset-react": "^7.24.1",
 		"@babel/preset-typescript": "^7.24.1",
-		"@react-native-community/netinfo": "^11.3.1",
+		"@react-native-community/netinfo": "^11.3.2",
 		"@resourge/react-search-params": "^1.11.3",
 		"@rollup/plugin-babel": "^6.0.4",
 		"@rollup/plugin-node-resolve": "^15.2.3",
@@ -87,16 +87,16 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"recursive-copy": "^2.0.14",
-		"rollup": "^4.14.0",
+		"rollup": "^4.18.0",
 		"rollup-plugin-filesize": "^10.0.0",
 		"rollup-plugin-shell": "^1.0.9",
 		"semantic-release": "^22.0.5",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.4.3",
-		"vite": "^5.2.7",
+		"typescript": "^5.4.5",
+		"vite": "^5.2.11",
 		"vite-plugin-checker": "^0.6.4",
 		"vite-tsconfig-paths": "^4.3.2",
-		"vitest": "^1.4.0"
+		"vitest": "^1.6.0"
 	},
 	"config": {
 		"commitizen": {
