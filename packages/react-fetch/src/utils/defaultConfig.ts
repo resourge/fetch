@@ -1,7 +1,7 @@
-import { type UseFetchStateConfig } from '../hooks';
+import { type FetchStateConfig } from '../hooks';
 
 export type FetchContextConfig = Pick<
-	UseFetchStateConfig<any>, 
+	FetchStateConfig<any>, 
 	'loadingService'
 	| 'onWindowFocus'
 	| 'enable'
