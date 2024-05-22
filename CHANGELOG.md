@@ -1,3 +1,10 @@
+# [1.33.0](https://github.com/resourge/fetch/compare/v1.32.1...v1.33.0) (2024-05-22)
+
+
+### Features
+
+* **sort:** change sort from object to array to be able to add multiple sorts ([eded1c2](https://github.com/resourge/fetch/commit/eded1c25a4f10b1a28c25e2adb03ebb7e57ac2c7))
+
 ## [1.32.1](https://github.com/resourge/fetch/compare/v1.32.0...v1.32.1) (2024-05-20)
 
 
