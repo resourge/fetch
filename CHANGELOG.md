@@ -1,3 +1,10 @@
+## [1.33.1](https://github.com/resourge/fetch/compare/v1.33.0...v1.33.1) (2024-05-22)
+
+
+### Bug Fixes
+
+* **defaultconfig:** fix type ([84ca153](https://github.com/resourge/fetch/commit/84ca15318ca24b99c916c3d3052bcd86a39587c5))
+
 # [1.33.0](https://github.com/resourge/fetch/compare/v1.32.1...v1.33.0) (2024-05-22)
 
 
