@@ -254,6 +254,11 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const fetch = async (...args: T) => {
+		if ( 
+			isErrorUsedRef.current && currentDataRef.current.error
+		) {
+			currentDataRef.current.error = null;
+		}
 		setLoading(true);
 		try {
 			const prom = (NotificationService.getRequest(id) ?? noLoadingFetch(...args));
@@ -356,6 +361,12 @@ export function useFetch<Result, T extends any[]>(
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			useOnFocusFetch(
 				async () => {
+					if ( 
+						isErrorUsedRef.current && currentDataRef.current.error
+					) {
+						currentDataRef.current.error = null;
+						NotificationService.notifyById(id);
+					}
 					await (noLoadingFetch as () => Promise<any>)();
 					NotificationService.notifyAll();
 				},
