@@ -1,3 +1,10 @@
+## [1.33.2](https://github.com/resourge/fetch/compare/v1.33.1...v1.33.2) (2024-05-23)
+
+
+### Bug Fixes
+
+* **usefetch:** fix error never being cleared ([19647c7](https://github.com/resourge/fetch/commit/19647c74e7d924c6fd391cbea4755442e1d18dab))
+
 ## [1.33.1](https://github.com/resourge/fetch/compare/v1.33.0...v1.33.1) (2024-05-22)
 
 
