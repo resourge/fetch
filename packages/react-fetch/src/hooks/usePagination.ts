@@ -22,6 +22,11 @@ export type PaginationConfig<
 & FetchStateConfig<Data> 
 & {
 	hash?: boolean
+	/**
+	 * Initial page starts with 0, but can be overwrite.
+	 * @default 0
+	 */
+	initialPage?: number
 }
 
 export type PaginationReturn<
@@ -79,14 +84,15 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 	) => Promise<{ data: Data, totalItems?: number }>,
 	{ 
 		initialState,
-		pagination: defaultPagination = {
-			page: 0,
-			perPage: 10
-		},
 		filter: defaultFilter,
 		sort: defaultSort,
 		hash = false,
 		deps = [],
+		initialPage = 0,
+		pagination: defaultPagination = {
+			page: initialPage,
+			perPage: 10
+		},
 		...config
 	}: PaginationConfig<Data, Filter>
 ): PaginationReturn<Data, Filter> => {
@@ -150,14 +156,14 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		}
 
 		if ( totalPages < pagination.page ) {
-			changePage(0)
+			changePage(initialPage)
 		}
 	}
 
 	const changeItemsPerPage = (perPage: number) => {
 		_setParams({
 			perPage,
-			page: 0
+			page: initialPage
 		});
 	};
     
@@ -170,7 +176,7 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 
 	const resetPagination = () => {
 		_setParams({
-			page: 0,
+			page: initialPage,
 			perPage
 		});
 	};
