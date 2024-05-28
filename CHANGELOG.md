@@ -1,3 +1,10 @@
+# [1.34.0](https://github.com/resourge/fetch/compare/v1.33.2...v1.34.0) (2024-05-28)
+
+
+### Features
+
+* **usepagination:** add ability to change initialPage, ex: from 0 to 1 ([d7cfd13](https://github.com/resourge/fetch/commit/d7cfd1312fd15ea150f172d5739e68d79726673b))
+
 ## [1.33.2](https://github.com/resourge/fetch/compare/v1.33.1...v1.33.2) (2024-05-23)
 
 
