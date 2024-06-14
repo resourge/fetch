@@ -1,3 +1,10 @@
+## [1.34.1](https://github.com/resourge/fetch/compare/v1.34.0...v1.34.1) (2024-06-14)
+
+
+### Bug Fixes
+
+* **types:** fix FilterType paginationSearchParams mandatory ([057dd5f](https://github.com/resourge/fetch/commit/057dd5f69dfdeb51a867daacc199ec51e1714fe5))
+
 # [1.34.0](https://github.com/resourge/fetch/compare/v1.33.2...v1.34.0) (2024-05-28)
 
 
