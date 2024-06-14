@@ -16,7 +16,7 @@ export type PaginationSearchParams = { page: number, perPage: number }
 
 export type FilterType<
 	T extends Record<string, any>
-> = PaginationSearchParams & Partial<T> & SortType
+> = Partial<PaginationSearchParams & T> & SortType
 
 export type FilterSearchParamsDefaultValue<T extends Record<string, any>> = {
 	filter?: T
