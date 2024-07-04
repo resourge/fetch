@@ -125,10 +125,11 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 	});
 
 	const pagination = useMemo((): Pagination => ({
-		perPage,
-		page,
+		perPage: perPage ?? defaultPagination.perPage,
+		page: page ?? defaultPagination.page,
 		totalPages: 0,
 		totalItems: 0
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}), [perPage, page])
 
 	pagination.totalPages = paginationRef.current.totalPages;

@@ -1,6 +1,4 @@
-import React, { useCallback } from 'react';
-
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import React, { useCallback, useSyncExternalStore } from 'react';
 
 import { LoadingService } from '../../../http-service/src';
 

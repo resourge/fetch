@@ -180,13 +180,16 @@ export function useFetch<Result, T extends any[]>(
 
 	const currentDataRef = useRefMemo<State<Result>>(() => {
 		const { initialState } = _config;
+		const enable = (_config.enable ?? defaultConfig.enable ?? true);
+		const silent = _config.silent ?? false;
+
 		return {
 			data: (
 				typeof initialState === 'function' 
 					? (initialState as () => Result)()
 					: initialState
 			),
-			isLoading: isFetchEffect || isFetchEffectWithData,
+			isLoading: !enable || silent ? false : (isFetchEffect || isFetchEffectWithData),
 			error: null
 		}
 	});
