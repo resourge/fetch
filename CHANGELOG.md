@@ -1,3 +1,10 @@
+## [1.34.2](https://github.com/resourge/fetch/compare/v1.34.1...v1.34.2) (2024-07-04)
+
+
+### Bug Fixes
+
+* **usefetch:** fix enable silent on initial loading ([f29bd17](https://github.com/resourge/fetch/commit/f29bd17603daeb1b63479c7807d2a5850916c24e))
+
 ## [1.34.1](https://github.com/resourge/fetch/compare/v1.34.0...v1.34.1) (2024-06-14)
 
 
