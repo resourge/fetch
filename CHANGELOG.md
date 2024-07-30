@@ -1,3 +1,15 @@
+# [1.35.0](https://github.com/resourge/fetch/compare/v1.34.2...v1.35.0) (2024-07-30)
+
+
+### Bug Fixes
+
+* **useinfiniteloading:** fix infiniteLoading ([2e05e47](https://github.com/resourge/fetch/commit/2e05e470063e9002c8d062718276205fc803521c))
+
+
+### Features
+
+* **usepreload:** add preload (not cache) to usePagination and useInfiniteLoading ([f86bf59](https://github.com/resourge/fetch/commit/f86bf598b02413855131d16cf226e57f5ceb56b6))
+
 ## [1.34.2](https://github.com/resourge/fetch/compare/v1.34.1...v1.34.2) (2024-07-04)
 
 
