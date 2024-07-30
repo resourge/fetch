@@ -12,6 +12,7 @@ import { calculateTotalPages } from '../utils/utils';
 
 import { useFetch, type FetchState, type FetchStateConfig } from './useFetch';
 import { useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
+import { type PreloadConfig, usePreload } from './usePreload';
 
 export type Pagination = PaginationSearchParams & { totalItems: number, totalPages: number }
 
@@ -27,6 +28,11 @@ export type PaginationConfig<
 	 * @default 0
 	 */
 	initialPage?: number
+	/**
+	 * Max number of items per page
+	 */
+	maxPerPage?: number
+	preload?: PreloadConfig
 }
 
 export type PaginationReturn<
@@ -78,7 +84,7 @@ export type PaginationReturn<
 	setPaginationState: FetchState<any, any>['setFetchState']
 } 
 
-export const usePagination = <Data, Filter extends Record<string, any> = Record<string, any>>(
+export const usePagination = <Data extends any[], Filter extends Record<string, any> = Record<string, any>>(
 	method: (
 		metadata: PaginationMetadata<Filter>
 	) => Promise<{ data: Data, totalItems?: number }>,
@@ -89,13 +95,15 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		hash = false,
 		deps = [],
 		initialPage = 0,
-		pagination: defaultPagination = {
-			page: initialPage,
-			perPage: 10
-		},
+		pagination: defaultPagination = { },
+		preload,
+		maxPerPage,
 		...config
 	}: PaginationConfig<Data, Filter>
 ): PaginationReturn<Data, Filter> => {
+	const defaultPerPage = defaultPagination.perPage ?? 10;
+	const defaultPage = defaultPagination.page ?? initialPage;
+
 	const {
 		params,
 		filter,
@@ -125,15 +133,26 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 	});
 
 	const pagination = useMemo((): Pagination => ({
-		perPage: perPage ?? defaultPagination.perPage,
-		page: page ?? defaultPagination.page,
-		totalPages: 0,
-		totalItems: 0
+		perPage: perPage ?? defaultPerPage,
+		page: page ?? defaultPage,
+		get totalPages() {
+			return paginationRef.current.totalPages
+		},
+		get totalItems() {
+			return paginationRef.current.totalItems
+		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}), [perPage, page])
 
-	pagination.totalPages = paginationRef.current.totalPages;
-	pagination.totalItems = paginationRef.current.totalItems;
+	const { getMethod } = usePreload<Data, Filter>({
+		method,
+		preload,
+		filter,
+		initialPage,
+		page: pagination.page,
+		maxPerPage,
+		sort
+	});
 
 	const _setParams = (newPagination: Partial<PaginationSearchParams>) => {
 		setParams({
@@ -184,7 +203,7 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 
 	const fetchData = useFetch(
 		async () => {
-			const { data, totalItems } = await method({
+			const { data, totalItems } = await getMethod({
 				pagination,
 				sort,
 				filter
@@ -207,8 +226,8 @@ export const usePagination = <Data, Filter extends Record<string, any> = Record<
 		sort = []
 	}: DeepPartial<PaginationMetadata<Filter>> = {}) => {
 		setParams({
-			page: pagination.page ?? defaultPagination.page,
-			perPage: pagination.perPage ?? defaultPagination.perPage,
+			page: pagination.page ?? defaultPage,
+			perPage: pagination.perPage ?? defaultPerPage,
 			sort,
 
 			...defaultFilter,

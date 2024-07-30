@@ -1,4 +1,4 @@
-import { useBaseScrollRestoration } from '../useBaseScrollRestoration/useBaseScrollRestoration';
+import { useBaseScrollRestoration } from '../useBaseScrollRestoration';
 import { type VisitedUrl } from '../useOnScroll/types';
 import { type ElementWithScrollTo } from '../useOnScroll/useOnScroll';
 

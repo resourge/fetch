@@ -25,7 +25,7 @@ export type FilterSearchParamsDefaultValue<T extends Record<string, any>> = {
 export type DefaultPaginationType<
 	Filter extends Record<string, any> = Record<string, any>
 > = FilterSearchParamsDefaultValue<Filter> & {
-	pagination?: PaginationSearchParams
+	pagination?: Partial<PaginationSearchParams>
 } 
 
 export type PaginationMetadata<

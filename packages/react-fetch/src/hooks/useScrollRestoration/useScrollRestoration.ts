@@ -1,4 +1,4 @@
-import { useBaseScrollRestoration } from '../useBaseScrollRestoration/useBaseScrollRestoration';
+import { useBaseScrollRestoration } from '../useBaseScrollRestoration';
 import { type VisitedUrl } from '../useOnScroll/types';
 import { type ElementWithScrollTo } from '../useOnScroll/useOnScroll';
 
@@ -37,6 +37,4 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 	 * Unique id categorizing current component. Must be the same between render or component changes for scroll restoration to work.
 	 */
 	scrollRestorationId: string = window?.location?.pathname
-) => {
-	return useBaseScrollRestoration<T>(visitedUrl, action, scrollRestorationId)
-};
+) => useBaseScrollRestoration<T>(visitedUrl, action, scrollRestorationId);

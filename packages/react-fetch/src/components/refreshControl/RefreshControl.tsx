@@ -12,9 +12,6 @@ type RefreshControlProps<
 	Filter extends Record<string, any> = Record<string, any>,
 > = {
 	context: InfiniteLoadingReturn<Data, Filter>
-	/**
-	 * By default is 100%
-	 */
 	detectionMargin?: string
 	/**
 	 * By default is false
@@ -40,7 +37,7 @@ function RefreshControl<
 >({
 	context,
 	root = null,
-	detectionMargin = '100%',
+	detectionMargin,
 	renderComponent,
 	preload
 }: RefreshControlProps<Data, Filter>) {
@@ -48,11 +45,10 @@ function RefreshControl<
 
 	useEffect(() => {
 		if (ref.current) {
-			const _root =
-				root &&
+			const _root = root &&
 				(root as MutableRefObject<IntersectionObserverInit['root']>).current
-					? (root as MutableRefObject<IntersectionObserverInit['root']>).current
-					: (root as IntersectionObserverInit['root']);
+				? (root as MutableRefObject<IntersectionObserverInit['root']>).current
+				: (root as IntersectionObserverInit['root']);
 
 			const observer = new IntersectionObserver(
 				(entries) => {
@@ -79,17 +75,19 @@ function RefreshControl<
 			};
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [detectionMargin]);
+	}, [detectionMargin, context.data.length]);
 
 	return (
 		<div ref={ref}>
-			{renderComponent &&
+			{
+				renderComponent &&
 				renderComponent({
 					isLastIncomplete: context.isLastIncomplete,
 					onClick: () => {
 						context.loadMore();
 					}
-				})}
+				})
+			}
 		</div>
 	);
 }

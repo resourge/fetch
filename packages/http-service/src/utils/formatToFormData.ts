@@ -8,9 +8,7 @@ const convertModelToFormData = <K>(model: K, formData: FormData, namespace: stri
 		else if ( typeof model === 'object' && !(model instanceof Date) ) {
 			Object.keys(model)
 			.forEach((key: string) => {
-				const _namespace: string = `${namespace ? `${namespace}.` : ''}${key}`;
-				const _model: any = model[key as keyof typeof model];
-				convertModelToFormData(_model, formData, _namespace);
+				convertModelToFormData(model[key as keyof typeof model], formData, `${namespace ? `${namespace}.` : ''}${key}`);
 			})
 		}
 		else {

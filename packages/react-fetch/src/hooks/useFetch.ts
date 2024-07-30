@@ -171,7 +171,7 @@ export function useFetch<Result, T extends any[]>(
 	const _config: FetchStateConfig<Result> = (config ?? {}) as FetchStateConfig<Result>;
 
 	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const id = _config?.id ?? useId();
+	const id = _config.id ?? useId();
 
 	const isOnline = useIsOnline();
 
@@ -195,9 +195,7 @@ export function useFetch<Result, T extends any[]>(
 	});
 
 	const setLoading = (isLoading: boolean) => { 
-		const silent = _config.silent ?? false;
-
-		if ( !silent ) {
+		if ( !_config.silent ) {
 			if ( isLoadingUsedRef.current ) {
 				currentDataRef.current.isLoading = isLoading;
 			}
@@ -257,9 +255,7 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const fetch = async (...args: T) => {
-		if ( 
-			isErrorUsedRef.current && currentDataRef.current.error
-		) {
+		if ( isErrorUsedRef.current && currentDataRef.current.error ) {
 			currentDataRef.current.error = null;
 		}
 		setLoading(true);
@@ -341,7 +337,6 @@ export function useFetch<Result, T extends any[]>(
 				QueueKingSystem.isThresholdEnabled = true;
 				
 				result.fetch()
-				.catch(() => {})
 				.finally(() => {
 					if ( _config.scrollRestoration ) {
 						if ( Array.isArray(_config.scrollRestoration) ) {
@@ -364,9 +359,7 @@ export function useFetch<Result, T extends any[]>(
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			useOnFocusFetch(
 				async () => {
-					if ( 
-						isErrorUsedRef.current && currentDataRef.current.error
-					) {
+					if ( isErrorUsedRef.current && currentDataRef.current.error ) {
 						currentDataRef.current.error = null;
 						NotificationService.notifyById(id);
 					}
@@ -385,7 +378,6 @@ export function useFetch<Result, T extends any[]>(
 		return () => {
 			NotificationService.finishRequest(id); 
 			if ( controllers.current.size ) {
-				// eslint-disable-next-line react-hooks/exhaustive-deps
 				controllers.current.forEach((controller) => {
 					if ( !controller.signal.aborted ) {
 						controller.abort();

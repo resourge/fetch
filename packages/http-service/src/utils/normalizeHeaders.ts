@@ -61,20 +61,19 @@ export const normalizeBody = (
 			config.data instanceof URLSearchParams ||
 			config.data instanceof ArrayBuffer || (
 				globalThis.ReadableStream !== undefined && config.data instanceof ReadableStream
+			) || (
+				typeof config.data === 'object' && 
+				( 
+					Object.keys(config.data).length &&
+					config.data.buffer != null &&
+					config.data.byteLength != null &&
+					config.data.byteOffset != null
+				)
 			)
 		) {
 			return config.data
 		}
 		else if ( typeof config.data === 'object' ) {
-			if ( 
-				Object.keys(config.data).length &&
-				config.data.buffer != null &&
-				config.data.byteLength != null &&
-				config.data.byteOffset != null
-			) {
-				return config.data
-			}
-			
 			if ( !config.headers['Content-Type'] ) {
 				config.headers['Content-Type'] = 'application/json'
 			}

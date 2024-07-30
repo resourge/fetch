@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-import { ScrollRestorationIdIsUndefined } from '../../errors/ScrollRestorationIdIsUndefined';
-import { type VisitedUrl } from '../useOnScroll/types';
-import { type ElementWithScrollTo, useOnScroll } from '../useOnScroll/useOnScroll';
+import { ScrollRestorationIdIsUndefined } from '../errors/ScrollRestorationIdIsUndefined';
+
+import { type VisitedUrl } from './useOnScroll/types';
+import { type ElementWithScrollTo, useOnScroll } from './useOnScroll/useOnScroll';
 
 /**
  * Method to restore scroll.

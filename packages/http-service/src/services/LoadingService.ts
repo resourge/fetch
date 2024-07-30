@@ -15,10 +15,7 @@ class LoadingService {
 
 	public getLoading(loaderId: string = ''): boolean {
 		const event = this.events.get(loaderId);
-		if ( event ) {
-			return event.isLoading
-		}
-		return false;
+		return Boolean(event && event.isLoading);
 	};
 
 	/**

@@ -5,6 +5,4 @@ import { type NormalizeRequestConfig } from './normalizeHeaders'
  */
 export const getCacheKey = (
 	config: NormalizeRequestConfig
-): string => {
-	return `${config.url.href}_${config.method ?? 'get'}_${JSON.stringify(config.headers)}`
-}
+): string => `${config.url.href}_${config.method ?? 'get'}_${JSON.stringify(config.headers)}`

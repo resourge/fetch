@@ -26,23 +26,20 @@ export const useOnFocusFetch = (
 					dateNow = Date.now()
 				})
 			}, 1000);
-
-			const focus = () => {
-				const now = Date.now();
-
-				if (now - dateNow <= threshold ) {
-					return;
-				}
-
-				fetchOnWindowFocus();
-			}
-			const blur = () => {
-				dateNow = Date.now();
-			}
-
+		
 			return {
-				focus,
-				blur,
+				focus: () => {
+					const now = Date.now();
+
+					if (now - dateNow <= threshold ) {
+						return;
+					}
+
+					fetchOnWindowFocus();
+				},
+				blur: () => {
+					dateNow = Date.now();
+				},
 				clear: fetchOnWindowFocus.clear
 			}
 		},

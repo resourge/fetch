@@ -55,20 +55,25 @@ describe('useFetch', () => {
 	});
 
 	it('should handle errors correctly', async () => {
-		const { result } = renderHook(() =>
-			useFetch(() => Promise.reject(new Error('fetch error')), {
-				initialState: ''
-			})
-		);
+		try {
+			const { result } = renderHook(() =>
+				useFetch(() => Promise.reject(new Error('fetch error')), {
+					initialState: ''
+				})
+			);
 
-		expect(result.current.error).toBe(null);
-		expect(result.current.isLoading).toBe(true);
+			expect(result.current.error).toBe(null);
+			expect(result.current.isLoading).toBe(true);
 
-		await waitFor(() => {
+			await waitFor(() => {
+				expect(result.current.error).toEqual(new Error('fetch error'));
+			});
+
 			expect(result.current.isLoading).toBe(false);
-		});
-
-		expect(result.current.error).toEqual(new Error('fetch error'));
+		}
+		catch (e) {
+			expect(e).toEqual(Error('some error'))
+		}
 	});
 
 	it('should not fetch data when enable is false', () => {

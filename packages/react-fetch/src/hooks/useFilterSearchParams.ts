@@ -10,9 +10,7 @@ import {
 import { type SearchParamsResult, useSearchParams } from './useSearchParams/useSearchParams';
 
 type SortTable = {
-	(
-		sort: SortCriteria, 
-	): void
+	(sort: SortCriteria): void
 	(
 		orderBy: OrderByEnum, 
 		orderColumn: string
@@ -47,17 +45,18 @@ export const useFilterSearchParams = <
 		hash
 	);
 
-	const {
-		perPage,
-		page, 
-
-		sort,
-		..._filter
-	} = params;
-
 	// This is to memorize filter and only change when search('?*') change.
 	// eslint-disable-next-line react-hooks/exhaustive-deps 
-	const filter = useMemo(() => _filter as unknown as Filter, [params]);
+	const filter = useMemo(() => {
+		const {
+			perPage,
+			page, 
+
+			sort,
+			..._filter
+		} = params;
+		return _filter as unknown as Filter
+	}, [params]);
 
 	const setFilter = (newFilter: FilterType<Filter>) => {
 		setParams({
@@ -102,7 +101,7 @@ export const useFilterSearchParams = <
 
 	return {
 		filter,
-		sort,
+		sort: params.sort,
 		setFilter,
 		sortTable: sortTable as SortTable,
 		getPaginationHref,

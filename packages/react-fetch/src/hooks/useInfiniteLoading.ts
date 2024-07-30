@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { useEffect, useRef } from 'react';
@@ -13,6 +14,7 @@ import { calculateTotalPages } from '../utils/utils';
 
 import { type FetchState } from './useFetch';
 import { useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams'
+import { type PreloadConfig, usePreload } from './usePreload';
 import { type InfiniteScrollRestoration } from './useScrollRestoration/useInfiniteScrollRestoration';
 
 import { useFetch, useIsOnline, type FetchStateConfig } from '.';
@@ -24,10 +26,15 @@ export type InfiniteLoadingConfig<
 FetchStateConfig<Data> & {
 	hash?: boolean
 	/**
-		 * Initial page starts with 0, but can be overwrite.
-		 * @default 0
-		 */
+	 * Initial page starts with 0, but can be overwrite.
+	 * @default 0
+	 */
 	initialPage?: number
+	/**
+	 * Max number of items per page
+	 */
+	maxPerPage?: number
+	preload?: PreloadConfig
 };
 
 export type InfiniteLoadingReturn<
@@ -54,7 +61,7 @@ export type InfiniteLoadingReturn<
 	 */
 	isLastIncomplete: boolean
 	isLoading: FetchState<any, any>['isLoading']
-	loadMore: () => void
+	loadMore: () => Promise<void>
 	/**
 	 * Preload method.
 	 */
@@ -67,23 +74,12 @@ export type InfiniteLoadingReturn<
 	setPaginationState: FetchState<any, any>['setFetchState']
 };
 
-const MINUTE_IN_MILLISECOND = 60000;
-
 type InternalDataRef<Data extends any[]> = {
 	data: Data[]
 	isFirstTime: boolean
-	nextData: {
-		method?: () => Promise<{
-			data: Data
-			totalItems?: number | undefined
-		}>
-		promise?: Promise<{
-			data: Data
-			totalItems?: number | undefined
-		}>
-		when?: Date
-	}
-	perPage: number
+	isLast: boolean
+	isLastIncomplete: boolean
+	isLoading: boolean
 };
 
 export const useInfiniteLoading = <
@@ -96,17 +92,19 @@ export const useInfiniteLoading = <
 	{
 		initialState,
 		initialPage = 0,
-		pagination: defaultPagination = {
-			page: initialPage,
-			perPage: 10
-		},
+		pagination: defaultPagination = {},
 		filter: defaultFilter,
 		sort: defaultSort,
 		scrollRestoration,
 		hash,
+		preload,
+		maxPerPage,
 		...config
 	}: InfiniteLoadingConfig<Data, Filter>
 ): InfiniteLoadingReturn<Data, Filter> => {
+	const defaultPerPage = defaultPagination.perPage ?? 10;
+	const defaultPage = defaultPagination.page ?? initialPage;
+
 	const isOnline = useIsOnline();
 
 	const _scrollRestoration: InfiniteScrollRestoration =
@@ -125,99 +123,111 @@ export const useInfiniteLoading = <
 		totalItems: number
 		totalPages: number
 	}>({
-		pagination: defaultPagination,
+		pagination: {
+			perPage: defaultPerPage,
+			page: defaultPage
+		},
 		totalPages: 0,
 		totalItems: 0
 	});
+
 	const internalDataRef = useRef<InternalDataRef<Data>>({
 		isFirstTime: true,
+		isLoading: false,
 		data: [],
-		nextData: {},
-		perPage: defaultPagination.perPage
+		isLast: false,
+		isLastIncomplete: false
 	});
 
 	const {
 		setParams, filter, setFilter, sort, sortTable 
-	} =
-		useFilterSearchParams<Filter>(
-			{
-				filter: defaultFilter,
-				sort: defaultSort
-			},
-			hash
-		);
+	} = useFilterSearchParams<Filter>(
+		{
+			filter: defaultFilter,
+			sort: defaultSort
+		},
+		hash
+	);
 
 	const deps = config?.deps ? [filter, sort, ...config.deps] : [filter, sort];
 
+	const {
+		willPreload, getMethod, getRestoreMethod 
+	} = usePreload<Data, Filter>({
+		method,
+		preload,
+		filter,
+		initialPage,
+		page: paginationRef.current.pagination.page,
+		maxPerPage,
+		sort
+	});
+
+	async function _getRestoreMethod(metadata: PaginationMetadata<Filter>, restoration: PaginationSearchParams) { 
+		const { totalItems } = await getRestoreMethod(
+			metadata, 
+			{
+				page: restoration.page,
+				perPage: restoration.perPage 
+			},
+			(index, data) => {
+				internalDataRef.current.data[index] = data.splice(index, restoration.perPage) as Data;
+			}
+		);
+
+		return {
+			page: restoration.page,
+			totalItems
+		};
+	}
+
+	async function _getMethod(metadata: PaginationMetadata<Filter>) {
+		if ( internalDataRef.current.isFirstTime && _scrollRestoration ) {
+			const scrollRestorationData = _scrollRestoration.getPage();
+
+			if ( 
+				scrollRestorationData.perPage !== undefined &&
+				scrollRestorationData.page !== undefined 
+			) {
+				return await _getRestoreMethod(
+					metadata, 
+					{
+						page: scrollRestorationData.page,
+						perPage: scrollRestorationData.perPage 
+					}
+				);
+			}
+		}
+
+		const { data, totalItems } = await getMethod(
+			metadata
+		);
+
+		internalDataRef.current.data[metadata.pagination.page] = data;
+
+		return {
+			page: metadata.pagination.page,
+			totalItems
+		};
+	}
+
 	const fetchData = useFetch(
 		async () => {
-			const scrollRestorationData =
-				internalDataRef.current.isFirstTime && _scrollRestoration
-					? _scrollRestoration.getPage()
-					: undefined;
-			internalDataRef.current.isFirstTime = false;
-
-			const perPage =
-				scrollRestorationData &&
-				scrollRestorationData.perPage !== undefined &&
-				scrollRestorationData.page !== undefined
-					? scrollRestorationData.perPage * (scrollRestorationData.page + 1)
-					: paginationRef.current.pagination.perPage;
-			const page = scrollRestorationData
-				? initialPage
-				: paginationRef.current.pagination.page;
-
-			paginationRef.current.pagination.page =
-				scrollRestorationData?.page ?? paginationRef.current.pagination.page;
-
-			const tableMeta = {
-				pagination: {
-					page,
-					perPage
-				},
+			internalDataRef.current.isLoading = true;
+			const { page, totalItems } = await _getMethod({
+				pagination: paginationRef.current.pagination,
 				sort,
 				filter
-			};
+			})
 
-			// Finish "nextData" in case "nextData" has yet to finish
-			const { data, totalItems } = await (internalDataRef.current.nextData.promise &&
-				internalDataRef.current.nextData.when &&
-				Date.now() - internalDataRef.current.nextData.when.getTime() <= MINUTE_IN_MILLISECOND
-				? internalDataRef.current.nextData.promise
-				// Normal get
-				: method(tableMeta)
-			);
+			internalDataRef.current.isFirstTime = false;
 
-			internalDataRef.current.data[tableMeta.pagination.page] = data;
-
-			// If outside dependencies change reset infiniteLoading page
-			paginationRef.current.pagination.page = tableMeta.pagination.page;
 			changeTotalPages(totalItems ?? 0);
+			
+			// If outside dependencies change reset infiniteLoading page
+			paginationRef.current.pagination.page = page;
 
-			// Preload next "page"
 			const newData = internalDataRef.current.data.flat() as Data;
-			internalDataRef.current.nextData = {};
-			if (
-				totalItems &&
-				totalItems > tableMeta.pagination.perPage &&
-				!(
-					paginationRef.current.pagination.page >=
-						paginationRef.current.totalPages - (initialPage === 0 ? 1 : 0) &&
-					newData.length !==
-						(paginationRef.current.pagination.page + 1) *
-							paginationRef.current.pagination.perPage
-				)
-			) {
-				internalDataRef.current.nextData.method = () =>
-					method({
-						pagination: {
-							page: tableMeta.pagination.page + 1,
-							perPage: tableMeta.pagination.perPage
-						},
-						filter: tableMeta.filter,
-						sort: tableMeta.sort
-					});
-			}
 
 			if (_scrollRestoration) {
 				_scrollRestoration.setPage(
@@ -225,6 +235,16 @@ export const useInfiniteLoading = <
 					paginationRef.current.pagination.perPage
 				);
 			}
+
+			const inComplete = newData.length !== (
+				paginationRef.current.pagination.page + 1
+			) * paginationRef.current.pagination.perPage
+
+			internalDataRef.current.isLast = newData.length === totalItems;
+
+			internalDataRef.current.isLastIncomplete = internalDataRef.current.isLast && inComplete;
+
+			internalDataRef.current.isLoading = false;
 
 			return newData;
 		},
@@ -238,10 +258,9 @@ export const useInfiniteLoading = <
 
 	useEffect(() => {
 		internalDataRef.current.data = [];
-		internalDataRef.current.nextData = {};
 		paginationRef.current.pagination.page = initialPage;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isOnline, ...(deps ?? [])]);
+	}, [isOnline, ...deps]);
 
 	const changeItemsPerPage = (perPage: number) => {
 		paginationRef.current.pagination.perPage = perPage;
@@ -269,48 +288,14 @@ export const useInfiniteLoading = <
 		}
 	};
 
-	const preload = () => {
-		if (internalDataRef.current.nextData.method) {
-			if (
-				!internalDataRef.current.nextData.when || 
-				(
-					internalDataRef.current.nextData.when &&
-					Date.now() - internalDataRef.current.nextData.when.getTime() >
-						MINUTE_IN_MILLISECOND
-				)
-			) {
-				internalDataRef.current.nextData.promise = internalDataRef.current.nextData.method();
-				internalDataRef.current.nextData.when = new Date();
-			}
-		}
-	};
-
-	const isLast =
-		paginationRef.current.pagination.page >=
-		paginationRef.current.totalPages - (initialPage === 0 ? 1 : 0);
-
-	const isLastIncomplete = internalDataRef.current.isFirstTime
-		? false
-		: isLast &&
-			fetchData.data.length !==
-				(paginationRef.current.pagination.page + 1) *
-					paginationRef.current.pagination.perPage;
-
-	const loadMore = () => {
-		if (isLastIncomplete) {
-			fetchData.fetch();
-			return;
-		}
-		changePage(paginationRef.current.pagination.page + 1);
-	};
-
 	const reset = ({
 		filter,
 		pagination,
 		sort
 	}: Partial<PaginationMetadata<Filter>> = {}) => {
 		paginationRef.current.pagination = {
-			...(pagination ?? defaultPagination)
+			perPage: pagination?.perPage ?? defaultPerPage,
+			page: pagination?.perPage ?? defaultPage
 		};
 
 		setParams({
@@ -321,11 +306,48 @@ export const useInfiniteLoading = <
 		} as FilterType<Filter>);
 	};
 
-	const _context: InfiniteLoadingReturn<Data, Filter> = {
-		preload,
-		isLast,
-		isLastIncomplete,
-		loadMore,
+	return {
+		preload: () => {
+			getMethod({
+				filter,
+				sort,
+				pagination: {
+					...paginationRef.current.pagination,
+					page: paginationRef.current.pagination.page + 1
+				}
+			})
+		},
+		isLast: internalDataRef.current.isLast,
+		isLastIncomplete: internalDataRef.current.isLastIncomplete,
+		loadMore: async () => {
+			if ( internalDataRef.current.isLoading ) {
+				return;
+			}
+
+			if ( internalDataRef.current.isLastIncomplete ) {
+				if ( willPreload(paginationRef.current.pagination.page) ) {
+					return;
+				}
+				const { totalItems } = await _getRestoreMethod(
+					{
+						pagination: paginationRef.current.pagination,
+						sort,
+						filter
+					}, 
+					{
+						page: paginationRef.current.pagination.page,
+						perPage: paginationRef.current.pagination.perPage 
+					}
+				);
+
+				changeTotalPages(totalItems ?? 0);
+
+				fetchData.setFetchState(internalDataRef.current.data.flat() as Data);
+
+				return;
+			}
+			changePage(paginationRef.current.pagination.page + 1);
+		},
 
 		data: fetchData.data,
 		get error() {
@@ -349,9 +371,16 @@ export const useInfiniteLoading = <
 		reset,
 
 		get context() {
-			return _context;
+			return this;
+		},
+		// @ts-expect-error To prevent circular dependency
+		toJSON() {
+			return {
+				...this,
+				get context() {
+					return 'To Prevent circular dependency';
+				}
+			};
 		}
 	};
-
-	return _context;
 };
