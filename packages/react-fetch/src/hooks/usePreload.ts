@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react'
 
 import { type PaginationSearchParams, type PaginationMetadata, type SortCriteria } from '../types'
+import { IS_DEV } from '../utils/constants'
 import { calculateTotalPages } from '../utils/utils'
 
 export type PreloadConfig = false | {
@@ -43,7 +44,7 @@ export const usePreload = <
 		initialPage
 	}: PreloadProps<Data, Filter>
 ) => {
-	if ( __DEV__ ) {
+	if ( IS_DEV ) {
 		if ( maxPerPage && !Number.isInteger(maxPerPage) ) {
 			throw new Error('`maxPerPage` needs to be integer');
 		}

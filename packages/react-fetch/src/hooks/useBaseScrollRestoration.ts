@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { ScrollRestorationIdIsUndefined } from '../errors/ScrollRestorationIdIsUndefined';
+import { IS_DEV } from '../utils/constants';
 
 import { type VisitedUrl } from './useOnScroll/types';
 import { type ElementWithScrollTo, useOnScroll } from './useOnScroll/useOnScroll';
@@ -40,7 +41,7 @@ export const useBaseScrollRestoration = <T extends ElementWithScrollTo | null>(
 	 */
 	scrollRestorationId: string = window?.location?.pathname
 ) => {
-	if ( __DEV__ ) {
+	if ( IS_DEV ) {
 		if ( !scrollRestorationId ) {
 			throw new ScrollRestorationIdIsUndefined();
 		}

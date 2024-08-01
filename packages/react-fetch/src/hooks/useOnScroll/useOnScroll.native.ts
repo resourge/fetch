@@ -1,6 +1,8 @@
 import { useEffect, useRef, type MutableRefObject } from 'react';
 import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
+import { IS_DEV } from '../../utils/constants';
+
 import { type ScrollPos } from './types';
 
 export type ElementWithScrollTo = {
@@ -21,7 +23,7 @@ export const useOnScroll = <T extends ElementWithScrollTo | null>(
 
 	onScrollRef.current = scrollMethod;
 
-	if ( __DEV__ ) {
+	if ( IS_DEV ) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			if ( !ref.current ) {
