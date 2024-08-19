@@ -1,3 +1,10 @@
+## [1.35.1](https://github.com/resourge/fetch/compare/v1.35.0...v1.35.1) (2024-08-19)
+
+
+### Bug Fixes
+
+* **preload:** remove preload from working in using fetch directly ([429fc8f](https://github.com/resourge/fetch/commit/429fc8f25731911802da0896e4c4580ec15e1d29))
+
 # [1.35.0](https://github.com/resourge/fetch/compare/v1.34.2...v1.35.0) (2024-07-30)
 
 
