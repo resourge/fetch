@@ -152,7 +152,7 @@ export const useInfiniteLoading = <
 	const deps = config?.deps ? [filter, sort, ...config.deps] : [filter, sort];
 
 	const {
-		willPreload, getMethod, getRestoreMethod 
+		willPreload, getMethod, getRestoreMethod, preloadRef
 	} = usePreload<Data, Filter>({
 		method,
 		preload,
@@ -358,7 +358,10 @@ export const useInfiniteLoading = <
 		},
 
 		setPaginationState: fetchData.setFetchState,
-		fetch: fetchData.fetch,
+		fetch: () => {
+			preloadRef.current = {};
+			return fetchData.fetch();
+		},
 
 		sort,
 		filter,

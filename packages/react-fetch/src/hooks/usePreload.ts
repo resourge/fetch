@@ -234,6 +234,7 @@ export const usePreload = <
 	return {
 		willPreload,
 		getMethod,
-		getRestoreMethod
+		getRestoreMethod,
+		preloadRef
 	}
 }

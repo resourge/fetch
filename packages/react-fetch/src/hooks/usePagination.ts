@@ -144,7 +144,7 @@ export const usePagination = <Data extends any[], Filter extends Record<string, 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}), [perPage, page])
 
-	const { getMethod } = usePreload<Data, Filter>({
+	const { getMethod, preloadRef } = usePreload<Data, Filter>({
 		method,
 		preload,
 		filter,
@@ -245,7 +245,10 @@ export const usePagination = <Data extends any[], Filter extends Record<string, 
 		},
 
 		setPaginationState: fetchData.setFetchState,
-		fetch: fetchData.fetch,
+		fetch: () => {
+			preloadRef.current = {};
+			return fetchData.fetch();
+		},
 
 		sort,
 		filter,
