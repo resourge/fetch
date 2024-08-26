@@ -1,3 +1,10 @@
+## [1.35.2](https://github.com/resourge/fetch/compare/v1.35.1...v1.35.2) (2024-08-26)
+
+
+### Bug Fixes
+
+* **useinfiniteloading:** fix sort not updating list ([fc392f9](https://github.com/resourge/fetch/commit/fc392f90e7607bdb463ac88bcf39134d30a84f0d))
+
 ## [1.35.1](https://github.com/resourge/fetch/compare/v1.35.0...v1.35.1) (2024-08-19)
 
 
