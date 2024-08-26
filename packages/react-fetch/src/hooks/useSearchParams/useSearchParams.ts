@@ -1,55 +1,49 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import { createNewUrlWithSearch, parseParams, useSearchParams as useRSearchParams } from '@resourge/react-search-params';
+import { createNewUrlWithSearch, parseParams, useSearchParams as useRSearchParams } from '@resourge/react-search-params'
 
-import { type DefaultPaginationType, type FilterType } from '../../types/types';
+import { type ParamsType } from '../../types/ParamsType';
 
-export type SearchParamsResult<
-	Filter extends Record<string, any> = Record<string, any>,
-> = {
-	getPaginationHref: (page: number) => string
-	params: FilterType<Filter>
-	setParams: (newParams: FilterType<Filter>) => void
-}
+import { type SearchParamsResult, type SearchParamsProps } from './types'
 
 export const useSearchParams = <
-	Filter extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>,
 >(
 	{
 		filter, 
 		pagination,
-		sort
-	}: DefaultPaginationType<Filter>,
-	hash?: boolean
-): SearchParamsResult<Filter> => {
+		sort,
+		hash
+	}: SearchParamsProps<FilterSearchParams>
+): SearchParamsResult<FilterSearchParams> => {
 	const [
 		{ params, url }, 
 		setParams
-	] = useRSearchParams<FilterType<Filter>>(
+	] = useRSearchParams<ParamsType<FilterSearchParams>>(
 		({ url }) => {
 			window.history.replaceState(null, '', url.href); 
 		},
 		{
-			...filter, 
-			...pagination,
-			sort
-		} as FilterType<Filter>,
-		{
+			defaultParams: {
+				...filter, 
+				...pagination,
+				sort
+			},
 			hash
 		}
 	);
 
-	const getPaginationHref = (page: number) => {
-		const newSearch: string = parseParams({
-			...params,
-			page
-		});
-
-		return createNewUrlWithSearch(url, newSearch, hash).href;
-	}
-
 	return {
 		params,
 		setParams,
-		getPaginationHref
-	} as const
+		getPaginationHref(page: number) {
+			return createNewUrlWithSearch(
+				url, 
+				parseParams({
+					...params,
+					page
+				}), 
+				hash
+			).href;
+		}
+	}
 }

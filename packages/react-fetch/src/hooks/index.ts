@@ -7,11 +7,9 @@ export type {
 } from './useFetch'
 export { useFetchOnDependencyUpdate } from './useFetchOnDependencyUpdate';
 export { useInfiniteLoading } from './useInfiniteLoading';
-export type { InfiniteLoadingConfig, InfiniteLoadingReturn } from './useInfiniteLoading';
+export type { InfiniteLoadingReturn } from './useInfiniteLoading';
 export { useIsOnline } from './useIsOnline';
 export { usePagination } from './usePagination';
-export type {
-	Pagination, PaginationConfig, PaginationReturn 
-} from './usePagination';
+export type { Pagination, PaginationReturn } from './usePagination';
 export { useScrollRestoration } from './useScrollRestoration/useScrollRestoration';
 export { useInfiniteScrollRestoration } from './useScrollRestoration/useInfiniteScrollRestoration';

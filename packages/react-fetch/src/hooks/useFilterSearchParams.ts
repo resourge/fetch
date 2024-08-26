@@ -1,15 +1,30 @@
 import { useMemo } from 'react';
 
 import {
+	type OrderByEnum,
+	type PaginationSearchParamsType,
+	type ParamsType,
 	type SortCriteria,
-	type DefaultPaginationType,
-	type FilterType,
-	type OrderByEnum
-} from '../types/types'
+	type SortSearchParamsType
+} from '../types/ParamsType';
+import { deepCompare } from '../utils/comparationUtils';
 
-import { type SearchParamsResult, useSearchParams } from './useSearchParams/useSearchParams';
+import { type Pagination } from './usePagination';
+import { useRefMemo } from './useRefMemo';
+import { type SearchParamsProps, type SearchParamsResult } from './useSearchParams/types';
+import { useSearchParams } from './useSearchParams/useSearchParams';
 
-type SortTable = {
+export type FilterSearchParamsDefaultValue<T extends Record<string, any>> = {
+	filter: T
+	pagination: PaginationSearchParamsType
+} & SortSearchParamsType
+
+export type State<T extends Record<string, any>> = {
+	filter: T
+	pagination: Pagination
+} & SortSearchParamsType
+
+type SortTableFunctionType = {
 	(sort: SortCriteria): void
 	(
 		orderBy: OrderByEnum, 
@@ -17,50 +32,88 @@ type SortTable = {
 	): void
 }
 
-export type FilterSearchParamsReturn<Filter extends Record<string, any>> = {
-	filter: Filter
+export type FilterSearchParamsReturn<FilterSearchParams extends Record<string, any>> = {
+	filter: FilterSearchParams
+	pagination: Pagination
+} & SortSearchParamsType 
+& {
 	/**
 	 * Method to updates filters.
 	 */
-	setFilter: (newFilter: FilterType<Filter>) => void
+	setFilter: <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => void
 	/**
 	 * Changes which column to order asc/desc.
 	 */
-	sortTable: SortTable
-	sort?: SortCriteria
+	sortTable: SortTableFunctionType
 }
 
 export const useFilterSearchParams = <
-	Filter extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>,
 >(
-	defaultData: DefaultPaginationType<Filter>,
-	hash?: boolean
-): FilterSearchParamsReturn<Filter> & SearchParamsResult<Filter> => {
+	defaultData: SearchParamsProps<FilterSearchParams>
+): FilterSearchParamsReturn<FilterSearchParams> & Pick<SearchParamsResult<FilterSearchParams>, 'getPaginationHref'> => {
 	const {
 		getPaginationHref,
 		params,
 		setParams
-	} = useSearchParams<Filter>(
-		defaultData,
-		hash
-	);
+	} = useSearchParams<FilterSearchParams>(defaultData);
 
-	// This is to memorize filter and only change when search('?*') change.
-	// eslint-disable-next-line react-hooks/exhaustive-deps 
-	const filter = useMemo(() => {
+	const memoRef = useRefMemo<State<FilterSearchParams>>(() => ({
+		filter: defaultData.filter,
+		sort: defaultData.sort,
+		pagination: {
+			page: defaultData.pagination.page,
+			perPage: defaultData.pagination.perPage,
+			totalItems: 0,
+			totalPages: 0
+		}
+	}))
+
+	const {
+		filter,
+		sort,
+		pagination
+	} = useMemo(() => {
 		const {
 			perPage,
 			page, 
 
 			sort,
-			..._filter
+			...filter
 		} = params;
-		return _filter as unknown as Filter
+
+		if ( 
+			perPage !== undefined &&
+			memoRef.current.pagination.perPage !== perPage
+		) {
+			memoRef.current.pagination.perPage = perPage;
+		}
+
+		if ( 
+			page !== undefined &&
+			memoRef.current.pagination.page !== page
+		) {
+			memoRef.current.pagination.page = page;
+		}
+
+		if ( !deepCompare(sort, memoRef.current.sort) ) {
+			memoRef.current.sort = sort;
+		}
+
+		if ( !deepCompare(filter as unknown as FilterSearchParams, memoRef.current.filter) ) {
+			memoRef.current.filter = filter as unknown as FilterSearchParams;
+		}
+
+		return memoRef.current
+	// eslint-disable-next-line react-hooks/exhaustive-deps 
 	}, [params]);
 
-	const setFilter = (newFilter: FilterType<Filter>) => {
+	const setFilter = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
 		setParams({
-			...params,
+			...filter,
+			sort,
+			page: pagination.page,
+			perPage: pagination.perPage,
 			...newFilter
 		})
 	};
@@ -70,13 +123,13 @@ export const useFilterSearchParams = <
 		orderColumn: string
 	) => {
 		if ( Array.isArray(orderBy) ) {
-			setParams({
-				...params,
+			setFilter({
+				page: 0,
 				sort: orderBy
 			});
 			return;
 		}
-		const sort = params.sort ?? [];
+		const sort = params.sort ? [...params.sort] : [];
 
 		const index = sort.findIndex((val) => val.orderColumn === orderColumn);
 
@@ -93,19 +146,18 @@ export const useFilterSearchParams = <
 			})
 		}
 
-		setParams({
-			...params,
+		setFilter({
+			page: 0,
 			sort
 		});
 	};
 
 	return {
+		pagination,
 		filter,
-		sort: params.sort,
+		sort,
 		setFilter,
-		sortTable: sortTable as SortTable,
-		getPaginationHref,
-		params,
-		setParams
+		sortTable: sortTable as SortTableFunctionType,
+		getPaginationHref
 	}
 }

@@ -153,7 +153,7 @@ export function useFetch<Result, T extends any[]>(
 ): FetchMethod<Result, T> 
 export function useFetch<Result, T extends any[]>(
 	method: ((this: State<Result>, ...args: T) => Promise<Result>) | ((this: State<Result>, ...args: Partial<T>) => Promise<Result>),
-	config?: FetchConfig | FetchEffectConfig | FetchStateConfig<Result>
+	config: FetchConfig | FetchEffectConfig | FetchStateConfig<Result> = {}
 ): FetchMethod<Result, T> | FetchEffect<Result, T> | FetchState<Result, T> {
 	const controllers = useRef<Set<AbortController>>(new Set())
 
@@ -181,7 +181,6 @@ export function useFetch<Result, T extends any[]>(
 	const currentDataRef = useRefMemo<State<Result>>(() => {
 		const { initialState } = _config;
 		const enable = (_config.enable ?? defaultConfig.enable ?? true);
-		const silent = _config.silent ?? false;
 
 		return {
 			data: (
@@ -189,7 +188,7 @@ export function useFetch<Result, T extends any[]>(
 					? (initialState as () => Result)()
 					: initialState
 			),
-			isLoading: !enable || silent ? false : (isFetchEffect || isFetchEffectWithData),
+			isLoading: !enable || _config.silent ? false : (isFetchEffect || isFetchEffectWithData),
 			error: null
 		}
 	});

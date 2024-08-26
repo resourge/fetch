@@ -3,13 +3,12 @@ export {
 	Loader,
 	type LoaderProps,
 	LoadingFallback,
-	LoadingSuspense
+	LoadingSuspense, 
+	RefreshControl
 } from './components'
 export {
-	type InfiniteLoadingConfig,
 	type InfiniteLoadingReturn,
 	type Pagination,
-	type PaginationConfig,
 	type PaginationReturn,
 	type FetchConfig,
 	type FetchEffect,
@@ -20,16 +19,18 @@ export {
 	useInfiniteLoading,
 	useIsOnline,
 	usePagination,
-	useScrollRestoration
+	useScrollRestoration,
+	useInfiniteScrollRestoration
 } from './hooks'
 export { NotificationService } from './services';
 export {
-	type DefaultPaginationType,
 	type FilterType,
 	OrderByEnum,
 	type PaginationMetadata,
-	type PaginationSearchParams,
 	type SortCriteria,
-	type FilterSearchParamsDefaultValue
+	type PaginationSearchParamsType,
+	type ResetPaginationMetadataType,
+	type SortSearchParamsType,
+	type PaginationConfig
 } from './types'
 export { setFetchDefaultConfig } from './utils';

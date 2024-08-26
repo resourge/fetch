@@ -1,3 +1,10 @@
 export {
-	type DefaultPaginationType, type DeepPartial, type FilterType, OrderByEnum, type PaginationMetadata, type PaginationSearchParams, type SortCriteria, type FilterSearchParamsDefaultValue 
-} from './types';
+	type ParamsType as FilterType, OrderByEnum, 
+	type SortCriteria, type PaginationSearchParamsType, type SortSearchParamsType
+} from './ParamsType';
+
+export type {
+	PaginationConfig,
+	PaginationMetadata,
+	ResetPaginationMetadataType
+} from './PaginationConfig';

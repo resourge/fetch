@@ -9,9 +9,9 @@ import { type InfiniteLoadingReturn } from '../../hooks';
 
 type RefreshControlProps<
 	Data extends any[],
-	Filter extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>,
 > = {
-	context: InfiniteLoadingReturn<Data, Filter>
+	context: InfiniteLoadingReturn<Data, FilterSearchParams>
 	detectionMargin?: string
 	/**
 	 * By default is false
@@ -33,14 +33,14 @@ type RefreshControlProps<
  */
 function RefreshControl<
 	Data extends any[],
-	Filter extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>,
 >({
 	context,
 	root = null,
 	detectionMargin,
 	renderComponent,
 	preload
-}: RefreshControlProps<Data, Filter>) {
+}: RefreshControlProps<Data, FilterSearchParams>) {
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
