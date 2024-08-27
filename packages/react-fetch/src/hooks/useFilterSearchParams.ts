@@ -124,7 +124,7 @@ export const useFilterSearchParams = <
 	) => {
 		if ( Array.isArray(orderBy) ) {
 			setFilter({
-				page: 0,
+				page: defaultData.pagination.page,
 				sort: orderBy
 			});
 			return;
@@ -147,7 +147,7 @@ export const useFilterSearchParams = <
 		}
 
 		setFilter({
-			page: 0,
+			page: defaultData.pagination.page,
 			sort
 		});
 	};
