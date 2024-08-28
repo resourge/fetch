@@ -1,3 +1,16 @@
+# [1.36.0](https://github.com/resourge/fetch/compare/v1.35.2...v1.36.0) (2024-08-28)
+
+
+### Bug Fixes
+
+* **package.json:** add react-native to package.json ([ef55100](https://github.com/resourge/fetch/commit/ef55100bb7a09a543e3d74398397d60bf54bad5e))
+* **usefiltersearchparams:** fix sort page reseting to the wrong page ([7f4f607](https://github.com/resourge/fetch/commit/7f4f6070879133c9a9f761085818674afb0ad1d0))
+
+
+### Features
+
+* **usefilterserachparams:** change from react-search-params to history-store, remove double render ([45e2539](https://github.com/resourge/fetch/commit/45e2539eaba94c1ba5cffe6c4b1aec0832ebb0a2))
+
 ## [1.35.2](https://github.com/resourge/fetch/compare/v1.35.1...v1.35.2) (2024-08-26)
 
 
