@@ -3,7 +3,7 @@ import { type StyleProp, View, type ViewStyle } from 'react-native'
 
 import Loader from '../Loader';
 
-import { GlobalLoading } from './GlobalLoading';
+import { GlobalLoading } from './GlobalLoading.native';
 import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
 
 export type GlobalLoaderProps = BaseGlobalLoaderProps<StyleProp<ViewStyle>>

@@ -89,12 +89,11 @@ const getProjectNameAndBanner = (
 
 const getPackage = (
 	BASE_OUTPUT_DIR,
-	SOURCE_FOLDER,
+	SOURCE_INDEXS,
 	PACKAGE_NAME,
 	merge
 ) => {
 	const OUTPUT_DIR = `${BASE_OUTPUT_DIR}dist`
-	const SOURCE_INDEX_FILE = `${SOURCE_FOLDER}/index.ts`
 	const { banner } = getProjectNameAndBanner(PACKAGE_NAME);
 
 	/**
@@ -183,12 +182,9 @@ const getPackage = (
 		// #endregion Update package json dependency
 	}
 
-	const nativeFiles = fg.sync(`${SOURCE_FOLDER}/**/*`)
-	.filter((fileName) => fileName.includes('.native.'));
-
 	return [
 		getDefault({
-			input: [SOURCE_INDEX_FILE, ...nativeFiles]
+			input: SOURCE_INDEXS
 		})
 	];
 }
@@ -197,12 +193,17 @@ export default function rollup() {
 	return [
 		...getPackage(
 			'./packages/http-service/',
-			'./packages/http-service/src',
+			[
+				'./packages/http-service/src/index.ts'
+			],
 			'http-service'
 		),
 		...getPackage(
 			'./packages/react-fetch/',
-			'./packages/react-fetch/src',
+			[
+				'./packages/react-fetch/src/index.ts',
+				'./packages/react-fetch/src/index.native.ts'
+			],
 			'react-fetch',
 			true
 		),
