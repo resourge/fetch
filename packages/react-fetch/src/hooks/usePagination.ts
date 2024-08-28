@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 
+import { createNewUrlWithSearch, HistoryStore, parseParams } from '@resourge/history-store';
+
 import { type PaginationConfig, type ResetPaginationMetadataType } from '../types/PaginationConfig';
 import { type PaginationFunctionsType, type PaginationMethod } from '../types/PaginationFunctionsType';
 import { type PaginationSearchParamsType, type ParamsType } from '../types/ParamsType';
@@ -7,7 +9,7 @@ import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../utils/constants';
 import { calculateTotalPages } from '../utils/utils';
 
 import { useFetch } from './useFetch';
-import { useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
+import { type SearchParamsMetadata, useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
 import { usePreload } from './usePreload';
 
 export type Pagination = PaginationSearchParamsType & { totalItems: number, totalPages: number }
@@ -56,53 +58,64 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		...config
 	}: PaginationConfig<Data, FilterSearchParams>
 ): PaginationReturn<Data, FilterSearchParams> => {
-	const {
-		pagination,
-		filter,
-		sort,
-
-		getPaginationHref,
-		setFilter,
-		sortTable
-	} = useFilterSearchParams<FilterSearchParams>({
-		filter: defaultFilter,
-		sort: defaultSort,
-		pagination: {
-			page: initialPage,
-			perPage: initialPerPage
-		},
-		hash
-	});
-
 	const { getMethod, preloadRef } = usePreload<Data, FilterSearchParams>({
 		method,
 		preload,
 		initialPage,
-
-		filter,
-		pagination,
-		sort
+		deps
 	});
 
 	const fetchData = useFetch(
-		async () => {
-			const { data, totalItems } = await getMethod({
-				filter,
+		async (
+			metadata: SearchParamsMetadata<FilterSearchParams> = {
 				pagination,
+				filter,
 				sort
-			});
+			}
+		) => {
+			const { data, totalItems } = await getMethod(metadata);
 
 			changeTotalPages(totalItems ?? 0);
+
 			return data
 		},
 		{
 			initialState,
 			...config,
-			deps: deps.length
-				? [pagination.page, pagination.perPage, filter, sort, ...deps] 
-				: [pagination.page, pagination.perPage, filter, sort]
+			deps
 		}
 	)
+
+	const {
+		pagination,
+		filter,
+		sort,
+
+		setFilter,
+		sortTable
+	} = useFilterSearchParams<Data, FilterSearchParams>({
+		fetch: fetchData.fetch,
+		preloadRef,
+		filter: defaultFilter,
+		sort: defaultSort,
+		page: initialPage,
+		perPage: initialPerPage,
+		hash
+	});
+	
+	function getPaginationHref(page: number) {
+		const [url] = HistoryStore.getValue()
+		return createNewUrlWithSearch(
+			url, 
+			parseParams({
+				page,
+				perPage: pagination.perPage,
+				sort,
+				...filter
+			}), 
+			hash
+		).href;
+	}
 
 	const changeItemsPerPage = (perPage: number) => {
 		setFilter({

@@ -254,6 +254,9 @@ export function useFetch<Result, T extends any[]>(
 	}
 
 	const fetch = async (...args: T) => {
+		if ( !isOnline ) {
+			return await Promise.reject(new Error('No internet'))
+		}
 		if ( isErrorUsedRef.current && currentDataRef.current.error ) {
 			currentDataRef.current.error = null;
 		}

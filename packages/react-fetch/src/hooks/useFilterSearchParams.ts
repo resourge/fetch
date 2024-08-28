@@ -1,4 +1,11 @@
-import { useMemo } from 'react';
+import { type MutableRefObject, useEffect } from 'react';
+
+import {
+	createNewUrlWithSearch,
+	parseParams,
+	parseSearchParams,
+	HistoryStore
+} from '@resourge/history-store'
 
 import {
 	type OrderByEnum,
@@ -10,19 +17,23 @@ import {
 import { deepCompare } from '../utils/comparationUtils';
 
 import { type Pagination } from './usePagination';
+import { type PreloadRef } from './usePreload';
 import { useRefMemo } from './useRefMemo';
-import { type SearchParamsProps, type SearchParamsResult } from './useSearchParams/types';
-import { useSearchParams } from './useSearchParams/useSearchParams';
 
 export type FilterSearchParamsDefaultValue<T extends Record<string, any>> = {
 	filter: T
 	pagination: PaginationSearchParamsType
 } & SortSearchParamsType
 
-export type State<T extends Record<string, any>> = {
-	filter: T
+export type SearchParamsMetadata<FilterSearchParams extends Record<string, any>> = {
+	filter: FilterSearchParams
 	pagination: Pagination
 } & SortSearchParamsType
+
+export type State<FilterSearchParams extends Record<string, any>> = {
+	metadata: SearchParamsMetadata<FilterSearchParams>
+	params: ParamsType<FilterSearchParams>
+}
 
 type SortTableFunctionType = {
 	(sort: SortCriteria): void
@@ -47,75 +58,96 @@ export type FilterSearchParamsReturn<FilterSearchParams extends Record<string, a
 	sortTable: SortTableFunctionType
 }
 
+export type FilterSearchParamsProps<
+	Data,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
+> = {
+		
+	fetch: (metadata: SearchParamsMetadata<FilterSearchParams>) => Promise<Data>
+	filter: FilterSearchParams
+	preloadRef: MutableRefObject<PreloadRef<Data>>
+	hash?: boolean
+} & SortSearchParamsType
+& PaginationSearchParamsType
+
 export const useFilterSearchParams = <
+	Data,
 	FilterSearchParams extends Record<string, any> = Record<string, any>,
 >(
-	defaultData: SearchParamsProps<FilterSearchParams>
-): FilterSearchParamsReturn<FilterSearchParams> & Pick<SearchParamsResult<FilterSearchParams>, 'getPaginationHref'> => {
-	const {
-		getPaginationHref,
-		params,
-		setParams
-	} = useSearchParams<FilterSearchParams>(defaultData);
-
-	const memoRef = useRefMemo<State<FilterSearchParams>>(() => ({
-		filter: defaultData.filter,
-		sort: defaultData.sort,
-		pagination: {
-			page: defaultData.pagination.page,
-			perPage: defaultData.pagination.perPage,
-			totalItems: 0,
-			totalPages: 0
-		}
-	}))
-
-	const {
+	{
 		filter,
+		page,
+		perPage,
 		sort,
-		pagination
-	} = useMemo(() => {
-		const {
-			perPage,
-			page, 
+		fetch,
+		preloadRef,
+		hash
+	}: FilterSearchParamsProps<Data, FilterSearchParams>
+): FilterSearchParamsReturn<FilterSearchParams> => {
+	function getDataFromParams() {
+		const [url] = HistoryStore.getValue()
 
-			sort,
-			...filter
-		} = params;
-
-		if ( 
-			perPage !== undefined &&
-			memoRef.current.pagination.perPage !== perPage
-		) {
-			memoRef.current.pagination.perPage = perPage;
+		let searchParams = url.searchParams;
+		if (hash) {
+			const hashUrl = new URL(
+				url.hash.substring(1, url.hash.length),
+				window.location.origin
+			);
+			searchParams = hashUrl.searchParams;
 		}
 
-		if ( 
-			page !== undefined &&
-			memoRef.current.pagination.page !== page
-		) {
-			memoRef.current.pagination.page = page;
-		}
+		const params = parseSearchParams<ParamsType<FilterSearchParams>>(
+			searchParams, 
+			{
+				...filter, 
+				page,
+				perPage,
+				sort
+			}
+		);
 
-		if ( !deepCompare(sort, memoRef.current.sort) ) {
-			memoRef.current.sort = sort;
-		}
+		return ({
+			metadata: {
+				filter: params.filter ?? filter,
+				sort: params.sort ?? sort,
+				pagination: {
+					page: params.page ?? page,
+					perPage: params.perPage ?? perPage,
+					totalItems: 0,
+					totalPages: 0
+				}
+			},
+			params
+		});
+	}
 
-		if ( !deepCompare(filter as unknown as FilterSearchParams, memoRef.current.filter) ) {
-			memoRef.current.filter = filter as unknown as FilterSearchParams;
-		}
-
-		return memoRef.current
-	// eslint-disable-next-line react-hooks/exhaustive-deps 
-	}, [params]);
+	const memoRef = useRefMemo<State<FilterSearchParams>>(getDataFromParams)
 
 	const setFilter = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
-		setParams({
-			...filter,
-			sort,
-			page: pagination.page,
-			perPage: pagination.perPage,
+		const [url] = HistoryStore.getValue()
+		
+		const newSearch = parseParams({
+			...memoRef.current.metadata.filter,
+			sort: memoRef.current.metadata.sort,
+			page: memoRef.current.metadata.pagination.page,
+			perPage: memoRef.current.metadata.pagination.perPage,
 			...newFilter
-		})
+		});
+
+		if ( url.search !== newSearch ) {
+			const newURL = createNewUrlWithSearch(
+				url,
+				newSearch,
+				hash
+			);
+
+			HistoryStore.navigate(
+				newURL, 
+				{
+					replace: true 
+				}
+			)
+		}
 	};
 
 	const sortTable = (
@@ -124,40 +156,83 @@ export const useFilterSearchParams = <
 	) => {
 		if ( Array.isArray(orderBy) ) {
 			setFilter({
-				page: defaultData.pagination.page,
+				page,
 				sort: orderBy
 			});
 			return;
 		}
-		const sort = params.sort ? [...params.sort] : [];
+		const _sort = memoRef.current.metadata.sort ? [...memoRef.current.metadata.sort] : [];
 
-		const index = sort.findIndex((val) => val.orderColumn === orderColumn);
+		const index = _sort.findIndex((val) => val.orderColumn === orderColumn);
 
 		if ( index > -1 ) {
-			sort[index] = {
+			_sort[index] = {
 				orderBy,
 				orderColumn
 			}
 		}
 		else {
-			sort.push({
+			_sort.push({
 				orderBy,
 				orderColumn
 			})
 		}
 
 		setFilter({
-			page: defaultData.pagination.page,
-			sort
+			page,
+			sort: _sort
 		});
 	};
 
+	useEffect(() => {
+		return HistoryStore.subscribe(() => {
+			const {
+				metadata: {
+					filter,
+					pagination: {
+						page,
+						perPage
+					},
+					sort
+				},
+				params
+			} = getDataFromParams();
+
+			memoRef.current.params = params;
+			
+			if ( 
+				perPage !== undefined && memoRef.current.metadata.pagination.perPage !== perPage
+			) {
+				preloadRef.current = {};
+				memoRef.current.metadata.pagination.perPage = perPage;
+			}
+
+			if ( 
+				page !== undefined && memoRef.current.metadata.pagination.page !== page
+			) {
+				memoRef.current.metadata.pagination.page = page;
+			}
+
+			if ( !deepCompare(sort, memoRef.current.metadata.sort) ) {
+				preloadRef.current = {};
+				memoRef.current.metadata.sort = sort;
+			}
+
+			if ( !deepCompare(filter as unknown as FilterSearchParams, memoRef.current.metadata.filter) ) {
+				preloadRef.current = {};
+				memoRef.current.metadata.filter = filter as unknown as FilterSearchParams;
+			}
+
+			fetch(memoRef.current.metadata);
+		})
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	return {
-		pagination,
-		filter,
-		sort,
+		pagination: memoRef.current.metadata.pagination,
+		filter: memoRef.current.metadata.filter,
+		sort: memoRef.current.metadata.sort,
 		setFilter,
-		sortTable: sortTable as SortTableFunctionType,
-		getPaginationHref
+		sortTable: sortTable as SortTableFunctionType
 	}
 }

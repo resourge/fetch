@@ -9,7 +9,7 @@ import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../utils/constants';
 import { calculateTotalPages } from '../utils/utils';
 
 import { useFetch } from './useFetch';
-import { useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
+import { type SearchParamsMetadata, useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
 import { useIsOnline } from './useIsOnline';
 import { usePreload } from './usePreload';
 import { type InfiniteScrollRestoration } from './useScrollRestoration/useInfiniteScrollRestoration';
@@ -84,29 +84,12 @@ export const useInfiniteLoading = <
 	});
 
 	const {
-		filter, setFilter, sort, sortTable, pagination
-	} = useFilterSearchParams<FilterSearchParams>({
-		filter: defaultFilter,
-		sort: defaultSort,
-		pagination: {
-			page: initialPage,
-			perPage: initialPerPage
-		},
-		hash
-	});
-
-	const _deps = deps.length ? [filter, sort, ...deps] : [filter, sort];
-
-	const {
 		willPreload, getMethod, getRestoreMethod, preloadRef
 	} = usePreload<Data, FilterSearchParams>({
 		method,
 		preload,
 		initialPage,
-		
-		filter,
-		pagination,
-		sort
+		deps
 	});
 
 	async function _getRestoreMethod(metadata: PaginationMetadata<FilterSearchParams>, restoration: PaginationSearchParamsType) { 
@@ -158,13 +141,15 @@ export const useInfiniteLoading = <
 	}
 
 	const fetchData = useFetch(
-		async () => {
-			internalDataRef.current.isLoading = true;
-			const { page, totalItems } = await _getMethod({
+		async (
+			metadata: SearchParamsMetadata<FilterSearchParams> = {
 				pagination,
-				sort,
-				filter
-			})
+				filter,
+				sort
+			}
+		) => {
+			internalDataRef.current.isLoading = true;
+			const { page, totalItems } = await _getMethod(metadata)
 
 			internalDataRef.current.isFirstTime = false;
 
@@ -198,15 +183,27 @@ export const useInfiniteLoading = <
 			initialState,
 			...config,
 			scrollRestoration,
-			deps: _deps
+			deps
 		}
 	);
+
+	const {
+		filter, setFilter, sort, sortTable, pagination
+	} = useFilterSearchParams<Data, FilterSearchParams>({
+		fetch: fetchData.fetch,
+		preloadRef,
+		filter: defaultFilter,
+		sort: defaultSort,
+		page: initialPage,
+		perPage: initialPerPage,
+		hash
+	});
 
 	useEffect(() => {
 		internalDataRef.current.data = [];
 		pagination.page = initialPage;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isOnline, ..._deps]);
+	}, [isOnline, ...deps]);
 
 	const changeItemsPerPage = (perPage: number) => {
 		pagination.perPage = perPage;

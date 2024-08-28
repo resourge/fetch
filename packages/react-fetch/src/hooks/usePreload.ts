@@ -1,11 +1,9 @@
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 
 import { type PaginationMetadata } from '../types'
-import { type PaginationSearchParamsType, type SortCriteria } from '../types/ParamsType'
+import { type PaginationSearchParamsType } from '../types/ParamsType'
 import { IS_DEV } from '../utils/constants'
 import { calculateTotalPages } from '../utils/utils'
-
-import { type Pagination } from './usePagination'
 
 export type PreloadConfig = false | {
 	maxPerPage?: number
@@ -19,16 +17,22 @@ export type PreloadConfig = false | {
 
 export type PreloadMethodResult<Data extends any[]> = { data: Data, totalItems?: number }
 
+export type PreloadRef<Data> = Record<
+	string, 
+	{ 
+		data: { data: Data, totalItems?: number }
+		date: number 
+	}
+>
+
 export type PreloadProps<
 	Data extends any[],
 	FilterSearchParams extends Record<string, any> = Record<string, any>,
 > = {
-	filter: FilterSearchParams
+	deps: readonly any[]
 	initialPage: number
 	method: (metadata: PaginationMetadata<FilterSearchParams>) => Promise<PreloadMethodResult<Data>>
-	pagination: Pagination
 	preload?: PreloadConfig
-	sort?: SortCriteria
 }
 
 const ONE_MINUTE_IN_MILLISECOND = (1 * 60 * 1000);
@@ -40,10 +44,8 @@ export const usePreload = <
 	{
 		method,
 		preload = {},
-		filter,
-		sort,
-		pagination,
-		initialPage
+		initialPage,
+		deps
 	}: PreloadProps<Data, FilterSearchParams>
 ) => {
 	if ( IS_DEV ) {
@@ -52,39 +54,37 @@ export const usePreload = <
 		}
 	}
 		
-	const preloadRef = useRef<
-		Record<
-			number, 
-			{ 
-				data: { data: Data, totalItems?: number }
-				date: number 
-			}
-		>
-	>({});
+	const preloadRef = useRef<PreloadRef<Data>>({});
+
+	function getKey(page: number) {
+		return `${page}_${deps.length ? JSON.stringify(deps) : ''}`
+	}
 
 	function willPreload(page: number) {
+		const key = getKey(page);
 		return (
 			preload !== false && 
-			preloadRef.current[page] &&
-			Date.now() - preloadRef.current[page].date <= (preload.timeout ?? ONE_MINUTE_IN_MILLISECOND)
+			preloadRef.current[key] &&
+			Date.now() - preloadRef.current[key].date <= (preload.timeout ?? ONE_MINUTE_IN_MILLISECOND)
 		)
 	}
 
 	async function _getMethod(metadata: PaginationMetadata<FilterSearchParams>): Promise<PreloadMethodResult<Data>> {
 		const page = metadata.pagination.page;
+		const key = getKey(page);
 
 		if ( willPreload(page) ) {
-			return preloadRef.current[page].data;
+			return preloadRef.current[key].data;
 		}
 
 		const data = await method(metadata);
 
-		preloadRef.current[page] = {
+		preloadRef.current[key] = {
 			date: Date.now(),
 			data
 		}
 
-		return preloadRef.current[page].data;
+		return preloadRef.current[key].data;
 	}
 
 	function preloadMethod(metadata: PaginationMetadata<FilterSearchParams>, res: PreloadMethodResult<Data>) {
@@ -124,13 +124,6 @@ export const usePreload = <
 			}
 		}
 	}
-
-	useMemo(() => {
-		if ( pagination.page === initialPage ) {
-			preloadRef.current = {};
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [filter, sort])
 
 	async function getMethod(metadata: PaginationMetadata<FilterSearchParams>) {
 		const res = await _getMethod(metadata);
@@ -207,7 +200,8 @@ export const usePreload = <
 				const newData = data.splice(index, metadata.pagination.perPage) as Data;
 				onData && onData(newIndex, newData)
 
-				preloadRef.current[index + initialPage] = {
+				const key = getKey(index + initialPage);
+				preloadRef.current[key] = {
 					data: {
 						data: newData,
 						totalItems

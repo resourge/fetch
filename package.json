@@ -43,6 +43,7 @@
 		"react": ">=17.0.0"
 	},
 	"dependencies": {
+		"@resourge/history-store": "*",
 		"use-sync-external-store": "^1.2.2"
 	},
 	"devDependencies": {
@@ -51,7 +52,6 @@
 		"@babel/preset-react": "^7.24.7",
 		"@babel/preset-typescript": "^7.24.7",
 		"@react-native-community/netinfo": "^11.3.2",
-		"@resourge/react-search-params": "^1.12.2",
 		"@rollup/plugin-babel": "^6.0.4",
 		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@semantic-release/changelog": "^6.0.3",

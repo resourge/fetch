@@ -21,7 +21,8 @@ const external = [
 	'react-native',
 	'@resourge/http-service',
 	'@react-native-community/netinfo',
-	'@resourge/react-search-params'
+	'@resourge/history-store',
+	'@resourge/history-store/mobile'
 ];
 
 const babelPlugins = [
