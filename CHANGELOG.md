@@ -1,3 +1,10 @@
+## [1.36.1](https://github.com/resourge/fetch/compare/v1.36.0...v1.36.1) (2024-09-02)
+
+
+### Bug Fixes
+
+* **usefilterserachparams:** fix some bugs, and not working in react-native ([323d584](https://github.com/resourge/fetch/commit/323d5845a1f5eb949a3b208afcf0bce799ac4fef))
+
 # [1.36.0](https://github.com/resourge/fetch/compare/v1.35.2...v1.36.0) (2024-08-28)
 
 
