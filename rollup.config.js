@@ -2,6 +2,7 @@ import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import fg from 'fast-glob'
 import fs, { readFileSync } from 'fs'
+import path from 'path';
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
 
@@ -22,7 +23,8 @@ const external = [
 	'@resourge/http-service',
 	'@react-native-community/netinfo',
 	'@resourge/history-store',
-	'@resourge/history-store/mobile'
+	'@resourge/history-store/mobile',
+	'@resourge/history-store/utils'
 ];
 
 const babelPlugins = [
@@ -132,7 +134,36 @@ const getPackage = (
 				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`],
 				sync: true,
 				hook: 'buildEnd'
-			})
+			}),
+			{
+				name: 'include-native-plugin',
+
+				resolveId(source, importer) {
+					if (!importer) return null;
+
+					// Resolve the original file
+					const resolved = path.resolve(source);
+
+					if ( fs.existsSync(resolved) ) {
+						const extname = path.extname(resolved);
+						const basename = path.basename(resolved, extname);
+						const dirname = path.dirname(resolved);
+						const nativeId = path.join(dirname, `${basename}.native${extname}`);
+
+						// Check if the .native version exists
+						if (fs.existsSync(nativeId)) {
+							// Ensure both the regular and .native versions are bundled
+							this.emitFile({
+								type: 'chunk',
+								id: nativeId
+							})
+						}
+
+						return resolved;
+					}
+				}
+
+			}
 		],
 		...input
 	})
@@ -173,7 +204,7 @@ const getPackage = (
 		const packageJson = JSON.parse(fs.readFileSync(`${BASE_OUTPUT_DIR}/package.json`, 'utf-8'));
 
 		Object.keys(packageJson.dependencies)
-		.filter((key) => key.includes('@resourge'))
+		.filter((key) => key.includes('@resourge/http-service'))
 		.forEach((key) => {
 			packageJson.dependencies[key] = VERSION ?? '1.0.0'
 		})

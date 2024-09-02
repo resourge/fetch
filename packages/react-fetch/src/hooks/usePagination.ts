@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 
-import { createNewUrlWithSearch, HistoryStore, parseParams } from '@resourge/history-store';
+import { HistoryStore } from '@resourge/history-store';
+import { createNewUrlWithSearch, parseParams } from '@resourge/history-store/utils';
 
 import { type PaginationConfig, type ResetPaginationMetadataType } from '../types/PaginationConfig';
 import { type PaginationFunctionsType, type PaginationMethod } from '../types/PaginationFunctionsType';
@@ -9,7 +10,7 @@ import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../utils/constants';
 import { calculateTotalPages } from '../utils/utils';
 
 import { useFetch } from './useFetch';
-import { type SearchParamsMetadata, useFilterSearchParams, type FilterSearchParamsReturn } from './useFilterSearchParams';
+import { useFilterSearchParams, type FilterSearchParamsReturn, type SearchParamsMetadata } from './useFilterSearchParams';
 import { usePreload } from './usePreload';
 
 export type Pagination = PaginationSearchParamsType & { totalItems: number, totalPages: number }
@@ -17,7 +18,7 @@ export type Pagination = PaginationSearchParamsType & { totalItems: number, tota
 export type PaginationReturn<
 	Data,
 	FilterSearchParams extends Record<string, any> = Record<string, any>,
-> = FilterSearchParamsReturn<FilterSearchParams>
+> = Omit<FilterSearchParamsReturn<FilterSearchParams>, 'setParams'>
 & PaginationFunctionsType<Data, FilterSearchParams>
 & {
 	/**
@@ -92,15 +93,17 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		sort,
 
 		setFilter,
-		sortTable
+		sortTable,
+		setParams
 	} = useFilterSearchParams<Data, FilterSearchParams>({
 		fetch: fetchData.fetch,
 		preloadRef,
-		filter: defaultFilter,
-		sort: defaultSort,
-		page: initialPage,
-		perPage: initialPerPage,
-		hash
+		defaultFilter,
+		defaultSort,
+		initialPage,
+		initialPerPage,
+		hash,
+		deps
 	});
 	
 	function getPaginationHref(page: number) {
@@ -117,16 +120,10 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		).href;
 	}
 
-	const changeItemsPerPage = (perPage: number) => {
+	const changePage = (page: number, perPage: number = pagination.perPage) => {
 		setFilter({
-			perPage,
-			page: initialPage
-		});
-	};
-
-	const changePage = (page: number) => {
-		setFilter({
-			page
+			page,
+			perPage
 		});
 	};
 
@@ -140,30 +137,16 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 			changePage(initialPage)
 		}
 	}
-    
-	const changePagination = (page: number, perPage: number) => {
-		setFilter({
-			perPage,
-			page
-		});
-	};
-
-	const resetPagination = () => {
-		setFilter({
-			page: initialPage,
-			perPage: initialPerPage
-		});
-	};
 
 	const reset = ({
 		filter,
 		pagination = {},
 		sort = []
 	}: ResetPaginationMetadataType<FilterSearchParams> = {}) => {
-		setFilter({
+		setParams({
 			page: pagination.page ?? initialPage,
 			perPage: pagination.perPage ?? initialPerPage,
-			sort,
+			sort: sort ?? defaultSort,
 
 			...defaultFilter,
 			...filter
@@ -191,9 +174,15 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		pagination,
 		changeTotalPages,
 		changePage,
-		changeItemsPerPage,
-		changePagination,
-		resetPagination,
+		changeItemsPerPage(perPage: number) {
+			changePage(initialPage, perPage)
+		},
+		changePagination(page: number, perPage: number) {
+			changePage(page, perPage);
+		},
+		resetPagination() {
+			changePage(initialPage, initialPerPage)
+		},
 		getPaginationHref,
 
 		setFilter,

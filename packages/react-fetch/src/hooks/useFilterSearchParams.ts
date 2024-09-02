@@ -1,11 +1,13 @@
-import { type MutableRefObject, useEffect } from 'react';
-
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import {
-	createNewUrlWithSearch,
-	parseParams,
-	parseSearchParams,
-	HistoryStore
-} from '@resourge/history-store'
+	type MutableRefObject,
+	useEffect,
+	useMemo,
+	useRef
+} from 'react'
+
+import { HistoryStore } from '@resourge/history-store'
+import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourge/history-store/utils'
 
 import {
 	type OrderByEnum,
@@ -18,7 +20,6 @@ import { deepCompare } from '../utils/comparationUtils';
 
 import { type Pagination } from './usePagination';
 import { type PreloadRef } from './usePreload';
-import { useRefMemo } from './useRefMemo';
 
 export type FilterSearchParamsDefaultValue<T extends Record<string, any>> = {
 	filter: T
@@ -30,10 +31,7 @@ export type SearchParamsMetadata<FilterSearchParams extends Record<string, any>>
 	pagination: Pagination
 } & SortSearchParamsType
 
-export type State<FilterSearchParams extends Record<string, any>> = {
-	metadata: SearchParamsMetadata<FilterSearchParams>
-	params: ParamsType<FilterSearchParams>
-}
+export type State<FilterSearchParams extends Record<string, any>> = SearchParamsMetadata<FilterSearchParams>
 
 type SortTableFunctionType = {
 	(sort: SortCriteria): void
@@ -53,6 +51,10 @@ export type FilterSearchParamsReturn<FilterSearchParams extends Record<string, a
 	 */
 	setFilter: <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => void
 	/**
+	 * Method to update params.
+	 */
+	setParams: <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => void
+	/**
 	 * Changes which column to order asc/desc.
 	 */
 	sortTable: SortTableFunctionType
@@ -62,30 +64,36 @@ export type FilterSearchParamsProps<
 	Data,
 	FilterSearchParams extends Record<string, any> = Record<string, any>
 > = {
-		
+	defaultFilter: FilterSearchParams
+	deps: readonly any[]
 	fetch: (metadata: SearchParamsMetadata<FilterSearchParams>) => Promise<Data>
-	filter: FilterSearchParams
+	initialPage: PaginationSearchParamsType['page']
+	initialPerPage: PaginationSearchParamsType['perPage']
 	preloadRef: MutableRefObject<PreloadRef<Data>>
+	defaultSort?: SortSearchParamsType['sort']
 	hash?: boolean
-} & SortSearchParamsType
-& PaginationSearchParamsType
+}
 
 export const useFilterSearchParams = <
 	Data,
 	FilterSearchParams extends Record<string, any> = Record<string, any>,
 >(
 	{
-		filter,
-		page,
-		perPage,
-		sort,
+		defaultFilter,
+		initialPage,
+		initialPerPage,
+		defaultSort,
 		fetch,
 		preloadRef,
-		hash
+		hash,
+		deps
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
+	const pathnameRef = useRef<string>();
+	
 	function getDataFromParams() {
 		const [url] = HistoryStore.getValue()
+		pathnameRef.current = url.pathname;
 
 		let searchParams = url.searchParams;
 		if (hash) {
@@ -96,43 +104,40 @@ export const useFilterSearchParams = <
 			searchParams = hashUrl.searchParams;
 		}
 
-		const params = parseSearchParams<ParamsType<FilterSearchParams>>(
+		const {
+			sort,
+			page,
+			perPage,
+			...filter
+		} = parseSearchParams<ParamsType<FilterSearchParams>>(
 			searchParams, 
 			{
-				...filter, 
-				page,
-				perPage,
-				sort
+				...defaultFilter, 
+				page: initialPage,
+				perPage: initialPerPage,
+				sort: defaultSort
 			}
 		);
 
 		return ({
-			metadata: {
-				filter: params.filter ?? filter,
-				sort: params.sort ?? sort,
-				pagination: {
-					page: params.page ?? page,
-					perPage: params.perPage ?? perPage,
-					totalItems: 0,
-					totalPages: 0
-				}
-			},
-			params
-		});
+			filter: filter ?? defaultFilter,
+			sort: sort ?? defaultSort,
+			pagination: {
+				page: page ?? initialPage,
+				perPage: perPage ?? initialPerPage,
+				totalItems: 0,
+				totalPages: 0
+			}
+		}) as State<FilterSearchParams>;
 	}
 
-	const memoRef = useRefMemo<State<FilterSearchParams>>(getDataFromParams)
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const data = useMemo(getDataFromParams, deps);
 
-	const setFilter = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
+	const setParams = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
 		const [url] = HistoryStore.getValue()
 		
-		const newSearch = parseParams({
-			...memoRef.current.metadata.filter,
-			sort: memoRef.current.metadata.sort,
-			page: memoRef.current.metadata.pagination.page,
-			perPage: memoRef.current.metadata.pagination.perPage,
-			...newFilter
-		});
+		const newSearch = parseParams(newFilter);
 
 		if ( url.search !== newSearch ) {
 			const newURL = createNewUrlWithSearch(
@@ -150,88 +155,106 @@ export const useFilterSearchParams = <
 		}
 	};
 
+	const setFilter = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
+		setParams<F>({
+			...data.filter,
+			sort: data.sort,
+			page: data.pagination.page,
+			perPage: data.pagination.perPage,
+			...newFilter
+		});
+	};
+
 	const sortTable = (
 		orderBy: OrderByEnum | SortCriteria, 
 		orderColumn: string
 	) => {
 		if ( Array.isArray(orderBy) ) {
 			setFilter({
-				page,
+				page: initialPage,
 				sort: orderBy
 			});
 			return;
 		}
-		const _sort = memoRef.current.metadata.sort ? [...memoRef.current.metadata.sort] : [];
+		const sort = data.sort ? [...data.sort] : [];
 
-		const index = _sort.findIndex((val) => val.orderColumn === orderColumn);
+		const index = sort.findIndex((val) => val.orderColumn === orderColumn);
 
 		if ( index > -1 ) {
-			_sort[index] = {
+			sort[index] = {
 				orderBy,
 				orderColumn
 			}
 		}
 		else {
-			_sort.push({
+			sort.push({
 				orderBy,
 				orderColumn
 			})
 		}
 
 		setFilter({
-			page,
-			sort: _sort
+			page: initialPage,
+			sort
 		});
 	};
 
 	useEffect(() => {
 		return HistoryStore.subscribe(() => {
+			const [url] = HistoryStore.getValue();
+			if (pathnameRef.current !== url.pathname) {
+				return;
+			}
 			const {
-				metadata: {
-					filter,
-					pagination: {
-						page,
-						perPage
-					},
-					sort
+				filter,
+				pagination: {
+					page,
+					perPage
 				},
-				params
+				sort
 			} = getDataFromParams();
 
-			memoRef.current.params = params;
+			let makeRequest = false;
 			
 			if ( 
-				perPage !== undefined && memoRef.current.metadata.pagination.perPage !== perPage
+				perPage !== undefined && data.pagination.perPage !== perPage
 			) {
 				preloadRef.current = {};
-				memoRef.current.metadata.pagination.perPage = perPage;
+				makeRequest = true;
+				data.pagination.perPage = perPage;
 			}
 
 			if ( 
-				page !== undefined && memoRef.current.metadata.pagination.page !== page
+				page !== undefined && data.pagination.page !== page
 			) {
-				memoRef.current.metadata.pagination.page = page;
+				makeRequest = true;
+				data.pagination.page = page;
 			}
 
-			if ( !deepCompare(sort, memoRef.current.metadata.sort) ) {
+			if ( !deepCompare(sort, data.sort) ) {
+				makeRequest = true;
 				preloadRef.current = {};
-				memoRef.current.metadata.sort = sort;
+				data.sort = sort;
 			}
 
-			if ( !deepCompare(filter as unknown as FilterSearchParams, memoRef.current.metadata.filter) ) {
+			if ( !deepCompare(filter as unknown as FilterSearchParams, data.filter) ) {
+				makeRequest = true;
 				preloadRef.current = {};
-				memoRef.current.metadata.filter = filter as unknown as FilterSearchParams;
+				data.filter = filter as unknown as FilterSearchParams;
 			}
 
-			fetch(memoRef.current.metadata);
+			if ( makeRequest ) {
+				fetch(data);
+			}
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return {
-		pagination: memoRef.current.metadata.pagination,
-		filter: memoRef.current.metadata.filter,
-		sort: memoRef.current.metadata.sort,
+		pagination: data.pagination,
+		filter: data.filter,
+		sort: data.sort,
+		setParams,
 		setFilter,
 		sortTable: sortTable as SortTableFunctionType
 	}

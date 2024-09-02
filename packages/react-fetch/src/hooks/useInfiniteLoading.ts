@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { type PaginationMetadata } from '../types';
 import { type PaginationConfig, type ResetPaginationMetadataType } from '../types/PaginationConfig';
 import { type PaginationFunctionsType, type PaginationMethod } from '../types/PaginationFunctionsType';
-import { type PaginationSearchParamsType } from '../types/ParamsType';
+import { type ParamsType, type PaginationSearchParamsType } from '../types/ParamsType';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../utils/constants';
 import { calculateTotalPages } from '../utils/utils';
 
@@ -69,9 +69,7 @@ export const useInfiniteLoading = <
 
 	if (process.env.NODE_ENV === 'development') {
 		if (_scrollRestoration && !_scrollRestoration.getPage) {
-			throw new Error(
-				"'scrollRestoration' needs to come from 'useInfiniteScrollRestoration'. 'scrollRestoration' from 'useScrollRestoration' doesn't work"
-			);
+			throw new Error("'scrollRestoration' needs to come from 'useInfiniteScrollRestoration'. 'scrollRestoration' from 'useScrollRestoration' doesn't work");
 		}
 	}
 
@@ -188,15 +186,22 @@ export const useInfiniteLoading = <
 	);
 
 	const {
-		filter, setFilter, sort, sortTable, pagination
+		pagination,
+		filter,
+		sort,
+
+		setFilter,
+		sortTable,
+		setParams
 	} = useFilterSearchParams<Data, FilterSearchParams>({
 		fetch: fetchData.fetch,
 		preloadRef,
-		filter: defaultFilter,
-		sort: defaultSort,
-		page: initialPage,
-		perPage: initialPerPage,
-		hash
+		defaultFilter,
+		defaultSort,
+		initialPage,
+		initialPerPage,
+		hash,
+		deps
 	});
 
 	useEffect(() => {
@@ -234,12 +239,12 @@ export const useInfiniteLoading = <
 		pagination.perPage = value.pagination?.perPage ?? initialPerPage;
 		pagination.page = value.pagination?.perPage ?? initialPage;
 
-		setFilter({
-			sort,
+		setParams({
+			sort: value.sort ?? defaultSort,
 
 			...defaultFilter,
 			...filter
-		});
+		} as ParamsType<FilterSearchParams>);
 	};
 
 	return {
