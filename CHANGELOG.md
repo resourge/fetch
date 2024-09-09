@@ -1,3 +1,10 @@
+# [1.37.0](https://github.com/resourge/fetch/compare/v1.36.1...v1.37.0) (2024-09-09)
+
+
+### Features
+
+* **usefiltersearchparams:** make it so searchParams don't overlap in case of multiple filters ([76de3de](https://github.com/resourge/fetch/commit/76de3de1ac4053b90a3e160b102144e8f08a2fb3))
+
 ## [1.36.1](https://github.com/resourge/fetch/compare/v1.36.0...v1.36.1) (2024-09-02)
 
 
