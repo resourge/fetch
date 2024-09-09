@@ -74,9 +74,7 @@ export const normalizeBody = (
 			return config.data
 		}
 		else if ( typeof config.data === 'object' ) {
-			if ( !config.headers['Content-Type'] ) {
-				config.headers['Content-Type'] = 'application/json'
-			}
+			config.headers['Content-Type'] = config.headers['Content-Type'] || 'application/json';
 
 			return JSON.stringify(config.data);
 		}
@@ -104,12 +102,10 @@ export const normalizeRequest = async (
 	try {
 		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		let _config: HttpResponseConfig = {
-			...config
+			...config,
+			method: config.method.toUpperCase(),
+			url: createUrl(config.url, baseUrl)
 		} as HttpResponseConfig;
-
-		_config.method = config.method.toUpperCase();
-
-		_config.url = createUrl(config.url, baseUrl)
 
 		_config.url.searchParams.sort();
 		

@@ -5,7 +5,6 @@ import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/w
 
 import { LoadingService, QueueKingSystem, isAbortedError } from '../../../http-service/src';
 import NotificationService, { type State, type UseFetchError } from '../services/NotificationService';
-import { getFetchDefaultConfig } from '../utils/defaultConfig';
 import { useId } from '../utils/useIdShim';
 
 import { useIsOnline } from './useIsOnline';
@@ -156,52 +155,46 @@ export function useFetch<Result, T extends any[]>(
 	config: FetchConfig | FetchEffectConfig | FetchStateConfig<Result> = {}
 ): FetchMethod<Result, T> | FetchEffect<Result, T> | FetchState<Result, T> {
 	const controllers = useRef<Set<AbortController>>(new Set())
-
-	let isFetchEffect = false;
-	let isFetchEffectWithData = false;
-	if ( config ) {
-		const keys = Object.keys(config) as Array<keyof FetchStateConfig<Result>>;
-		
-		isFetchEffect = keys.some((key) => key === 'initialState' || key === 'deps');
-		
-		isFetchEffectWithData = keys.includes('initialState');
-	}
-
-	const defaultConfig = getFetchDefaultConfig()
-	const _config: FetchStateConfig<Result> = (config ?? {}) as FetchStateConfig<Result>;
-
-	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const id = _config.id ?? useId();
+	const isErrorUsedRef = useRef<boolean>(false);
+	const isLoadingUsedRef = useRef<boolean>(false);
+	const fetchRef = useRef<() => any>(() => {});
 
 	const isOnline = useIsOnline();
 
-	const isErrorUsedRef = useRef<boolean>(false);
-	const isLoadingUsedRef = useRef<boolean>(false);
+	const isFetchEffectWithData = 'initialState' in config;
+	const isFetchEffect = isFetchEffectWithData || 'deps' in config;
 
-	const currentDataRef = useRefMemo<State<Result>>(() => {
-		const { initialState } = _config;
-		const enable = (_config.enable ?? defaultConfig.enable ?? true);
+	const _config: FetchStateConfig<Result> = config as FetchStateConfig<Result>;
 
-		return {
-			data: (
-				typeof initialState === 'function' 
-					? (initialState as () => Result)()
-					: initialState
-			),
-			isLoading: !enable || _config.silent ? false : (isFetchEffect || isFetchEffectWithData),
-			error: null
-		}
-	});
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	const { id = useId(), initialState } = _config;
+
+	const currentDataRef = useRefMemo<State<Result>>(() => ({
+		data: (
+			typeof initialState === 'function' 
+				? (initialState as () => Result)()
+				: initialState
+		),
+		isLoading: _config.enable !== false && 
+		!_config.silent &&
+		(isFetchEffect || isFetchEffectWithData),
+		error: null
+	}));
 
 	const setLoading = (isLoading: boolean) => { 
 		if ( !_config.silent ) {
 			if ( isLoadingUsedRef.current ) {
+				const shouldUpdate = isLoading && currentDataRef.current.isLoading !== isLoading
+				
 				currentDataRef.current.isLoading = isLoading;
+				
+				if ( shouldUpdate ) {
+					NotificationService.notifyById(id);
+				}
 			}
 			else {
-				const loadingService = _config.loadingService ?? defaultConfig.loadingService;
 				// @ts-expect-error Its protected because I don't want it to be visible to others
-				LoadingService.setLoading(loadingService, isLoading)
+				LoadingService.setLoading(_config.loadingService, isLoading)
 			}
 		}
 
@@ -218,29 +211,26 @@ export function useFetch<Result, T extends any[]>(
 		NotificationService.notifyAll();
 	}
 
-	const request = async (...args: Partial<T>) => {
-		const remove = QueueKingSystem.add(
-			(controller) => controllers.current.add(controller),
-			(controller) => controllers.current.delete(controller)
-		);
-
-		const data = await method.call(currentDataRef.current, ...(args ?? []) as T)
-		.finally(() => {
-			remove();
-		})
-
-		if ( isFetchEffect && isFetchEffectWithData ) {
-			currentDataRef.current.data = data;
-
-			_config.onDataChange && _config.onDataChange(data)
-		}
-
-		return data;
-	}
-
 	const noLoadingFetch = async (...args: Partial<T>) => {
 		try {
-			return await request(...(args ?? []) as T);
+			const remove = QueueKingSystem.add(
+				(controller) => controllers.current.add(controller),
+				(controller) => controllers.current.delete(controller)
+			);
+
+			const data = await method
+			.call(currentDataRef.current, ...(args ?? []) as T)
+			.finally(() => {
+				remove();
+			})
+
+			if ( isFetchEffect && isFetchEffectWithData ) {
+				currentDataRef.current.data = data;
+
+				_config.onDataChange && _config.onDataChange(data)
+			}
+
+			return data;
 		}
 		catch (e) {
 			if ( 
@@ -274,8 +264,6 @@ export function useFetch<Result, T extends any[]>(
 		}
 	}
 
-	const fetchRef = useRef<() => any>(() => {});
-
 	const { 
 		current: {
 			subscribe,
@@ -283,29 +271,20 @@ export function useFetch<Result, T extends any[]>(
 			selector,
 			isEqual
 		} 
-	} = useRefMemo(() => {
-		const subscribe = NotificationService.subscribe(id, () => fetchRef.current());
-		const getSnapshot = () => ({
+	} = useRefMemo(() => ({
+		subscribe: NotificationService.subscribe(id, () => fetchRef.current()),
+		getSnapshot: () => ({
 			data: currentDataRef.current.data,
 			isLoading: currentDataRef.current.isLoading,
 			error: currentDataRef.current.error
-		});
-		const selector = (selection: State<Result>) => selection
-		const isEqual = (previousState: State<Result>, newState: State<Result>) => {
-			return (
-				`${String(previousState.isLoading)}` === `${String(newState.isLoading)}` &&
-				previousState.data === newState.data &&
-				previousState.error === newState.error
-			)
-		};
-
-		return {
-			subscribe,
-			getSnapshot,
-			selector,
-			isEqual
-		}
-	});
+		}),
+		selector: (selection: State<Result>) => selection,
+		isEqual: (previousState: State<Result>, newState: State<Result>) => (
+			previousState.isLoading === newState.isLoading &&
+			previousState.data === newState.data &&
+			previousState.error === newState.error
+		)
+	}));
 
 	useSyncExternalStoreWithSelector(
 		subscribe,
@@ -318,12 +297,10 @@ export function useFetch<Result, T extends any[]>(
 	const result: any = {
 		get isLoading() {
 			isLoadingUsedRef.current = true;
-
 			return currentDataRef.current.isLoading
 		},
 		get error() {
 			isErrorUsedRef.current = true;
-
 			return currentDataRef.current.error
 		},
 		fetch
@@ -332,28 +309,28 @@ export function useFetch<Result, T extends any[]>(
 	if ( isFetchEffect ) {
 		fetchRef.current = fetch;
 
-		const enable = (_config.enable ?? defaultConfig.enable ?? true);
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			if ( enable && isOnline ) {
+			if ( _config.enable !== false && isOnline ) {
 				QueueKingSystem.isThresholdEnabled = true;
 				
 				result.fetch()
 				.finally(() => {
 					if ( _config.scrollRestoration ) {
-						if ( Array.isArray(_config.scrollRestoration) ) {
-							_config.scrollRestoration.forEach((method) => {
-								method(); 
-							});
-							return;
-						}
-						_config.scrollRestoration();
+						(
+							Array.isArray(_config.scrollRestoration) 
+								? _config.scrollRestoration 
+								: [_config.scrollRestoration]
+						)
+						.forEach((method) => {
+							method?.(); 
+						});
 					}
-					_config.onEffectEnd && _config.onEffectEnd();
+					_config.onEffectEnd?.();
 				});
 			}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [isOnline, enable, ...(_config.deps ?? [])])
+		}, [isOnline, _config.enable, ...(_config.deps ?? [])])
 
 		// This is to make sure onFocus will only trigger if the hook commands the data,
 		// Otherwise it can lead to errors
@@ -368,7 +345,7 @@ export function useFetch<Result, T extends any[]>(
 					await (noLoadingFetch as () => Promise<any>)();
 					NotificationService.notifyAll();
 				},
-				_config.onWindowFocus ?? defaultConfig?.onWindowFocus ?? true
+				_config.onWindowFocus ?? true
 			);
 
 			result.data = currentDataRef.current.data;
@@ -380,12 +357,12 @@ export function useFetch<Result, T extends any[]>(
 		return () => {
 			NotificationService.finishRequest(id); 
 			if ( controllers.current.size ) {
-				controllers.current.forEach((controller) => {
-					if ( !controller.signal.aborted ) {
-						controller.abort();
-					}
+				controllers.current
+				.forEach((controller) => {
+					controller.abort();
 				})
-				controllers.current = new Set();
+				// eslint-disable-next-line react-hooks/exhaustive-deps
+				controllers.current.clear();
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps

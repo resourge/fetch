@@ -29,7 +29,7 @@ class QueueKingSystem {
 		return this.queue[this.queue.length - 1];
 	}
 
-	add(cb: QueueCallback, onRemove?: QueueCallback) {
+	add(cb: QueueCallback, onRemove: QueueCallback) {
 		let _controller: AbortController;
 		this.queue.push((controller) => {
 			_controller = controller;
@@ -37,7 +37,7 @@ class QueueKingSystem {
 		})
 
 		return () => {
-			onRemove && onRemove(_controller);
+			onRemove(_controller);
 			this.queue.filter((v) => v === cb)
 		}
 	}

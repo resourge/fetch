@@ -1,11 +1,8 @@
-const transformURLSearchParamsFromArray = <K extends any[]>(
-	params: K,
-	baseKey: string = ''
+const transformURLSearchParams = (
+	params: Array<[string, any]>
 ): any[] => {
 	return params
-	.reduce<any[]>((arr, [_key, value]) => {
-		const key = `${baseKey ? `${baseKey}` : ''}[]`
-    
+	.reduce<any[]>((arr, [key, value]) => {
 		const newArr = convertValue(key, value);
     
 		if ( Array.isArray(newArr[0]) ) {
@@ -19,25 +16,23 @@ const transformURLSearchParamsFromArray = <K extends any[]>(
 	}, [])
 }
 
+const transformURLSearchParamsFromArray = <K extends any[]>(
+	params: K,
+	baseKey: string = ''
+): any[] => transformURLSearchParams(
+	params
+	.map(([_key, value]) => [`${baseKey}[]`, value])
+)
+
 const transformURLSearchParamsFromObject = <K extends object>(
 	params: K,
 	baseKey: string = ''
 ): any[] => {
-	return Object.entries(params)
-	.reduce<any[]>((arr, [_key, value]) => {
-		const key = `${baseKey ? `${baseKey}.` : ''}${_key}`
-    
-		const newArr = convertValue(key, value);
-    
-		if ( Array.isArray(newArr[0]) ) {
-			arr.push(...newArr)
-		}
-		else {
-			arr.push(newArr)
-		}
-    
-		return arr;
-	}, [])
+	const _baseKey = baseKey ? `${baseKey}.` : '';
+	return transformURLSearchParams(
+		Object.entries(params)
+		.map(([key, value]) => [`${_baseKey}${key}`, value])
+	)
 }
 
 const convertValue = (key: string, value: any): any[] => {

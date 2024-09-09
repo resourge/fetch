@@ -3,7 +3,6 @@ export class FetchError extends Error {
 		const f = new FetchError(error.message);
 
 		f.cause = error.cause;
-		f.message = error.message;
 		f.stack = error.stack;
 
 		return f;

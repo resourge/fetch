@@ -69,12 +69,10 @@ class LoadingService {
 	}
 
 	protected emit(emits: Array<() => void>) {
-		if ( emits && emits.length ) {
-			emits
-			.forEach((emit) => {
-				emit();
-			})
-		}
+		emits
+		.forEach((emit) => {
+			emit();
+		})
 	}
 
 	protected setLoading(loaderId: string = '', isLoading: boolean) {

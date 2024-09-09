@@ -12,10 +12,7 @@ const convertModelToFormData = <K>(model: K, formData: FormData, namespace: stri
 			})
 		}
 		else {
-			let value: any = model;
-			if (value instanceof Date) {
-				value = value.toISOString();
-			}
+			const value: any = model instanceof Date ? model.toISOString() : model;
 			formData.append(namespace, value)
 		}
 	}
@@ -29,12 +26,16 @@ const convertModelToFormData = <K>(model: K, formData: FormData, namespace: stri
  * @param model {any}
  * @param formDataKey {string} - formData key (default: 'formFiles')
  */
-export const formatToFormData = <K>(files: File[], model: K, formDataKey?: string): FormData => {
+export const formatToFormData = <K>(
+	files: File[], 
+	model: K, 
+	formDataKey: string = 'formFiles'
+): FormData => {
 	const formData: FormData = new FormData();
 
 	if ( files && files.length ) {
 		files.forEach((file: File) => {
-			formData.append(formDataKey ?? 'formFiles', file);
+			formData.append(formDataKey, file);
 		});
 	}
 

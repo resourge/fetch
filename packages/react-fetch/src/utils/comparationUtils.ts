@@ -1,7 +1,3 @@
-export function booleanCompare(a: boolean = false, b: boolean = false) {
-	return Boolean(Number(a) - Number(b));
-}
-
 export function deepCompare(
 	obj1?: any,
 	obj2?: any
@@ -14,24 +10,12 @@ export function deepCompare(
 		return false;
 	}
 
-	// If both are arrays
-	if (Array.isArray(obj1) && Array.isArray(obj2)) {
-		if (obj1.length !== obj2.length) {
-			return false;
-		}
-
-		// Compare elements of both arrays
-		for (let i = 0; i < obj1.length; i++) {
-			if (!deepCompare(obj1[i], obj2[i])) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	// If one is an array and the other is not, return false
-	if (Array.isArray(obj1) !== Array.isArray(obj2)) {
-		return false;
+	// Handle arrays comparison
+	if (Array.isArray(obj1) || Array.isArray(obj2)) {
+		return Array.isArray(obj1) && 
+			Array.isArray(obj2) &&
+			obj1.length === obj2.length && 
+			obj1.every((item, i) => deepCompare(item, obj2[i]));
 	}
 
 	// Get the keys of each object
@@ -41,5 +25,5 @@ export function deepCompare(
 	// Check if both objects have the same number of keys
 	if (keys1.length !== keys2.length) return false;
 
-	return !keys1.some((key) => !keys2.includes(key) || !deepCompare(obj1[key], obj2[key]))
+	return keys1.every((key) => keys2.includes(key) && deepCompare(obj1[key], obj2[key]))
 }

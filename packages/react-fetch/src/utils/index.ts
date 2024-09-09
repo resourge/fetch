@@ -1,1 +1,0 @@
-export { setFetchDefaultConfig } from './defaultConfig';

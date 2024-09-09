@@ -4,10 +4,10 @@ import {
 	useEffect,
 	useMemo,
 	useRef
-} from 'react'
+} from 'react';
 
-import { HistoryStore } from '@resourge/history-store'
-import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourge/history-store/utils'
+import { HistoryStore } from '@resourge/history-store';
+import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourge/history-store/utils';
 
 import {
 	type OrderByEnum,
@@ -18,6 +18,7 @@ import {
 } from '../types/ParamsType';
 import { deepCompare } from '../utils/comparationUtils';
 
+import { filterByCacheIds, removeCacheIds, useMultipleFiltersId } from './useMultipleFiltersId';
 import { type Pagination } from './usePagination';
 import { type PreloadRef } from './usePreload';
 
@@ -90,26 +91,21 @@ export const useFilterSearchParams = <
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
 	const pathnameRef = useRef<string>();
-	
-	function getDataFromParams() {
-		const [url] = HistoryStore.getValue()
-		pathnameRef.current = url.pathname;
+	const fId = useMultipleFiltersId({
+		hash 
+	});
 
+	function getParams(url: URL) {
 		let searchParams = url.searchParams;
 		if (hash) {
 			const hashUrl = new URL(
-				url.hash.substring(1, url.hash.length),
+				url.hash.slice(1),
 				window.location.origin
 			);
 			searchParams = hashUrl.searchParams;
 		}
 
-		const {
-			sort,
-			page,
-			perPage,
-			...filter
-		} = parseSearchParams<ParamsType<FilterSearchParams>>(
+		return parseSearchParams<ParamsType<FilterSearchParams>>(
 			searchParams, 
 			{
 				...defaultFilter, 
@@ -118,9 +114,22 @@ export const useFilterSearchParams = <
 				sort: defaultSort
 			}
 		);
+	}
+	
+	function getDataFromParams() {
+		const [url] = HistoryStore.getValue()
+		pathnameRef.current = url.pathname;
+
+		const params = getParams(url);
+		const {
+			sort,
+			page,
+			perPage,
+			...filter
+		} = fId ? ((params[fId] ?? {}) as ParamsType<FilterSearchParams>) : params
 
 		return ({
-			filter: filter ?? defaultFilter,
+			filter: removeCacheIds(filter) ?? defaultFilter,
 			sort: sort ?? defaultSort,
 			pagination: {
 				page: page ?? initialPage,
@@ -136,8 +145,17 @@ export const useFilterSearchParams = <
 
 	const setParams = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
 		const [url] = HistoryStore.getValue()
-		
-		const newSearch = parseParams(newFilter);
+		const params = filterByCacheIds(
+			fId,
+			getParams(url)
+		);
+
+		const newSearch = parseParams({
+			...params,
+			...fId ? ({
+				[fId]: newFilter 
+			}) : newFilter
+		});
 
 		if ( url.search !== newSearch ) {
 			const newURL = createNewUrlWithSearch(
@@ -237,10 +255,10 @@ export const useFilterSearchParams = <
 				data.sort = sort;
 			}
 
-			if ( !deepCompare(filter as unknown as FilterSearchParams, data.filter) ) {
+			if ( !deepCompare(filter, data.filter) ) {
 				makeRequest = true;
 				preloadRef.current = {};
-				data.filter = filter as unknown as FilterSearchParams;
+				data.filter = filter;
 			}
 
 			if ( makeRequest ) {

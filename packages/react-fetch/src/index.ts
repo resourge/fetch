@@ -33,4 +33,3 @@ export {
 	type SortSearchParamsType,
 	type PaginationConfig
 } from './types'
-export { setFetchDefaultConfig } from './utils';

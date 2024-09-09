@@ -81,9 +81,35 @@ export class BaseHttpService {
 	}
 
 	private async generatePromise(request: Request, config: HttpResponseConfig) {
-		let _response: Response
 		try {
-			_response = await fetch(request);
+			const _response = await fetch(request);
+			const response = _response.clone();
+
+			const isJson = response.headers.get('content-type')?.includes('application/json');
+		
+			const data = await (config.transform ? config.transform(_response.clone(), config) : (isJson ? response.json() : response.text()));
+
+			if ( _response.ok ) {
+				return new HttpResponse(
+					response.status,
+					response.statusText,
+					request,
+					response,
+					data,
+					config
+				);
+			}
+
+			return await Promise.reject(
+				new HttpResponseError(
+					response.statusText,
+					request,
+					data,
+					config,
+					response.status,
+					response
+				)
+			);
 		}
 		catch ( e ) {
 			return await Promise.reject(
@@ -95,33 +121,6 @@ export class BaseHttpService {
 				)
 			)
 		}
-		const response = _response.clone();
-
-		const isJson = response.headers.get('content-type')?.includes('application/json');
-		
-		const data = await (config.transform ? config.transform(_response.clone(), config) : (isJson ? response.json() : response.text()));
-
-		if ( _response.ok ) {
-			return new HttpResponse(
-				response.status,
-				response.statusText,
-				request,
-				response,
-				data,
-				config
-			);
-		}
-
-		return await Promise.reject(
-			new HttpResponseError(
-				response.statusText,
-				request,
-				data,
-				config,
-				response.status,
-				response
-			)
-		);
 	}
 
 	protected _setToken: InterceptorOnRequest = (config) => config;
@@ -209,14 +208,12 @@ export class BaseHttpService {
 		data?: D,
 		config: MethodConfig = {}
 	): Promise<R> {
-		const _config: RequestConfig = {
+		return this.request<T, R>({
 			...config,
 			method: config.method ?? 'post',
 			url,
 			data
-		}
-
-		return this.request<T, R>(_config);
+		});
 	}
 
 	public put<T = any, R = HttpResponse<T>, D = any>(
@@ -229,14 +226,12 @@ export class BaseHttpService {
 		data?: D,
 		config: MethodConfig = {}
 	): Promise<R> {
-		const _config: RequestConfig = {
+		return this.request<T, R>({
 			...config,
 			method: config.method ?? 'put',
 			url,
 			data
-		}
-
-		return this.request<T, R>(_config);
+		});
 	}
 
 	public delete<T = any, R = HttpResponse<T>, D = any>(
@@ -249,14 +244,12 @@ export class BaseHttpService {
 		data?: D,
 		config: MethodConfig = {}
 	): Promise<R> {
-		const _config: RequestConfig = {
+		return this.request<T, R>({
 			...config,
 			method: config.method ?? 'delete',
 			url,
 			data
-		}
-
-		return this.request<T, R>(_config);
+		});
 	}
 
 	public patch<T = any, R = HttpResponse<T>, D = any>(
@@ -269,14 +262,12 @@ export class BaseHttpService {
 		data?: D,
 		config: MethodConfig = {}
 	): Promise<R> {
-		const _config: RequestConfig = {
+		return this.request<T, R>({
 			...config,
 			method: config.method ?? 'patch',
 			url,
 			data
-		}
-
-		return this.request<T, R>(_config);
+		});
 	}
 
 	public upload<T = any, R = HttpResponse<T>, D = any>(
@@ -295,13 +286,11 @@ export class BaseHttpService {
 		config: Omit<MethodConfig, 'method'> = {},
 		formDataKey?: string
 	): Promise<R> {
-		const _config: RequestConfig = {
+		return this.request<T, R>({
 			...config,
 			method,
 			url,
 			data: formatToFormData(files, data, formDataKey)
-		}
-
-		return this.request<T, R>(_config);
+		});
 	}
 }
