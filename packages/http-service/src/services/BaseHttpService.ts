@@ -178,7 +178,7 @@ export class BaseHttpService {
 			QueueKingSystem.send(controller)
 		}
 
-		const threshold = (QueueKingSystem.isThresholdEnabled ?? config.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) 
+		const threshold = (config.isThresholdEnabled ?? QueueKingSystem.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) 
 			? (config.threshold ?? this.defaultConfig.threshold) 
 			: 0;
 
