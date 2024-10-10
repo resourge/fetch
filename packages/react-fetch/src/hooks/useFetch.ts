@@ -345,7 +345,7 @@ export function useFetch<Result, T extends any[]>(
 					await (noLoadingFetch as () => Promise<any>)();
 					NotificationService.notifyAll();
 				},
-				_config.onWindowFocus ?? true
+				_config.enable !== false ? (_config.onWindowFocus ?? true) : false
 			);
 
 			result.data = currentDataRef.current.data;
