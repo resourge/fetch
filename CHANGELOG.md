@@ -1,3 +1,11 @@
+## [1.37.1](https://github.com/resourge/fetch/compare/v1.37.0...v1.37.1) (2024-10-30)
+
+
+### Bug Fixes
+
+* **basehttpservice:** fix priority on isThresholdEnabled ([102c9b6](https://github.com/resourge/fetch/commit/102c9b6fbf84ddf5859163eb78830817ce0135f0))
+* **usefetch:** fix when enable is false useOnFocusFetch still works ([3ac01d2](https://github.com/resourge/fetch/commit/3ac01d24eddd5c576e43947002c25f8ba0664a52))
+
 # [1.37.0](https://github.com/resourge/fetch/compare/v1.36.1...v1.37.0) (2024-09-09)
 
 
