@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/resourge/fetch/compare/v1.37.1...v1.38.0) (2024-10-31)
+
+
+### Features
+
+* **usefiltersearchparams:** improve check when searchParams change ([fb4c55d](https://github.com/resourge/fetch/commit/fb4c55d752616b8bfe6e39b2dd1518d50ca8d815))
+
 ## [1.37.1](https://github.com/resourge/fetch/compare/v1.37.0...v1.37.1) (2024-10-30)
 
 
