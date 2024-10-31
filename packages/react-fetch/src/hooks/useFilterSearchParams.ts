@@ -17,6 +17,7 @@ import {
 	type SortSearchParamsType
 } from '../types/ParamsType';
 import { deepCompare } from '../utils/comparationUtils';
+import { type FilterKeysState } from '../utils/createProxy';
 
 import { filterByCacheIds, removeCacheIds, useMultipleFiltersId } from './useMultipleFiltersId';
 import { type Pagination } from './usePagination';
@@ -68,6 +69,7 @@ export type FilterSearchParamsProps<
 	defaultFilter: FilterSearchParams
 	deps: readonly any[]
 	fetch: (metadata: SearchParamsMetadata<FilterSearchParams>) => Promise<Data>
+	filterKeysRef: React.MutableRefObject<FilterKeysState>
 	initialPage: PaginationSearchParamsType['page']
 	initialPerPage: PaginationSearchParamsType['perPage']
 	preloadRef: MutableRefObject<PreloadRef<Data>>
@@ -87,7 +89,8 @@ export const useFilterSearchParams = <
 		fetch,
 		preloadRef,
 		hash,
-		deps
+		deps,
+		filterKeysRef
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
 	const pathnameRef = useRef<string>();
@@ -255,7 +258,13 @@ export const useFilterSearchParams = <
 				data.sort = sort;
 			}
 
-			if ( !deepCompare(filter, data.filter) ) {
+			if ( 
+				!deepCompare(
+					filter, 
+					data.filter, 
+					filterKeysRef.current
+				) 
+			) {
 				makeRequest = true;
 				preloadRef.current = {};
 				data.filter = filter;

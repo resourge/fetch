@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 
+import { useRef } from 'react';
+
 import { HistoryStore } from '@resourge/history-store';
 import { createNewUrlWithSearch, parseParams } from '@resourge/history-store/utils';
 
@@ -7,6 +9,7 @@ import { type PaginationConfig, type ResetPaginationMetadataType } from '../type
 import { type PaginationFunctionsType, type PaginationMethod } from '../types/PaginationFunctionsType';
 import { type PaginationSearchParamsType, type ParamsType } from '../types/ParamsType';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../utils/constants';
+import { createProxy, type FilterKeysState } from '../utils/createProxy';
 import { calculateTotalPages } from '../utils/utils';
 
 import { useFetch } from './useFetch';
@@ -66,6 +69,10 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		deps
 	});
 
+	const filterKeysRef = useRef<FilterKeysState>({
+		keys: new Set() 
+	});
+
 	const fetchData = useFetch(
 		async (
 			metadata: SearchParamsMetadata<FilterSearchParams> = {
@@ -74,7 +81,11 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 				sort
 			}
 		) => {
-			const { data, totalItems } = await getMethod(metadata);
+			const { data, totalItems } = await getMethod({
+				filter: createProxy(metadata.filter, filterKeysRef.current),
+				pagination: metadata.pagination,
+				sort: metadata.sort
+			});
 
 			changeTotalPages(totalItems ?? 0);
 
@@ -103,7 +114,8 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		initialPage,
 		initialPerPage,
 		hash,
-		deps
+		deps,
+		filterKeysRef
 	});
 	
 	function getPaginationHref(page: number) {

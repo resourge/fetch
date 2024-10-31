@@ -6,6 +6,7 @@ import { type PaginationConfig, type ResetPaginationMetadataType } from '../type
 import { type PaginationFunctionsType, type PaginationMethod } from '../types/PaginationFunctionsType';
 import { type ParamsType, type PaginationSearchParamsType } from '../types/ParamsType';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../utils/constants';
+import { createProxy, type FilterKeysState } from '../utils/createProxy';
 import { calculateTotalPages } from '../utils/utils';
 
 import { useFetch } from './useFetch';
@@ -138,6 +139,10 @@ export const useInfiniteLoading = <
 		};
 	}
 
+	const filterKeysRef = useRef<FilterKeysState>({
+		keys: new Set() 
+	});
+
 	const fetchData = useFetch(
 		async (
 			metadata: SearchParamsMetadata<FilterSearchParams> = {
@@ -147,7 +152,11 @@ export const useInfiniteLoading = <
 			}
 		) => {
 			internalDataRef.current.isLoading = true;
-			const { page, totalItems } = await _getMethod(metadata)
+			const { page, totalItems } = await _getMethod({
+				filter: createProxy(metadata.filter, filterKeysRef.current),
+				pagination: metadata.pagination,
+				sort: metadata.sort
+			})
 
 			internalDataRef.current.isFirstTime = false;
 
@@ -201,7 +210,8 @@ export const useInfiniteLoading = <
 		initialPage,
 		initialPerPage,
 		hash,
-		deps
+		deps,
+		filterKeysRef
 	});
 
 	useEffect(() => {
