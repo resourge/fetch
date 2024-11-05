@@ -113,12 +113,14 @@ export class BaseHttpService {
 		}
 		catch ( e ) {
 			return await Promise.reject(
-				new HttpResponseError(
-					'Network Error',
-					request,
-					e,
-					config
-				)
+				e instanceof HttpResponseError
+					? e
+					: new HttpResponseError(
+						'Network Error',
+						request,
+						e,
+						config
+					)
 			)
 		}
 	}
