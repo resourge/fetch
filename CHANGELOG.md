@@ -1,3 +1,10 @@
+## [1.38.1](https://github.com/resourge/fetch/compare/v1.38.0...v1.38.1) (2024-11-05)
+
+
+### Bug Fixes
+
+* **basehttpservice:** fix generatePromise reject not working as intended ([3b86605](https://github.com/resourge/fetch/commit/3b86605d91282ee981c3389d9fa96c2612c1aa75))
+
 # [1.38.0](https://github.com/resourge/fetch/compare/v1.37.1...v1.38.0) (2024-10-31)
 
 
