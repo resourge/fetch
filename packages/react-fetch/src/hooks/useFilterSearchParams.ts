@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import {
-	type MutableRefObject,
-	useEffect,
-	useMemo,
-	useRef
-} from 'react';
+import { type MutableRefObject, useEffect, useMemo } from 'react'
 
 import { HistoryStore } from '@resourge/history-store';
 import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourge/history-store/utils';
@@ -93,7 +88,6 @@ export const useFilterSearchParams = <
 		filterKeysRef
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
-	const pathnameRef = useRef<string>();
 	const fId = useMultipleFiltersId({
 		hash 
 	});
@@ -121,7 +115,6 @@ export const useFilterSearchParams = <
 	
 	function getDataFromParams() {
 		const [url] = HistoryStore.getValue()
-		pathnameRef.current = url.pathname;
 
 		const params = getParams(url);
 		const {
@@ -222,10 +215,6 @@ export const useFilterSearchParams = <
 
 	useEffect(() => {
 		return HistoryStore.subscribe(() => {
-			const [url] = HistoryStore.getValue();
-			if (pathnameRef.current !== url.pathname) {
-				return;
-			}
 			const {
 				filter,
 				pagination: {
