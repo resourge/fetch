@@ -1,3 +1,10 @@
+## [1.38.2](https://github.com/resourge/fetch/compare/v1.38.1...v1.38.2) (2024-11-26)
+
+
+### Bug Fixes
+
+* **usefiltersearchparams:** fix request not being made when filters change ([78526b3](https://github.com/resourge/fetch/commit/78526b394c59947c8a372b66278f19fac568a188))
+
 ## [1.38.1](https://github.com/resourge/fetch/compare/v1.38.0...v1.38.1) (2024-11-05)
 
 
