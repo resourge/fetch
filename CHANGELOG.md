@@ -1,3 +1,10 @@
+# [1.39.0](https://github.com/resourge/fetch/compare/v1.38.2...v1.39.0) (2024-12-11)
+
+
+### Features
+
+* **basehttpservice:** add timeout to request and default config ([d84a9e6](https://github.com/resourge/fetch/commit/d84a9e6c25daa80091ab1a88f1f95c08612c97e0))
+
 ## [1.38.2](https://github.com/resourge/fetch/compare/v1.38.1...v1.38.2) (2024-11-26)
 
 
