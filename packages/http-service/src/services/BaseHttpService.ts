@@ -1,3 +1,4 @@
+import { TimeoutError } from '../errors/TimeoutError';
 import { type RequestConfig } from '../types/RequestConfig';
 import { HttpResponse, type HttpResponseConfig, HttpResponseError } from '../utils/HttpResponse';
 import { Interceptor, type InterceptorOnRequest } from '../utils/Interceptors';
@@ -25,24 +26,22 @@ export type HttpServiceDefaultConfig = {
 	threshold: number
 }
 
-export type BaseRequestConfig = Partial<HttpServiceDefaultConfig> & {
-	/**
-	 * A signal object that allows you to communicate with a DOM request (such as a Fetch) and abort it if required via an AbortController object.
-	 */
-	signal?: AbortSignal
-}
-
 export type GetMethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
 	method?: string
 	/**
 	 * Throttle key
 	 */
 	throttleKey?: string
-} & BaseRequestConfig
+} & Partial<HttpServiceDefaultConfig>
 
 export type HttpServiceConfig = {
 	baseUrl?: string
 	headers?: Record<string, string>
+	/**
+	 * Aborts the request when time out expires
+	 * @default 0
+	 */
+	timeout?: number
 }
 
 /**
@@ -53,6 +52,7 @@ export type HttpServiceConfig = {
 export class BaseHttpService {
 	public baseUrl: string;
 	public defaultHeaders: Record<string, string>;
+	public timeout: number;
 
 	/**
 	 * Default config of HttpService
@@ -66,10 +66,12 @@ export class BaseHttpService {
 
 	constructor({ 
 		baseUrl = typeof globalThis.window !== 'undefined' && globalThis.window.location ? window.location.origin : '/',
-		headers = {}
+		headers = {},
+		timeout = 0
 	}: HttpServiceConfig = {}) {
 		this.baseUrl = baseUrl;
 		this.defaultHeaders = headers;
+		this.timeout = timeout;
 	}
 
 	private throttleRequest(
@@ -80,9 +82,16 @@ export class BaseHttpService {
 		return throttlePromise(cacheKey, cb, threshold)
 	}
 
-	private async generatePromise(request: Request, config: HttpResponseConfig) {
+	private async generatePromise(
+		request: Request,
+		config: HttpResponseConfig,
+		timeoutId?: number
+	) {
 		try {
 			const _response = await fetch(request);
+
+			clearTimeout(timeoutId);
+
 			const response = _response.clone();
 
 			const isJson = response.headers.get('content-type')?.includes('application/json');
@@ -112,6 +121,7 @@ export class BaseHttpService {
 			);
 		}
 		catch ( e ) {
+			clearTimeout(timeoutId);
 			return await Promise.reject(
 				e instanceof HttpResponseError
 					? e
@@ -131,6 +141,18 @@ export class BaseHttpService {
 	}
 
 	public async request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
+		let timeoutId: number | undefined;
+		const timeout = config.timeout ?? this.timeout;
+		if ( timeout ) {
+			config.controller ??= new AbortController();
+
+			timeoutId = setTimeout(() => {
+				if ( config.controller ) {
+					config.controller.abort(new TimeoutError(config.url, config.method)); 
+				}
+			}, timeout) as unknown as number; 
+		}
+
 		const _config = await normalizeRequest(
 			config as NormalizeRequestConfig,
 			this.defaultHeaders,
@@ -141,7 +163,7 @@ export class BaseHttpService {
 
 		const request = new Request(_config.url, _config);
 
-		let requestPromise = this.generatePromise(request, _config);
+		let requestPromise = this.generatePromise(request, _config, timeoutId);
 		
 		this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
 			requestPromise = requestPromise.then(onResponse, (e) => {
@@ -172,12 +194,10 @@ export class BaseHttpService {
 			_url.search = urlSearchParams.toString();
 		}
 
-		if ( !config.signal ) {
-			const controller = new AbortController();
+		if ( !config.controller ) {
+			config.controller = new AbortController();
 
-			config.signal = controller.signal;
-
-			QueueKingSystem.send(controller)
+			QueueKingSystem.send(config.controller)
 		}
 
 		const threshold = (config.isThresholdEnabled ?? QueueKingSystem.isThresholdEnabled ?? this.defaultConfig.isThresholdEnabled) 

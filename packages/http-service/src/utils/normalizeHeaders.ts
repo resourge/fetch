@@ -108,6 +108,8 @@ export const normalizeRequest = async (
 		} as HttpResponseConfig;
 
 		_config.url.searchParams.sort();
+
+		_config.signal = config.controller?.signal;
 		
 		normalizeHeaders(_config, defaultHeaders);
 

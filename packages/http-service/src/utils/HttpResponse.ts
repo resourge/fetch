@@ -1,8 +1,9 @@
 import { type RequestConfig } from '../types';
 
-export type HttpResponseConfig = Omit<RequestConfig, 'url' | 'headers'> & {
+export type HttpResponseConfig = Omit<RequestConfig, 'url' | 'headers' | 'controller'> & {
 	url: URL
 } & Required<Pick<RequestConfig, 'headers'>>
+& Pick<RequestInit, 'signal'>
 
 export class HttpResponse<T = any> {
 	constructor(
