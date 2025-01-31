@@ -22,6 +22,9 @@ export function deepCompare(
 
 	// Handle arrays comparison
 	if (Array.isArray(obj1) && Array.isArray(obj2)) {
+		if ( obj1.length !== obj2.length ) {
+			return false
+		}
 		const filteredObj1 = keysToCheck.keys.size
 			? obj1.filter((_, i) => keysToCheck.keys.has(String(i)))
 			: obj1;

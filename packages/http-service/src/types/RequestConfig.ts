@@ -8,7 +8,7 @@ export type RequestConfig = Omit<RequestInit, 'body' | 'method' | 'headers' | 's
 	data?: any
 	headers?: Record<string, string>
 	/**
-	 * Aborts the request when time out expires
+	 * Aborts the request when the time expires
 	 * @default 0
 	 */
 	timeout?: number
