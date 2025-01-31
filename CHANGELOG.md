@@ -1,3 +1,10 @@
+## [1.39.1](https://github.com/resourge/fetch/compare/v1.39.0...v1.39.1) (2025-01-31)
+
+
+### Bug Fixes
+
+* **deepcompare:** fix deepCompare when arrays have diferent sizes ([d9d09a4](https://github.com/resourge/fetch/commit/d9d09a43f5176afa60fe265ecf511e2dfd71bee6))
+
 # [1.39.0](https://github.com/resourge/fetch/compare/v1.38.2...v1.39.0) (2024-12-11)
 
 
