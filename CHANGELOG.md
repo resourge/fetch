@@ -1,3 +1,10 @@
+## [1.39.2](https://github.com/resourge/fetch/compare/v1.39.1...v1.39.2) (2025-02-14)
+
+
+### Bug Fixes
+
+* **useinfiniteloading:** fix not working as intended when filtering or sorting ([2cea05f](https://github.com/resourge/fetch/commit/2cea05f2b99c89661d0f00370f3445139a1ea860))
+
 ## [1.39.1](https://github.com/resourge/fetch/compare/v1.39.0...v1.39.1) (2025-01-31)
 
 
