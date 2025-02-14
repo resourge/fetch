@@ -63,7 +63,7 @@ export type FilterSearchParamsProps<
 > = {
 	defaultFilter: FilterSearchParams
 	deps: readonly any[]
-	fetch: (metadata: SearchParamsMetadata<FilterSearchParams>) => Promise<Data>
+	fetch: (metadata: SearchParamsMetadata<FilterSearchParams>, whatChanged: Set<'pagination' | 'sort' | 'filter'>) => Promise<Data>
 	filterKeysRef: React.MutableRefObject<FilterKeysState>
 	initialPage: PaginationSearchParamsType['page']
 	initialPerPage: PaginationSearchParamsType['perPage']
@@ -224,25 +224,25 @@ export const useFilterSearchParams = <
 				sort
 			} = getDataFromParams();
 
-			let makeRequest = false;
+			const whatChanged = new Set<'pagination' | 'sort' | 'filter'>();
 			
 			if ( 
 				perPage !== undefined && data.pagination.perPage !== perPage
 			) {
 				preloadRef.current = {};
-				makeRequest = true;
+				whatChanged.add('pagination');
 				data.pagination.perPage = perPage;
 			}
 
 			if ( 
 				page !== undefined && data.pagination.page !== page
 			) {
-				makeRequest = true;
+				whatChanged.add('pagination');
 				data.pagination.page = page;
 			}
 
 			if ( !deepCompare(sort, data.sort) ) {
-				makeRequest = true;
+				whatChanged.add('sort');
 				preloadRef.current = {};
 				data.sort = sort;
 			}
@@ -254,13 +254,13 @@ export const useFilterSearchParams = <
 					filterKeysRef.current
 				) 
 			) {
-				makeRequest = true;
+				whatChanged.add('filter');
 				preloadRef.current = {};
 				data.filter = filter;
 			}
 
-			if ( makeRequest ) {
-				fetch(data);
+			if ( whatChanged.size ) {
+				fetch(data, whatChanged);
 			}
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -65,8 +65,7 @@ export const useInfiniteLoading = <
 ): InfiniteLoadingReturn<Data, FilterSearchParams> => {
 	const isOnline = useIsOnline();
 
-	const _scrollRestoration: InfiniteScrollRestoration =
-		scrollRestoration as InfiniteScrollRestoration;
+	const _scrollRestoration: InfiniteScrollRestoration = scrollRestoration as InfiniteScrollRestoration;
 
 	if (process.env.NODE_ENV === 'development') {
 		if (_scrollRestoration && !_scrollRestoration.getPage) {
@@ -91,7 +90,7 @@ export const useInfiniteLoading = <
 		deps
 	});
 
-	async function _getRestoreMethod(metadata: PaginationMetadata<FilterSearchParams>, restoration: PaginationSearchParamsType) { 
+	async function fetchRestoredData(metadata: PaginationMetadata<FilterSearchParams>, restoration: PaginationSearchParamsType) { 
 		const { totalItems } = await getRestoreMethod(
 			metadata, 
 			{
@@ -109,7 +108,7 @@ export const useInfiniteLoading = <
 		};
 	}
 
-	async function _getMethod(metadata: PaginationMetadata<FilterSearchParams>) {
+	async function fetchDataMethod(metadata: PaginationMetadata<FilterSearchParams>) {
 		if ( internalDataRef.current.isFirstTime && _scrollRestoration ) {
 			const scrollRestorationData = _scrollRestoration.getPage();
 
@@ -117,7 +116,7 @@ export const useInfiniteLoading = <
 				scrollRestorationData.perPage !== undefined &&
 				scrollRestorationData.page !== undefined 
 			) {
-				return await _getRestoreMethod(
+				return await fetchRestoredData(
 					metadata, 
 					{
 						page: scrollRestorationData.page,
@@ -127,9 +126,7 @@ export const useInfiniteLoading = <
 			}
 		}
 
-		const { data, totalItems } = await getMethod(
-			metadata
-		);
+		const { data, totalItems } = await getMethod(metadata);
 
 		internalDataRef.current.data[metadata.pagination.page] = data;
 
@@ -149,10 +146,18 @@ export const useInfiniteLoading = <
 				pagination,
 				filter,
 				sort
-			}
+			},
+			whatChanged
 		) => {
+			if ( 
+				whatChanged && 
+				whatChanged.size &&
+				!( whatChanged.size === 1 && whatChanged.has('pagination') )
+			) {
+				internalDataRef.current.data = [];
+			}
 			internalDataRef.current.isLoading = true;
-			const { page, totalItems } = await _getMethod({
+			const { page, totalItems } = await fetchDataMethod({
 				filter: createProxy(metadata.filter, filterKeysRef.current),
 				pagination: metadata.pagination,
 				sort: metadata.sort
@@ -174,9 +179,7 @@ export const useInfiniteLoading = <
 				);
 			}
 
-			const inInComplete = newData.length !== (
-				(internalDataRef.current.data.length)
-			) * pagination.perPage
+			const inInComplete = newData.length !== (internalDataRef.current.data.length * pagination.perPage)
 
 			internalDataRef.current.isLast = newData.length === totalItems;
 
@@ -220,17 +223,8 @@ export const useInfiniteLoading = <
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isOnline, ...deps]);
 
-	const changeItemsPerPage = (perPage: number) => {
-		pagination.perPage = perPage;
-		pagination.page = initialPage;
-		internalDataRef.current.data = [];
-
-		fetchData.fetch();
-	};
-
 	const changePage = (page: number) => {
 		pagination.page = page;
-
 		fetchData.fetch();
 	};
 
@@ -243,18 +237,6 @@ export const useInfiniteLoading = <
 		if (totalPages < pagination.page) {
 			changePage(initialPage);
 		}
-	};
-
-	const reset = (value: ResetPaginationMetadataType<FilterSearchParams> = {}) => {
-		pagination.perPage = value.pagination?.perPage ?? initialPerPage;
-		pagination.page = value.pagination?.perPage ?? initialPage;
-
-		setParams({
-			sort: value.sort ?? defaultSort,
-
-			...defaultFilter,
-			...filter
-		} as ParamsType<FilterSearchParams>);
 	};
 
 	return {
@@ -275,29 +257,26 @@ export const useInfiniteLoading = <
 				return;
 			}
 
-			if ( internalDataRef.current.isLastIncomplete ) {
-				if ( willPreload(pagination.page) ) {
-					return;
-				}
-				const { totalItems } = await _getRestoreMethod(
-					{
-						pagination,
-						sort,
-						filter
-					}, 
-					{
-						page: pagination.page,
-						perPage: pagination.perPage 
-					}
-				);
+			if ( !internalDataRef.current.isLastIncomplete ) {
+				changePage(pagination.page + 1);
+			}
 
-				changeTotalPages(totalItems ?? 0);
-
-				fetchData.setFetchState(internalDataRef.current.data.flat() as Data);
-
+			if ( willPreload(pagination.page) ) {
 				return;
 			}
-			changePage(pagination.page + 1);
+
+			const { totalItems } = await fetchRestoredData(
+				{
+					pagination,
+					sort,
+					filter
+				}, 
+				pagination
+			);
+
+			changeTotalPages(totalItems ?? 0);
+
+			fetchData.setFetchState(internalDataRef.current.data.flat() as Data);
 		},
 
 		data: fetchData.data,
@@ -317,12 +296,28 @@ export const useInfiniteLoading = <
 		sort,
 		filter,
 
-		changeItemsPerPage,
+		changeItemsPerPage: (perPage: number) => {
+			pagination.perPage = perPage;
+			pagination.page = initialPage;
+			internalDataRef.current.data = [];
+	
+			fetchData.fetch();
+		},
 
 		setFilter,
 		sortTable,
 
-		reset,
+		reset: (value: ResetPaginationMetadataType<FilterSearchParams> = {}) => {
+			pagination.perPage = value.pagination?.perPage ?? initialPerPage;
+			pagination.page = value.pagination?.perPage ?? initialPage;
+	
+			setParams({
+				sort: value.sort ?? defaultSort,
+	
+				...defaultFilter,
+				...filter
+			} as ParamsType<FilterSearchParams>);
+		},
 
 		get context() {
 			return this;
