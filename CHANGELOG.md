@@ -1,3 +1,10 @@
+## [1.39.3](https://github.com/resourge/fetch/compare/v1.39.2...v1.39.3) (2025-02-18)
+
+
+### Bug Fixes
+
+* **usepreload:** fix getMultipleMethod not using correct initialPage ([101629c](https://github.com/resourge/fetch/commit/101629c2d21f6911b0768f2723668c439f986221))
+
 ## [1.39.2](https://github.com/resourge/fetch/compare/v1.39.1...v1.39.2) (2025-02-14)
 
 
