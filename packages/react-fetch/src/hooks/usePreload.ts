@@ -146,7 +146,7 @@ export const usePreload = <
 					...metadata,
 					pagination: {
 						...metadata.pagination,
-						page: index,
+						page: index + initialPage,
 						perPage: maxPerPage
 					}
 				})
