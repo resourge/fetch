@@ -22,11 +22,35 @@ type RefreshControlProps<
 		onClick: () => void
 	}) => ReactNode
 	/**
-	 * By default is null
+	 * Determines the nearest scrolling parent (overflow container) by default.
+	 * If no `root` is provided, it searches for the closest overflow parent, otherwise, it defaults to the `window`.
 	 */
 	root?: IntersectionObserverInit['root']
 	| MutableRefObject<IntersectionObserverInit['root']>
 };
+
+function getOverflowParent(element: HTMLElement | null) {
+	while (element && element !== document.body) {
+		const overflowY = window.getComputedStyle(element).overflowY;
+		const overflowX = window.getComputedStyle(element).overflowX;
+
+		if (
+			(
+				(overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'hidden') && 
+				element.scrollHeight > element.clientHeight
+			) || (
+				(overflowX === 'auto' || overflowX === 'scroll' || overflowX === 'hidden') && 
+				element.scrollWidth > element.clientWidth
+			)
+		) {
+			return element;
+		}
+
+		element = element.parentElement;
+	}
+
+	return null; // No overflow parent found
+}
 
 /**
  * Component to help useInfiniteScroll control the scroll
@@ -45,10 +69,12 @@ function RefreshControl<
 
 	useEffect(() => {
 		if (ref.current) {
-			const _root = root &&
+			const _root = (
+				root &&
 				(root as MutableRefObject<IntersectionObserverInit['root']>).current
-				? (root as MutableRefObject<IntersectionObserverInit['root']>).current
-				: (root as IntersectionObserverInit['root']);
+					? (root as MutableRefObject<IntersectionObserverInit['root']>).current
+					: (root as IntersectionObserverInit['root'])
+			) ?? getOverflowParent(ref.current);
 
 			const observer = new IntersectionObserver(
 				(entries) => {

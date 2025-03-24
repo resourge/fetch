@@ -43,7 +43,7 @@
 		"react": ">=17.0.0"
 	},
 	"dependencies": {
-		"@resourge/history-store": "^1.3.3",
+		"@resourge/history-store": ">=1.3.4",
 		"use-sync-external-store": "^1.2.2"
 	},
 	"devDependencies": {
