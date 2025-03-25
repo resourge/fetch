@@ -1,44 +1,48 @@
 {
-  "name": "@resourge/react-fetch",
-  "main": "./dist/index.js",
-  "react-native": "./dist/index.native.js",
-  "browser": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "dist"
-  ],
-  "author": "resourge",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/resourge/fetch.git"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "@react-native-community/netinfo": "*"
-  },
-  "peerDependenciesMeta": {
-    "@react-native-community/netinfo": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "use-sync-external-store": "^1.2.0",
-    "@resourge/http-service": "1.0.0",
-    "@resourge/history-store": "*"
-  },
-  "keywords": [
-    "javascript",
-    "fetch",
-    "api",
-    "throttle",
-    "react",
-    "hooks",
-    "react-fetch"
-  ],
-  "homepage": "https:/github.com/resourge/fetch/tree/master/src/lib/react-fetch/README.md"
+	"name": "@resourge/react-fetch",
+	"main": "./dist/index.js",
+	"react-native": "./dist/index.native.js",
+	"browser": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"private": false,
+	"exports": {
+		"default": "./dist/index.js",
+		"react-native": "./dist/index.native.js"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist"
+	],
+	"author": "resourge",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/resourge/fetch.git"
+	},
+	"peerDependencies": {
+		"react": ">=16.8.0",
+		"@react-native-community/netinfo": "*"
+	},
+	"peerDependenciesMeta": {
+		"@react-native-community/netinfo": {
+			"optional": true
+		}
+	},
+	"dependencies": {
+		"use-sync-external-store": "^1.2.0",
+		"@resourge/http-service": "1.0.0",
+		"@resourge/history-store": "*"
+	},
+	"keywords": [
+		"javascript",
+		"fetch",
+		"api",
+		"throttle",
+		"react",
+		"hooks",
+		"react-fetch"
+	],
+	"homepage": "https:/github.com/resourge/fetch/tree/master/src/lib/react-fetch/README.md"
 }

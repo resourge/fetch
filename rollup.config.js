@@ -1,7 +1,6 @@
 import { babel } from '@rollup/plugin-babel';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import fg from 'fast-glob'
-import fs, { readFileSync } from 'fs'
+import fs, { readFileSync } from 'fs';
 import path from 'path';
 import filsesize from 'rollup-plugin-filesize';
 import execute from 'rollup-plugin-shell';
@@ -134,7 +133,19 @@ const getPackage = (
 				commands: [`tsc --project ./scripts/tsconfig.${PACKAGE_NAME}.json && npm run injectBannerIntoDeclarations -- --folder "${OUTPUT_DIR}" --text "${banner}"`],
 				sync: true,
 				hook: 'buildEnd'
-			}),
+			}), 
+			{
+				name: 'remove-js-extension',
+				generateBundle(_, bundle) {
+					for (const file of Object.keys(bundle)) {
+						const chunk = bundle[file];
+
+						if (chunk.type === 'chunk') {
+							chunk.code = chunk.code.replace(/(from\s+['"]\.\/[^'"]+)\.js(['"])/g, '$1$2');
+						}
+					}
+				}
+			},
 			{
 				name: 'include-native-plugin',
 
