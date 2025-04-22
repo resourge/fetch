@@ -25,10 +25,10 @@ export function deepCompare(
 		if ( obj1.length !== obj2.length ) {
 			return false
 		}
-		const filteredObj1 = keysToCheck.keys.size
+		const filteredObj1 = keysToCheck.keys.size && !keysToCheck.all
 			? obj1.filter((_, i) => keysToCheck.keys.has(String(i)))
 			: obj1;
-		const filteredObj2 = keysToCheck.keys.size
+		const filteredObj2 = keysToCheck.keys.size && !keysToCheck.all
 			? obj2.filter((_, i) => keysToCheck.keys.has(String(i)))
 			: obj2;
 
