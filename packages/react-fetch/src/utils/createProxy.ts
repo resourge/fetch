@@ -7,7 +7,8 @@ export type FilterKeysState = {
 
 export function createProxy(
 	target: any, 
-	state: FilterKeysState
+	state: FilterKeysState,
+	isRecursive: boolean = false
 ) {
 	// Recursively create a proxy for nested objects
 	state.state = state.state ?? {
@@ -16,12 +17,21 @@ export function createProxy(
 
 	return new Proxy(target, {
 		get(target, key) {
-			state.keys.add(String(key));
 			const value = target[key];
 
-			if ( typeof value === 'object' && value !== null && !isBuiltinWithMutableMethods(value)) {
+			if ( !isRecursive && key !== 'filter' ) {
+				return value;
+			}
+
+			state.keys.add(String(key));
+
+			if ( 
+				typeof value === 'object' && 
+				value !== null && 
+				!isBuiltinWithMutableMethods(value)
+			) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				return createProxy(value, state.state!)
+				return createProxy(value, state.state!, true)
 			}
 
 			return value;

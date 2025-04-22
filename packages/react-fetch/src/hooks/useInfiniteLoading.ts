@@ -157,11 +157,12 @@ export const useInfiniteLoading = <
 				internalDataRef.current.data = [];
 			}
 			internalDataRef.current.isLoading = true;
-			const { page, totalItems } = await fetchDataMethod({
-				filter: createProxy(metadata.filter, filterKeysRef.current),
-				pagination: metadata.pagination,
-				sort: metadata.sort
-			})
+			const { page, totalItems } = await fetchDataMethod(
+				createProxy(
+					metadata, 
+					filterKeysRef.current
+				)
+			)
 
 			internalDataRef.current.isFirstTime = false;
 

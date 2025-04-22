@@ -251,7 +251,7 @@ export const useFilterSearchParams = <
 				!deepCompare(
 					filter, 
 					data.filter, 
-					filterKeysRef.current
+					filterKeysRef.current.state
 				) 
 			) {
 				whatChanged.add('filter');

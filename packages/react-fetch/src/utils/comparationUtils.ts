@@ -40,6 +40,7 @@ export function deepCompare(
 	const keys1 = keysToCheck.keys.size 
 		? Object.keys(obj1).filter((key) => keysToCheck.keys.has(key))
 		: Object.keys(obj1);
+
 	const keys2 = keysToCheck.keys.size 
 		? Object.keys(obj2).filter((key) => keysToCheck.keys.has(key))
 		: Object.keys(obj2);

@@ -81,11 +81,12 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 				sort
 			}
 		) => {
-			const { data, totalItems } = await getMethod({
-				filter: createProxy(metadata.filter, filterKeysRef.current),
-				pagination: metadata.pagination,
-				sort: metadata.sort
-			});
+			const { data, totalItems } = await getMethod(
+				createProxy(
+					metadata, 
+					filterKeysRef.current
+				)
+			);
 
 			changeTotalPages(totalItems ?? 0);
 
