@@ -294,6 +294,7 @@ export const useInfiniteLoading = <
 			return fetchData.fetch();
 		},
 
+		pagination,
 		sort,
 		filter,
 
