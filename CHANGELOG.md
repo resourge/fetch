@@ -1,3 +1,19 @@
+# [1.40.0](https://github.com/resourge/fetch/compare/v1.39.3...v1.40.0) (2025-05-16)
+
+
+### Bug Fixes
+
+* **comparationutils:** fix not working in array cases ([463bf02](https://github.com/resourge/fetch/commit/463bf0217f210aca70a423c15df87140466e13ed))
+* **createproxy:** fix not working in some specific cases ([74b80f2](https://github.com/resourge/fetch/commit/74b80f2b1a90adb2b03a9ace557b6dafd4db160e))
+* **package:** fix react-native ([a43dd1a](https://github.com/resourge/fetch/commit/a43dd1a780ed8022960602151eb40a32ac79078a))
+* **usefiltersearchparams:** fix request not updating when using the entire filter ([a5a0408](https://github.com/resourge/fetch/commit/a5a0408e412891d421ce8a1b6f7882e92c38d14a))
+* **useinfiniteloading:** fix pagination missing in return for useinfiniteloading ([1c5147a](https://github.com/resourge/fetch/commit/1c5147ae591cf8585626c432a3dc4e4e85b42ab9))
+
+
+### Features
+
+* **refreshcontrol:** add ability to find overflow ([71726f3](https://github.com/resourge/fetch/commit/71726f34b8690e35ef4a81b102fb46938803f91c))
+
 ## [1.39.3](https://github.com/resourge/fetch/compare/v1.39.2...v1.39.3) (2025-02-18)
 
 
