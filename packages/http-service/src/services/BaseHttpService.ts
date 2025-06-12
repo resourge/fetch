@@ -111,7 +111,7 @@ export class BaseHttpService {
 
 			return await Promise.reject(
 				new HttpResponseError(
-					response.statusText,
+					response.statusText || JSON.stringify(data),
 					request,
 					data,
 					config,
@@ -166,7 +166,7 @@ export class BaseHttpService {
 		let requestPromise = this.generatePromise(request, _config, timeoutId);
 		
 		this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
-			requestPromise = requestPromise.then(onResponse, (e) => {
+			requestPromise = requestPromise.then(onResponse, (e): Promise<HttpResponseError<any>> => {
 				if ( onResponseError && !isAbortedError(e) ) {
 					return onResponseError(e)
 				}

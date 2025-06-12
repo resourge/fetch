@@ -17,7 +17,7 @@ export class HttpResponse<T = any> {
 	) {}
 }
 
-export class HttpResponseError<T = any> {
+export class HttpResponseError<T = any> extends Error {
 	constructor(
 		public message: string,
 
@@ -26,5 +26,10 @@ export class HttpResponseError<T = any> {
 		public config: HttpResponseConfig,
 		public status?: number,
 		public response?: Response
-	) {}
+	) {
+		super(message);
+		this.name = 'HttpResponseError'
+
+		Error.captureStackTrace(this, HttpResponseError);
+	}
 }
