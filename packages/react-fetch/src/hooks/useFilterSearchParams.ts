@@ -28,7 +28,9 @@ export type SearchParamsMetadata<FilterSearchParams extends Record<string, any>>
 	pagination: Pagination
 } & SortSearchParamsType
 
-export type State<FilterSearchParams extends Record<string, any>> = SearchParamsMetadata<FilterSearchParams>
+export type State<FilterSearchParams extends Record<string, any>> = SearchParamsMetadata<FilterSearchParams> & {
+	url: URL
+}
 
 type SortTableFunctionType = {
 	(sort: SortCriteria): void
@@ -120,7 +122,7 @@ export const useFilterSearchParams = <
 		);
 	}
 	
-	function getDataFromParams() {
+	function getDataFromParams(): State<FilterSearchParams> {
 		const [url] = HistoryStore.getValue()
 
 		const params = getParams(url);
@@ -131,16 +133,17 @@ export const useFilterSearchParams = <
 			...filter
 		} = fId ? ((params[fId] ?? {}) as ParamsType<FilterSearchParams>) : params
 
-		return ({
-			filter: removeCacheIds(filter) ?? defaultFilter,
+		return {
+			filter: (removeCacheIds(filter) ?? defaultFilter) as FilterSearchParams,
 			sort: sort ?? defaultSort,
 			pagination: {
 				page: page ?? initialPage,
 				perPage: perPage ?? initialPerPage,
 				totalItems: 0,
 				totalPages: 0
-			}
-		}) as State<FilterSearchParams>;
+			},
+			url
+		};
 	}
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,6 +225,24 @@ export const useFilterSearchParams = <
 
 	useEffect(() => {
 		return HistoryStore.subscribe(() => {
+			const [subscribeURL] = HistoryStore.getValue();
+			if ( hash ) {
+				const newRenderURL = new URL(
+					data.url.hash.slice(1), 
+					window.location.origin
+				);
+				const newSubscribeURL = new URL(
+					subscribeURL.hash.slice(1), 
+					window.location.origin
+				);
+				if ( newRenderURL.hash !== newSubscribeURL.hash ) {
+					return;
+				}
+			}
+			else if ( data.url.pathname !== subscribeURL.pathname ) {
+				return;
+			}
+
 			const {
 				filter,
 				pagination: {
