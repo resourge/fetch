@@ -25,8 +25,11 @@ export type PaginationConfig<
 & FetchStateConfig<Data> 
 & {
 	/**
-	 * In some situations the mechanism to let the developer use multiple searchParams
-	 * is not able to correctly handle, so fId is a way to customize/override
+	 * Optional unique identifier to namespace multiple filter states in the URL.
+	 * 
+	 * When two or more instances of useInfiniteLoading and/or usePagination are used in the same page,
+	 * this ID helps prevent conflicts by grouping related search parameters together.
+	 * If not provided, a unique ID will be automatically generated.
 	 */
 	fId?: string
 	hash?: boolean
