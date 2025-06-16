@@ -1,3 +1,15 @@
+# [1.41.0](https://github.com/resourge/fetch/compare/v1.40.0...v1.41.0) (2025-06-16)
+
+
+### Bug Fixes
+
+* **httpresponse:** improve HttpRespondeError to show more details and better be an error ([8f4c9f0](https://github.com/resourge/fetch/commit/8f4c9f0ac3f76d5ee44df67ec16c6187c19aea08))
+
+
+### Features
+
+* **usefiltersearchparams:** let user customize the id for multiple pagination/infiniteloading ([e496097](https://github.com/resourge/fetch/commit/e496097f1758ca6603fec01f05d644178bfac037))
+
 # [1.40.0](https://github.com/resourge/fetch/compare/v1.39.3...v1.40.0) (2025-05-16)
 
 
