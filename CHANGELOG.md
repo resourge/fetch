@@ -1,3 +1,11 @@
+## [1.41.1](https://github.com/resourge/fetch/compare/v1.41.0...v1.41.1) (2025-06-16)
+
+
+### Bug Fixes
+
+* **usefiltersearchparams:** improve and fix pagination not resetting correctly ([ec045b2](https://github.com/resourge/fetch/commit/ec045b2c03a53fc22361811edf9e6d6e7684493b))
+* **usefiltersearchparams:** prevent doing fetch is only pathName/hash changed ([144d124](https://github.com/resourge/fetch/commit/144d12494671938ef0aa599c730aa4c712f53850))
+
 # [1.41.0](https://github.com/resourge/fetch/compare/v1.40.0...v1.41.0) (2025-06-16)
 
 
