@@ -20,15 +20,17 @@ export function deepCompare(
 		return false;
 	}
 
+	const shouldFilter = keysToCheck.keys.size && !keysToCheck.all;
+
 	// Handle arrays comparison
 	if (Array.isArray(obj1) && Array.isArray(obj2)) {
 		if ( obj1.length !== obj2.length ) {
 			return false
 		}
-		const filteredObj1 = keysToCheck.keys.size && !keysToCheck.all
+		const filteredObj1 = shouldFilter
 			? obj1.filter((_, i) => keysToCheck.keys.has(String(i)))
 			: obj1;
-		const filteredObj2 = keysToCheck.keys.size && !keysToCheck.all
+		const filteredObj2 = shouldFilter
 			? obj2.filter((_, i) => keysToCheck.keys.has(String(i)))
 			: obj2;
 
@@ -37,11 +39,11 @@ export function deepCompare(
 	}
 
 	// Get the keys of each object
-	const keys1 = keysToCheck.keys.size && !keysToCheck.all
+	const keys1 = shouldFilter
 		? Object.keys(obj1).filter((key) => keysToCheck.keys.has(key))
 		: Object.keys(obj1);
 
-	const keys2 = keysToCheck.keys.size && !keysToCheck.all
+	const keys2 = shouldFilter
 		? Object.keys(obj2).filter((key) => keysToCheck.keys.has(key))
 		: Object.keys(obj2);
 

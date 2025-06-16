@@ -24,6 +24,11 @@ export type PaginationConfig<
 }
 & FetchStateConfig<Data> 
 & {
+	/**
+	 * In some situations the mechanism to let the developer use multiple searchParams
+	 * is not able to correctly handle, so fId is a way to customize/override
+	 */
+	fId?: string
 	hash?: boolean
 	/**
 	 * Initial page starts with 0, but can be overwrite.

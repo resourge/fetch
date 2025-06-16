@@ -69,6 +69,11 @@ export type FilterSearchParamsProps<
 	initialPerPage: PaginationSearchParamsType['perPage']
 	preloadRef: MutableRefObject<PreloadRef<Data>>
 	defaultSort?: SortSearchParamsType['sort']
+	/**
+	 * In some situations the mechanism to let the developer use multiple searchParams
+	 * is not able to correctly handle, so fId is a way to customize/override
+	 */
+	fId?: string
 	hash?: boolean
 }
 
@@ -85,10 +90,12 @@ export const useFilterSearchParams = <
 		preloadRef,
 		hash,
 		deps,
-		filterKeysRef
+		filterKeysRef,
+		fId: _fId
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
-	const fId = useMultipleFiltersId({
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	const fId = _fId ?? useMultipleFiltersId({
 		hash 
 	});
 

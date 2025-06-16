@@ -60,6 +60,7 @@ export const useInfiniteLoading = <
 		initialPerPage = DEFAULT_PER_PAGE,
 		scrollRestoration,
 		preload,
+		fId,
 		...config
 	}: PaginationConfig<Data, FilterSearchParams>
 ): InfiniteLoadingReturn<Data, FilterSearchParams> => {
@@ -215,6 +216,7 @@ export const useInfiniteLoading = <
 		initialPerPage,
 		hash,
 		deps,
+		fId,
 		filterKeysRef
 	});
 
