@@ -225,31 +225,14 @@ export const useFilterSearchParams = <
 
 	useEffect(() => {
 		return HistoryStore.subscribe(() => {
-			const [subscribeURL] = HistoryStore.getValue();
-			if ( hash ) {
-				const newRenderURL = new URL(
-					data.url.hash.slice(1), 
-					window.location.origin
-				);
-				const newSubscribeURL = new URL(
-					subscribeURL.hash.slice(1), 
-					window.location.origin
-				);
-				if ( newRenderURL.hash !== newSubscribeURL.hash ) {
-					return;
-				}
-			}
-			else if ( data.url.pathname !== subscribeURL.pathname ) {
-				return;
-			}
-
 			const {
 				filter,
 				pagination: {
 					page,
 					perPage
 				},
-				sort
+				sort,
+				url: subscribeURL
 			} = getDataFromParams();
 
 			const whatChanged = new Set<'pagination' | 'sort' | 'filter'>();
@@ -288,11 +271,27 @@ export const useFilterSearchParams = <
 			}
 
 			if ( whatChanged.size ) {
+				if ( hash ) {
+					const newRenderURL = new URL(
+						data.url.hash.slice(1), 
+						window.location.origin
+					);
+					const newSubscribeURL = new URL(
+						subscribeURL.hash.slice(1), 
+						window.location.origin
+					);
+					if ( newRenderURL.hash !== newSubscribeURL.hash ) {
+						return;
+					}
+				}
+				else if ( data.url.pathname !== subscribeURL.pathname ) {
+					return;
+				}
 				fetch(data, whatChanged);
 			}
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [data]);
 
 	return {
 		pagination: data.pagination,
