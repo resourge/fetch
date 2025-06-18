@@ -1,3 +1,10 @@
+## [1.41.2](https://github.com/resourge/fetch/compare/v1.41.1...v1.41.2) (2025-06-18)
+
+
+### Bug Fixes
+
+* **httpresponse:** improve messaging in HttpResponseError ([c3b2905](https://github.com/resourge/fetch/commit/c3b2905b848eaa7534fe53cfcf59599416bf5762))
+
 ## [1.41.1](https://github.com/resourge/fetch/compare/v1.41.0...v1.41.1) (2025-06-16)
 
 
