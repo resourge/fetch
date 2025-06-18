@@ -100,23 +100,20 @@ export class BaseHttpService {
 
 			if ( _response.ok ) {
 				return new HttpResponse(
-					response.status,
-					response.statusText,
 					request,
-					response,
+					config,
 					data,
-					config
+					response
 				);
 			}
 
 			return await Promise.reject(
 				new HttpResponseError(
-					response.statusText || JSON.stringify(data),
 					request,
-					data,
 					config,
-					response.status,
-					response
+					data,
+					response,
+					response.status
 				)
 			);
 		}
@@ -126,10 +123,9 @@ export class BaseHttpService {
 				e instanceof HttpResponseError
 					? e
 					: new HttpResponseError(
-						'Network Error',
 						request,
-						e,
-						config
+						config,
+						e
 					)
 			)
 		}

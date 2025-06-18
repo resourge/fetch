@@ -6,30 +6,31 @@ export type HttpResponseConfig = Omit<RequestConfig, 'url' | 'headers' | 'contro
 & Pick<RequestInit, 'signal'>
 
 export class HttpResponse<T = any> {
-	constructor(
-		public status: number,
-		public message: string,
+	public status: number;
 
+	constructor(
 		public request: Request,
-		public response: Response,
+		public config: HttpResponseConfig,
 		public data: T,
-		public config: HttpResponseConfig
-	) {}
+		public response: Response
+	) {
+		this.status = response.status;
+	}
 }
 
 export class HttpResponseError<T = any> extends Error {
 	constructor(
-		public message: string,
-
 		public request: Request,
-		public data: T,
 		public config: HttpResponseConfig,
-		public status?: number,
-		public response?: Response
+		public data: T,
+		public response?: Response,
+		public status?: number
 	) {
-		super(message);
+		super();
 		this.name = 'HttpResponseError'
 
 		Error.captureStackTrace(this, HttpResponseError);
+
+		this.message = `[${response ? 'RESPONSE' : 'REQUEST'}] ${status !== undefined ? `[${status}] ` : ''}${JSON.stringify(this)}`
 	}
 }
