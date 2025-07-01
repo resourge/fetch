@@ -1,3 +1,10 @@
+## [1.41.3](https://github.com/resourge/fetch/compare/v1.41.2...v1.41.3) (2025-07-01)
+
+
+### Bug Fixes
+
+* **usefetch:** when using id only one useFetch was updating ([8d8365f](https://github.com/resourge/fetch/commit/8d8365f89f4fc14867a10839e7bd580dd35f7151))
+
 ## [1.41.2](https://github.com/resourge/fetch/compare/v1.41.1...v1.41.2) (2025-06-18)
 
 
