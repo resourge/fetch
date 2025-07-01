@@ -213,7 +213,7 @@ export function useFetch<Result, T extends any[]>(
 
 	const noLoadingFetch = async (...args: Partial<T>) => {
 		try {
-			const prom = (
+			const data = await (
 				NotificationService.getRequest(id) ?? (
 					(() => {
 						const remove = QueueKingSystem.add(
@@ -221,18 +221,19 @@ export function useFetch<Result, T extends any[]>(
 							(controller) => controllers.current.delete(controller)
 						);
 						
-						return method
+						const prom = method
 						.call(currentDataRef.current, ...(args ?? []) as T)
 						.finally(() => {
 							remove();
+							NotificationService.finishRequest(id);
 						})
+
+						NotificationService.startRequest(id, prom);
+
+						return prom
 					})()
 				)
 			);
-
-			NotificationService.startRequest(id, prom);
-
-			const data = await prom
 
 			if ( isFetchEffect && isFetchEffectWithData ) {
 				currentDataRef.current.data = data;
@@ -251,9 +252,6 @@ export function useFetch<Result, T extends any[]>(
 			}
 			return await Promise.reject(e);
 		}
-		finally {
-			NotificationService.finishRequest(id);
-		}
 	}
 
 	const fetch = async (...args: T) => {
@@ -263,7 +261,9 @@ export function useFetch<Result, T extends any[]>(
 		if ( isErrorUsedRef.current && currentDataRef.current.error ) {
 			currentDataRef.current.error = null;
 		}
+		
 		setLoading(true);
+
 		try {
 			return await noLoadingFetch(...args);
 		}
