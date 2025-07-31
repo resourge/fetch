@@ -186,7 +186,7 @@ export const useFilterSearchParams = <
 		setParams<F>({
 			...data.filter,
 			sort: data.sort,
-			page: data.pagination.page,
+			page: initialPage,
 			perPage: data.pagination.perPage,
 			...newFilter
 		});
