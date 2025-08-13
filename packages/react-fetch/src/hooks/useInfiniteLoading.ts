@@ -244,6 +244,9 @@ export const useInfiniteLoading = <
 
 	return {
 		preload: () => {
+			if ( config.enable === false ) {
+				return 
+			}
 			getMethod({
 				filter,
 				sort,
@@ -256,12 +259,13 @@ export const useInfiniteLoading = <
 		isLast: internalDataRef.current.isLast,
 		isLastIncomplete: internalDataRef.current.isLastIncomplete,
 		loadMore: async () => {
-			if ( internalDataRef.current.isLoading ) {
+			if ( config.enable === false || internalDataRef.current.isLoading ) {
 				return;
 			}
 
 			if ( !internalDataRef.current.isLastIncomplete ) {
 				changePage(pagination.page + 1);
+				return;
 			}
 
 			if ( willPreload(pagination.page) ) {
