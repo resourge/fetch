@@ -1,3 +1,11 @@
+## [1.41.4](https://github.com/resourge/fetch/compare/v1.41.3...v1.41.4) (2025-08-13)
+
+
+### Bug Fixes
+
+* **usefiltersearchparams:** fix setFilter not reseting page ([c9d2584](https://github.com/resourge/fetch/commit/c9d2584b1fa28741bb7f8b8e5b306b1f5ea766a1))
+* **useinfiniteloading:** fix loadmore or preload triggering when enable is false ([f42b087](https://github.com/resourge/fetch/commit/f42b08727a316a81dae66bff0036cee6fb6cb919))
+
 ## [1.41.3](https://github.com/resourge/fetch/compare/v1.41.2...v1.41.3) (2025-07-01)
 
 
