@@ -1,4 +1,5 @@
 import {
+	type CSSProperties,
 	type MutableRefObject,
 	type ReactNode,
 	useEffect,
@@ -12,6 +13,7 @@ type RefreshControlProps<
 	FilterSearchParams extends Record<string, any> = Record<string, any>,
 > = {
 	context: InfiniteLoadingReturn<Data, FilterSearchParams>
+	containerStyle?: CSSProperties
 	detectionMargin?: string
 	/**
 	 * By default is false
@@ -63,7 +65,8 @@ function RefreshControl<
 	root = null,
 	detectionMargin,
 	renderComponent,
-	preload
+	preload,
+	containerStyle
 }: RefreshControlProps<Data, FilterSearchParams>) {
 	const ref = useRef<HTMLDivElement | null>(null);
 
@@ -90,7 +93,7 @@ function RefreshControl<
 				{
 					root: _root,
 					rootMargin: detectionMargin,
-					threshold: 1.0
+					threshold: 0
 				}
 			);
 
@@ -104,7 +107,14 @@ function RefreshControl<
 	}, [detectionMargin, context.data.length]);
 
 	return (
-		<div ref={ref}>
+		<div
+			ref={ref}
+			style={{
+				...containerStyle,
+				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+				height: containerStyle?.height || '10px'
+			}}
+		>
 			{
 				renderComponent &&
 				renderComponent({
