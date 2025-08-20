@@ -314,6 +314,8 @@ export function useFetch<Result, T extends any[]>(
 		fetch
 	};
 
+	const deps = [isOnline, _config.enable, ...(_config.deps ?? [])];
+
 	if ( isFetchEffect ) {
 		fetchRef.current = fetch;
 
@@ -338,7 +340,7 @@ export function useFetch<Result, T extends any[]>(
 				});
 			}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [isOnline, _config.enable, ...(_config.deps ?? [])])
+		}, deps)
 
 		// This is to make sure onFocus will only trigger if the hook commands the data,
 		// Otherwise it can lead to errors
@@ -374,7 +376,7 @@ export function useFetch<Result, T extends any[]>(
 			}
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, deps)
 
 	return result
 }
