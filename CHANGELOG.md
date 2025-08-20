@@ -1,3 +1,10 @@
+## [1.41.6](https://github.com/resourge/fetch/compare/v1.41.5...v1.41.6) (2025-08-20)
+
+
+### Bug Fixes
+
+* **refreshcontrol:** fix loadMode not being triggered when scroll gets to bottom ([e3129b2](https://github.com/resourge/fetch/commit/e3129b2d80ad7fd0e4bb42bc5199067b5b399b40))
+
 ## [1.41.5](https://github.com/resourge/fetch/compare/v1.41.4...v1.41.5) (2025-08-20)
 
 
