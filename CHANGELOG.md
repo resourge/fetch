@@ -1,3 +1,10 @@
+## [1.41.5](https://github.com/resourge/fetch/compare/v1.41.4...v1.41.5) (2025-08-20)
+
+
+### Bug Fixes
+
+* **usefetch:** fix fetch not being cancel when deps change having 2 triggers ([ee2c8fb](https://github.com/resourge/fetch/commit/ee2c8fb7819d1b6d46908238120c4303c1f57f96))
+
 ## [1.41.4](https://github.com/resourge/fetch/compare/v1.41.3...v1.41.4) (2025-08-13)
 
 
