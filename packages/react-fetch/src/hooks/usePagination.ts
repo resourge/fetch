@@ -60,6 +60,7 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		initialPerPage = DEFAULT_PER_PAGE,
 		preload,
 		fId,
+		enable,
 		...config
 	}: PaginationConfig<Data, FilterSearchParams>
 ): PaginationReturn<Data, FilterSearchParams> => {
@@ -96,6 +97,7 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		{
 			initialState,
 			...config,
+			enable,
 			deps
 		}
 	)
@@ -118,7 +120,8 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 		hash,
 		deps,
 		fId,
-		filterKeysRef
+		filterKeysRef,
+		enable
 	});
 	
 	function getPaginationHref(page: number) {

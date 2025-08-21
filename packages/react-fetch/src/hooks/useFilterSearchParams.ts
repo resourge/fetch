@@ -71,6 +71,7 @@ export type FilterSearchParamsProps<
 	initialPerPage: PaginationSearchParamsType['perPage']
 	preloadRef: MutableRefObject<PreloadRef<Data>>
 	defaultSort?: SortSearchParamsType['sort']
+	enable?: boolean
 	/**
 	 * Optional unique identifier to namespace multiple filter states in the URL.
 	 * 
@@ -96,7 +97,8 @@ export const useFilterSearchParams = <
 		hash,
 		deps,
 		filterKeysRef,
-		fId: _fId
+		fId: _fId,
+		enable
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
 	// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -227,6 +229,10 @@ export const useFilterSearchParams = <
 	};
 
 	useEffect(() => {
+		if ( enable === false ) {
+			return;
+		}
+		
 		return HistoryStore.subscribe(() => {
 			const {
 				filter,
@@ -294,7 +300,7 @@ export const useFilterSearchParams = <
 			}
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [data]);
+	}, [data, enable]);
 
 	return {
 		pagination: data.pagination,

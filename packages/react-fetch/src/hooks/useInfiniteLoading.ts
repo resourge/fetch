@@ -61,6 +61,7 @@ export const useInfiniteLoading = <
 		scrollRestoration,
 		preload,
 		fId,
+		enable,
 		...config
 	}: PaginationConfig<Data, FilterSearchParams>
 ): InfiniteLoadingReturn<Data, FilterSearchParams> => {
@@ -194,6 +195,7 @@ export const useInfiniteLoading = <
 		{
 			initialState,
 			...config,
+			enable,
 			scrollRestoration,
 			deps
 		}
@@ -217,7 +219,8 @@ export const useInfiniteLoading = <
 		hash,
 		deps,
 		fId,
-		filterKeysRef
+		filterKeysRef,
+		enable
 	});
 
 	useEffect(() => {
@@ -244,7 +247,7 @@ export const useInfiniteLoading = <
 
 	return {
 		preload: () => {
-			if ( config.enable === false ) {
+			if ( enable === false ) {
 				return 
 			}
 			getMethod({
@@ -259,7 +262,7 @@ export const useInfiniteLoading = <
 		isLast: internalDataRef.current.isLast,
 		isLastIncomplete: internalDataRef.current.isLastIncomplete,
 		loadMore: async () => {
-			if ( config.enable === false || internalDataRef.current.isLoading ) {
+			if ( enable === false || internalDataRef.current.isLoading ) {
 				return;
 			}
 
