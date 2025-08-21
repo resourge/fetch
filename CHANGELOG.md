@@ -1,3 +1,10 @@
+## [1.41.7](https://github.com/resourge/fetch/compare/v1.41.6...v1.41.7) (2025-08-21)
+
+
+### Bug Fixes
+
+* **useinfiniteloading/usepagination:** fix fetching when enable is false ([2bfba14](https://github.com/resourge/fetch/commit/2bfba148cc87cc7ee0e2669d6867e9c1f9389c23))
+
 ## [1.41.6](https://github.com/resourge/fetch/compare/v1.41.5...v1.41.6) (2025-08-20)
 
 
