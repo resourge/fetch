@@ -14,7 +14,6 @@ import {
 import { deepCompare } from '../utils/comparationUtils';
 import { type FilterKeysState } from '../utils/createProxy';
 
-import { filterByCacheIds, removeCacheIds, useMultipleFiltersId } from './useMultipleFiltersId';
 import { type Pagination } from './usePagination';
 import { type PreloadRef } from './usePreload';
 
@@ -97,15 +96,10 @@ export const useFilterSearchParams = <
 		hash,
 		deps,
 		filterKeysRef,
-		fId: _fId,
+		fId,
 		enable
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
-	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const fId = _fId ?? useMultipleFiltersId({
-		hash 
-	});
-
 	function getParams(url: URL) {
 		let searchParams = url.searchParams;
 		if (hash) {
@@ -139,7 +133,7 @@ export const useFilterSearchParams = <
 		} = fId ? ((params[fId] ?? {}) as ParamsType<FilterSearchParams>) : params
 
 		return {
-			filter: (removeCacheIds(filter) ?? defaultFilter) as FilterSearchParams,
+			filter: (filter ?? defaultFilter) as FilterSearchParams,
 			sort: sort ?? defaultSort,
 			pagination: {
 				page: page ?? initialPage,
@@ -156,10 +150,7 @@ export const useFilterSearchParams = <
 
 	const setParams = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
 		const [url] = HistoryStore.getValue()
-		const params = filterByCacheIds(
-			fId,
-			getParams(url)
-		);
+		const params = getParams(url);
 
 		const newSearch = parseParams({
 			...params,
