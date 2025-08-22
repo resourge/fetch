@@ -238,7 +238,9 @@ export function useFetch<Result, T extends any[]>(
 			if ( isFetchEffect && isFetchEffectWithData ) {
 				currentDataRef.current.data = data;
 
-				_config.onDataChange && _config.onDataChange(data)
+				NotificationService.setDataChangeRequest(id, () => {
+					_config.onDataChange && _config.onDataChange(data); 
+				});
 			}
 
 			return data;
