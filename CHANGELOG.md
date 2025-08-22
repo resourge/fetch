@@ -1,3 +1,16 @@
+# [1.42.0](https://github.com/resourge/fetch/compare/v1.41.7...v1.42.0) (2025-08-22)
+
+
+### Bug Fixes
+
+* **usemultiplefiltersid:** remove useMultipleFiltersId and make the user add the fId ([b51c2d1](https://github.com/resourge/fetch/commit/b51c2d124faff124f003bea57067a0e7eb927709))
+
+
+### Features
+
+* **usefetch:** onDataChange was triggering out of order ([60591ab](https://github.com/resourge/fetch/commit/60591ab32219f2a30543ee7852cbb77b54acea19))
+* **usefiltersearchparams:** make filter on url be separated from the other searchParams ([67d8ad1](https://github.com/resourge/fetch/commit/67d8ad1140eb4d47896f34b5c6458e8783b407aa))
+
 ## [1.41.7](https://github.com/resourge/fetch/compare/v1.41.6...v1.41.7) (2025-08-21)
 
 
