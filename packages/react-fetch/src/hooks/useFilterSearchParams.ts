@@ -47,7 +47,7 @@ export type FilterSearchParamsReturn<FilterSearchParams extends Record<string, a
 	/**
 	 * Method to updates filters.
 	 */
-	setFilter: <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => void
+	setFilter: (newFilter: ParamsType<FilterSearchParams>) => void
 	/**
 	 * Method to update params.
 	 */
@@ -110,10 +110,10 @@ export const useFilterSearchParams = <
 			searchParams = hashUrl.searchParams;
 		}
 
-		return parseSearchParams<ParamsType<FilterSearchParams>>(
+		return parseSearchParams<ParamsType<FilterSearchParams> & Record<string, any>>(
 			searchParams, 
 			{
-				...defaultFilter, 
+				f: defaultFilter, 
 				page: initialPage,
 				perPage: initialPerPage,
 				sort: defaultSort
@@ -126,18 +126,18 @@ export const useFilterSearchParams = <
 
 		const params = getParams(url);
 		const {
-			sort,
-			page,
-			perPage,
-			...filter
-		} = fId ? ((params[fId] ?? {}) as ParamsType<FilterSearchParams>) : params
+			sort = defaultSort,
+			page = initialPage,
+			perPage = initialPerPage,
+			f: filter = defaultFilter
+		} = (fId ? (params[fId] ?? {}) : params)
 
 		return {
-			filter: (filter ?? defaultFilter) as FilterSearchParams,
-			sort: sort ?? defaultSort,
+			filter,
+			sort,
 			pagination: {
-				page: page ?? initialPage,
-				perPage: perPage ?? initialPerPage,
+				page,
+				perPage,
 				totalItems: 0,
 				totalPages: 0
 			},
@@ -175,13 +175,20 @@ export const useFilterSearchParams = <
 		}
 	};
 
-	const setFilter = <F extends Record<string, any> = FilterSearchParams>(newFilter: ParamsType<F>) => {
-		setParams<F>({
-			...data.filter,
-			sort: data.sort,
-			page: initialPage,
-			perPage: data.pagination.perPage,
-			...newFilter
+	const setFilter = ({
+		f = data.filter,
+		page = initialPage,
+		perPage = data.pagination.perPage,
+		sort = data.sort
+	}: ParamsType<FilterSearchParams>) => {
+		setParams<FilterSearchParams>({
+			sort,
+			page,
+			perPage,
+			f: {
+				...data.filter,
+				...f
+			}
 		});
 	};
 

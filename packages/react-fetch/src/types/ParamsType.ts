@@ -19,4 +19,8 @@ export type PaginationSearchParamsType = {
 
 export type ParamsType<
 	FilterSearchParams extends Record<string, any>
-> = Partial<PaginationSearchParamsType> & Partial<FilterSearchParams> & SortSearchParamsType
+> = Partial<PaginationSearchParamsType> 
+& SortSearchParamsType 
+& {
+	f?: Partial<FilterSearchParams>
+}
