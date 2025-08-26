@@ -172,7 +172,9 @@ export const usePagination = <Data extends any[], FilterSearchParams extends Rec
 	}
 
 	return {
-		data: fetchData.data,
+		get data() {
+			return fetchData.data;
+		},
 		get error() {
 			return fetchData.error
 		},

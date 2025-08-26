@@ -21,25 +21,9 @@ type NotificationType = {
 	request: () => Promise<any>
 }
 
-const requestNotification = new Map<string, Promise<any>>();
-const onDataChangeNotification = new Map<string, () => void>();
 const notifications = new Map<string, NotificationType>();
 
 const NotificationService = {
-	setDataChangeRequest(id: string, cb: () => void) {
-		return onDataChangeNotification.set(id, cb);
-	},
-
-	getRequest(id: string) {
-		return requestNotification.get(id);
-	},
-	startRequest(id: string, prom: Promise<any>) {
-		requestNotification.set(id, prom);
-	},
-	finishRequest(id: string) {
-		requestNotification.delete(id);
-	},
-	
 	subscribe(id: string, request: () => Promise<any>) {
 		return (notification: () => void) => {
 			notifications.set(id, {
@@ -52,15 +36,9 @@ const NotificationService = {
 		};
 	},
 	notifyAll() {
-		if ( requestNotification.size === 0 ) {
-			onDataChangeNotification.forEach((notification, key) => {
-				onDataChangeNotification.delete(key);
-				notification();
-			})
-			notifications.forEach(({ notification }) => {
-				notification();
-			})
-		}
+		notifications.forEach(({ notification }) => {
+			notification();
+		})
 	},
 	notifyById(id: string) {
 		const notification = notifications.get(id);

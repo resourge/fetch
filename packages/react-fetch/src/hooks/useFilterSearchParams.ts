@@ -47,7 +47,7 @@ export type FilterSearchParamsReturn<FilterSearchParams extends Record<string, a
 	/**
 	 * Method to updates filters.
 	 */
-	setFilter: (newFilter: ParamsType<FilterSearchParams>) => void
+	setFilter: <F extends Record<string, any> = FilterSearchParams>(newFilter: Omit<ParamsType<F>, 'f'> & Partial<F>) => void
 	/**
 	 * Method to update params.
 	 */
@@ -176,10 +176,10 @@ export const useFilterSearchParams = <
 	};
 
 	const setFilter = ({
-		f = data.filter,
 		page = initialPage,
 		perPage = data.pagination.perPage,
-		sort = data.sort
+		sort = data.sort,
+		...filter
 	}: ParamsType<FilterSearchParams>) => {
 		setParams<FilterSearchParams>({
 			sort,
@@ -187,7 +187,7 @@ export const useFilterSearchParams = <
 			perPage,
 			f: {
 				...data.filter,
-				...f
+				...filter
 			}
 		});
 	};

@@ -9,6 +9,7 @@ import { throttlePromise } from '../utils/throttlePromise';
 import { convertParamsToQueryString } from '../utils/transformURLSearchParams';
 import { createUrl, isAbortedError } from '../utils/utils';
 
+import { PromiseAllGrowing } from './PromiseAllGrowing';
 import QueueKingSystem from './QueueKingSystem';
 
 export type MethodConfig = Omit<RequestConfig, 'url' | 'method'> & {
@@ -63,6 +64,10 @@ export class BaseHttpService {
 	}
 
 	public interceptors = new Interceptor();
+
+	// If you do multiple request in a row, 
+	// it will wait for all of them to finish
+	private readonly promises = new PromiseAllGrowing();
 
 	constructor({ 
 		baseUrl = typeof globalThis.window !== 'undefined' && globalThis.window.location ? window.location.origin : '/',
@@ -136,41 +141,46 @@ export class BaseHttpService {
 		this._setToken = cb;
 	}
 
-	public async request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
-		let timeoutId: number | undefined;
-		const timeout = config.timeout ?? this.timeout;
-		if ( timeout ) {
-			config.controller ??= new AbortController();
+	public request<T = any, R = HttpResponse<T>>(config: RequestConfig): Promise<R> {
+		return this.promises.promise<R>(
+			'request',
+			async () => {
+				let timeoutId: number | undefined;
+				const timeout = config.timeout ?? this.timeout;
+				if ( timeout ) {
+					config.controller ??= new AbortController();
 
-			timeoutId = setTimeout(() => {
-				if ( config.controller ) {
-					config.controller.abort(new TimeoutError(config.url, config.method)); 
+					timeoutId = setTimeout(() => {
+						if ( config.controller ) {
+							config.controller.abort(new TimeoutError(config.url, config.method)); 
+						}
+					}, timeout) as unknown as number; 
 				}
-			}, timeout) as unknown as number; 
-		}
 
-		const _config = await normalizeRequest(
-			config as NormalizeRequestConfig,
-			this.defaultHeaders,
-			this._setToken,
-			this.interceptors,
-			this.baseUrl
-		);
+				const _config = await normalizeRequest(
+					config as NormalizeRequestConfig,
+					this.defaultHeaders,
+					this._setToken,
+					this.interceptors,
+					this.baseUrl
+				);
 
-		const request = new Request(_config.url, _config);
+				const request = new Request(_config.url, _config);
 
-		let requestPromise = this.generatePromise(request, _config, timeoutId);
+				let requestPromise = this.generatePromise(request, _config, timeoutId);
 		
-		this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
-			requestPromise = requestPromise.then(onResponse, (e): Promise<HttpResponseError<any>> => {
-				if ( onResponseError && !isAbortedError(e) ) {
-					return onResponseError(e)
-				}
-				return Promise.reject(e)
-			})
-		})
+				this.interceptors.response.values.forEach(({ onResponse, onResponseError }) => {
+					requestPromise = requestPromise.then(onResponse, (e): Promise<HttpResponseError<any>> => {
+						if ( onResponseError && !isAbortedError(e) ) {
+							return onResponseError(e)
+						}
+						return Promise.reject(e)
+					})
+				})
 
-		return await requestPromise as R;
+				return await requestPromise as R;
+			}
+		);
 	}
 
 	public get<T = any, R = HttpResponse<T>>(url: string): Promise<R>;

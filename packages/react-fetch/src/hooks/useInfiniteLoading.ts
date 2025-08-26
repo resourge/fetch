@@ -289,7 +289,9 @@ export const useInfiniteLoading = <
 			fetchData.setFetchState(internalDataRef.current.data.flat() as Data);
 		},
 
-		data: fetchData.data,
+		get data() {
+			return fetchData.data;
+		},
 		get error() {
 			return fetchData.error;
 		},

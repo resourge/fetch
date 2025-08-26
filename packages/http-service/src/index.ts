@@ -1,6 +1,6 @@
 export { FetchError, TimeoutError } from './errors';
 export {
-	BaseHttpService, type GetMethodConfig, LoadingService, type MethodConfig, QueueKingSystem 
+	BaseHttpService, type GetMethodConfig, LoadingService, type MethodConfig, QueueKingSystem, PromiseAllGrowing
 } from './services';
 export type { RequestConfig } from './types';
 export {
