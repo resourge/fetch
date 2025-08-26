@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { type PaginationMetadata } from '../types'
 import { type PaginationSearchParamsType } from '../types/ParamsType'
@@ -18,7 +18,7 @@ export type PreloadConfig = false | {
 export type PreloadMethodResult<Data extends any[]> = { data: Data, totalItems?: number }
 
 export type PreloadRef<Data> = Record<
-	string, 
+	number, 
 	{ 
 		data: { data: Data, totalItems?: number }
 		date: number 
@@ -56,35 +56,34 @@ export const usePreload = <
 		
 	const preloadRef = useRef<PreloadRef<Data>>({});
 
-	function getKey(page: number) {
-		return `${page}_${deps.length ? JSON.stringify(deps) : ''}`
-	}
+	useEffect(() => {
+		preloadRef.current = {};
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, deps)
 
 	function willPreload(page: number) {
-		const key = getKey(page);
 		return (
 			preload !== false && 
-			preloadRef.current[key] &&
-			Date.now() - preloadRef.current[key].date <= (preload.timeout ?? ONE_MINUTE_IN_MILLISECOND)
+			preloadRef.current[page] &&
+			Date.now() - preloadRef.current[page].date <= (preload.timeout ?? ONE_MINUTE_IN_MILLISECOND)
 		)
 	}
 
 	async function _getMethod(metadata: PaginationMetadata<FilterSearchParams>): Promise<PreloadMethodResult<Data>> {
 		const page = metadata.pagination.page;
-		const key = getKey(page);
 
 		if ( willPreload(page) ) {
-			return preloadRef.current[key].data;
+			return preloadRef.current[page].data;
 		}
 
 		const data = await method(metadata);
 
-		preloadRef.current[key] = {
+		preloadRef.current[page] = {
 			date: Date.now(),
 			data
 		}
 
-		return preloadRef.current[key].data;
+		return preloadRef.current[page].data;
 	}
 
 	function preloadMethod(metadata: PaginationMetadata<FilterSearchParams>, res: PreloadMethodResult<Data>) {
@@ -200,8 +199,8 @@ export const usePreload = <
 				const newData = data.splice(index, metadata.pagination.perPage) as Data;
 				onData && onData(newIndex, newData)
 
-				const key = getKey(index + initialPage);
-				preloadRef.current[key] = {
+				const page = index + initialPage;
+				preloadRef.current[page] = {
 					data: {
 						data: newData,
 						totalItems
