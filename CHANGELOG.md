@@ -1,3 +1,11 @@
+## [1.42.1](https://github.com/resourge/fetch/compare/v1.42.0...v1.42.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* **usefetch:** prevent multiple unnecessary renders ([08aebdc](https://github.com/resourge/fetch/commit/08aebdcb287ce6afd493a1606072d75556fb349d))
+* **usepreload:** fix preload not clearing when deps change ([ef9f336](https://github.com/resourge/fetch/commit/ef9f336c05a0c932b7f6c154b79b4b5dc33d227e))
+
 # [1.42.0](https://github.com/resourge/fetch/compare/v1.41.7...v1.42.0) (2025-08-22)
 
 
