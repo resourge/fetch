@@ -38,7 +38,9 @@ class QueueKingSystem {
 
 		return () => {
 			onRemove(_controller);
-			this.queue.filter((v) => v === cb)
+			const index = this.queue.indexOf(cb);
+
+			this.queue.splice(index, 1);
 		}
 	}
 
