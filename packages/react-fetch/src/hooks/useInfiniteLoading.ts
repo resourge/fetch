@@ -114,7 +114,8 @@ export const useInfiniteLoading = <
 		if ( internalDataRef.current.isFirstTime && _scrollRestoration ) {
 			const scrollRestorationData = _scrollRestoration.getPage();
 
-			if ( 
+			if (
+				scrollRestorationData && 
 				scrollRestorationData.perPage !== undefined &&
 				scrollRestorationData.page !== undefined 
 			) {
