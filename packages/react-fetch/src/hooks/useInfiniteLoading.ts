@@ -100,7 +100,7 @@ export const useInfiniteLoading = <
 				perPage: restoration.perPage 
 			},
 			(index, data) => {
-				internalDataRef.current.data[index] = data.splice(index, restoration.perPage) as Data;
+				internalDataRef.current.data[index] = data;
 			}
 		);
 
@@ -302,6 +302,8 @@ export const useInfiniteLoading = <
 
 		setPaginationState: fetchData.setFetchState,
 		fetch: () => {
+			internalDataRef.current.isFirstTime = true;
+			internalDataRef.current.data = [];
 			preloadRef.current = {};
 			return fetchData.fetch();
 		},

@@ -171,7 +171,7 @@ export const usePreload = <
 			pagination: {
 				...metadata.pagination,
 				page: initialPage,
-				perPage: pagination.perPage * (pagination.page + 1)
+				perPage: pagination.perPage * pagination.page
 			}
 		};
 
@@ -182,7 +182,7 @@ export const usePreload = <
 		const { data, totalItems } = await (
 			!maxPerPage 
 				? _getMethod(_metadata) 
-				: getMultipleMethod(_metadata, maxPerPage)
+				: getMultipleMethod(_metadata, Math.min(maxPerPage, _metadata.pagination.perPage))
 		);
 
 		const date = Date.now();
