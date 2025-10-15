@@ -1,3 +1,12 @@
+## [1.42.2](https://github.com/resourge/fetch/compare/v1.42.1...v1.42.2) (2025-10-15)
+
+
+### Bug Fixes
+
+* **queuekingsystem:** fix not removing from queue ([1aa535e](https://github.com/resourge/fetch/commit/1aa535e4d4f21edeed38dfead07bb3dcdf1cf035))
+* **useinfiniteloading:** fix scrollRestorationData ([fe0092f](https://github.com/resourge/fetch/commit/fe0092fddee9657fb09821afd7b844fce1cca0ab))
+* **usepreload:** fix getRestoreMethod not working as intended ([7992857](https://github.com/resourge/fetch/commit/7992857bfb63a362ed08d42645b3c300324b77f9))
+
 ## [1.42.1](https://github.com/resourge/fetch/compare/v1.42.0...v1.42.1) (2025-08-27)
 
 
