@@ -1,3 +1,11 @@
+# [1.43.0](https://github.com/resourge/fetch/compare/v1.42.2...v1.43.0) (2025-11-26)
+
+
+### Features
+
+* **useeffectevent:** add useEffectEvent to always have the latest version of method ([520773c](https://github.com/resourge/fetch/commit/520773cc6ca1985abf97cc7a7bf380edf3f6c614))
+* **usefetchondependencyupdate:** remove because it can create maintence problems ([1fb9788](https://github.com/resourge/fetch/commit/1fb97886fe90e588ea6829eb42e1e076d384bd3f))
+
 ## [1.42.2](https://github.com/resourge/fetch/compare/v1.42.1...v1.42.2) (2025-10-15)
 
 
