@@ -1,7 +1,6 @@
-import { useRef } from 'react';
-
 import { throttleMethod } from '../utils/throttleMethod';
 
+import { useEffectEvent } from './useEffectEvent';
 import { useOnFocus } from './useOnFocus/useOnFocus';
 
 const threshold = 10 * 60 * 1000;
@@ -13,15 +12,13 @@ export const useOnFocusFetch = (
 	fetch: () => Promise<void>,
 	onWindowFocus?: boolean
 ) => {
-	const fetchRef = useRef<() => Promise<void>>(fetch);
-
-	fetchRef.current = fetch;
+	const _fetch = useEffectEvent(fetch);
 
 	useOnFocus(
 		() => {
 			let dateNow = Date.now();
 			const fetchOnWindowFocus = throttleMethod(() => {
-				fetchRef.current()
+				_fetch()
 				.finally(() => {
 					dateNow = Date.now()
 				})

@@ -5,6 +5,8 @@ import {
 	useRef
 } from 'react'
 
+import { useEffectEvent } from '../useEffectEvent';
+
 import { type ScrollPos } from './types';
 
 export const getScrollPage = (): ScrollPos => {
@@ -29,12 +31,10 @@ export const useOnScroll = <T extends ElementWithScrollTo | null>(
 	onScroll: (event: UIEvent<T>) => void
 ] => {
 	const ref = useRef<T | Window>(window);
-	const onScrollRef = useRef<(position: ScrollPos) => void>(scrollMethod);
-
-	onScrollRef.current = scrollMethod;
+	const onScrollRef = useEffectEvent<(position: ScrollPos) => void>(scrollMethod);
 
 	const onScroll = (event: UIEvent<T>) => {
-		onScrollRef.current({
+		onScrollRef({
 			left: event.currentTarget.scrollLeft,
 			top: event.currentTarget.scrollTop
 		});
@@ -44,7 +44,7 @@ export const useOnScroll = <T extends ElementWithScrollTo | null>(
 		const element = ref.current;
 		if ( element ) {
 			const onScroll = () => {
-				onScrollRef.current(
+				onScrollRef(
 					element instanceof Window 
 						? getScrollPage()
 						: {

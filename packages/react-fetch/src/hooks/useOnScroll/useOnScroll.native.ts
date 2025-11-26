@@ -2,6 +2,7 @@ import { useEffect, useRef, type MutableRefObject } from 'react';
 import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { IS_DEV } from '../../utils/constants';
+import { useEffectEvent } from '../useEffectEvent';
 
 import { type ScrollPos } from './types';
 
@@ -19,9 +20,7 @@ export const useOnScroll = <T extends ElementWithScrollTo | null>(
 	onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 ] => {
 	const ref = useRef<T>(null);
-	const onScrollRef = useRef<(position: ScrollPos) => void>(scrollMethod);
-
-	onScrollRef.current = scrollMethod;
+	const onScrollRef = useEffectEvent<(position: ScrollPos) => void>(scrollMethod);
 
 	if ( IS_DEV ) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
@@ -33,7 +32,7 @@ export const useOnScroll = <T extends ElementWithScrollTo | null>(
 	}
 
 	const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-		onScrollRef.current(
+		onScrollRef(
 			{
 				left: event.nativeEvent.contentOffset.x,
 				top: event.nativeEvent.contentOffset.y
