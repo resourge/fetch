@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 import { type InfiniteLoadingReturn } from '../../hooks';
+import { useEffectEvent } from '../../hooks/useEffectEvent';
 
 type RefreshControlProps<
 	Data extends any[],
@@ -70,6 +71,9 @@ function RefreshControl<
 }: RefreshControlProps<Data, FilterSearchParams>) {
 	const ref = useRef<HTMLDivElement | null>(null);
 
+	const contextLoadMore = useEffectEvent(context.loadMore);
+	const contextPreload = useEffectEvent(context.preload);
+
 	useEffect(() => {
 		if (ref.current) {
 			const _root = (
@@ -83,10 +87,10 @@ function RefreshControl<
 				(entries) => {
 					if (entries[0].isIntersecting) {
 						if (preload) {
-							context.preload();
+							contextPreload();
 						}
 						else {
-							context.loadMore();
+							contextLoadMore();
 						}
 					}
 				},
@@ -120,7 +124,7 @@ function RefreshControl<
 				renderComponent({
 					isLastIncomplete: context.isLastIncomplete,
 					onClick: () => {
-						context.loadMore();
+						contextLoadMore();
 					}
 				})
 			}

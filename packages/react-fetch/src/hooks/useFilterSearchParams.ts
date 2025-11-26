@@ -14,6 +14,7 @@ import {
 import { deepCompare } from '../utils/comparationUtils';
 import { type FilterKeysState } from '../utils/createProxy';
 
+import { useEffectEvent } from './useEffectEvent';
 import { type Pagination } from './usePagination';
 import { type PreloadRef } from './usePreload';
 
@@ -100,6 +101,8 @@ export const useFilterSearchParams = <
 		enable
 	}: FilterSearchParamsProps<Data, FilterSearchParams>
 ): FilterSearchParamsReturn<FilterSearchParams> => {
+	const _fetch = useEffectEvent(fetch);
+
 	function getParams(url: URL) {
 		let searchParams = url.searchParams;
 		if (hash) {
@@ -294,7 +297,7 @@ export const useFilterSearchParams = <
 				else if ( data.url.pathname !== subscribeURL.pathname ) {
 					return;
 				}
-				fetch(data, whatChanged);
+				_fetch(data, whatChanged);
 			}
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps

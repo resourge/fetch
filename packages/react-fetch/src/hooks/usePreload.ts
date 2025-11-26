@@ -5,8 +5,6 @@ import { type PaginationSearchParamsType } from '../types/ParamsType'
 import { IS_DEV } from '../utils/constants'
 import { calculateTotalPages } from '../utils/utils'
 
-import { useEffectEvent } from './useEffectEvent'
-
 export type PreloadConfig = false | {
 	maxPerPage?: number
 	next?: boolean
@@ -50,8 +48,6 @@ export const usePreload = <
 		deps
 	}: PreloadProps<Data, FilterSearchParams>
 ) => {
-	const _method = useEffectEvent(method);
-	
 	if ( IS_DEV ) {
 		if ( typeof preload === 'object' && preload.maxPerPage && !Number.isInteger(preload.maxPerPage) ) {
 			throw new Error('`maxPerPage` needs to be integer');
@@ -80,7 +76,7 @@ export const usePreload = <
 			return preloadRef.current[page].data;
 		}
 
-		const data = await _method(metadata);
+		const data = await method(metadata);
 
 		preloadRef.current[page] = {
 			date: Date.now(),
