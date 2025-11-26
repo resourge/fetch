@@ -14,7 +14,6 @@ export {
 	type FetchEffectConfig,
 	type FetchStateConfig,
 	useFetch,
-	useFetchOnDependencyUpdate,
 	useInfiniteLoading,
 	useIsOnline,
 	usePagination,

@@ -5,7 +5,6 @@ export type {
 	FetchEffectConfig,
 	FetchStateConfig
 } from './useFetch'
-export { useFetchOnDependencyUpdate } from './useFetchOnDependencyUpdate';
 export { useInfiniteLoading } from './useInfiniteLoading';
 export type { InfiniteLoadingReturn } from './useInfiniteLoading';
 export { useIsOnline } from './useIsOnline';

@@ -12,7 +12,6 @@
 - [useInfiniteLoading](#useinfiniteloading)
 - [useScrollRestoration](#usescrollrestoration)
 - [useInfiniteScrollRestoration](#useinfinitescrollrestoration)
-- [useFetchOnDependencyUpdate](#usefetchondependencyupdate)
 - [useIsOnline](#useisonline)
 - [Loader Component](#loader)
 - [GlobalLoader Component](#globalloader)
@@ -95,14 +94,14 @@ const MyComponent = () => {
 
 1. `method`: A function that performs the data fetching. It should return a Promise that resolves with the fetched data.
 2. `config`: An optional configuration object with the following properties:
-	- `enable` (boolean, default: true): When `false`, `useEffect` will not trigger fetch.
-	- `loadingService` (string): Specifies a specific `LoadingService` instead of triggering the global one.
-	- `deps` (readonly array): `useEffect` dependencies.
-	- `id` (string): Assign a unique ID to the fetch request.
-	- `initialState` (any): Default data values.
-	- `onEffectEnd` (function): A function that executes only after `useEffect` completes.
-	- `scrollRestoration` (function or array of functions): Functions to restore scroll position.
-	- `silent` (boolean, default: false): When `false`, no loading will be triggered.
+   - `enable` (boolean, default: true): When `false`, `useEffect` will not trigger fetch.
+   - `loadingService` (string): Specifies a specific `LoadingService` instead of triggering the global one.
+   - `deps` (readonly array): `useEffect` dependencies.
+   - `id` (string): Assign a unique ID to the fetch request.
+   - `initialState` (any): Default data values.
+   - `onEffectEnd` (function): A function that executes only after `useEffect` completes.
+   - `scrollRestoration` (function or array of functions): Functions to restore scroll position.
+   - `silent` (boolean, default: false): When `false`, no loading will be triggered.
 
 #### Examples
 
@@ -211,7 +210,7 @@ const {
   {
     initialState: [],
     // Optional, for triggering a specific loader other than the global
-    // loadingService: 'specificLoadingService' // This will trigger a 
+    // loadingService: 'specificLoadingService' // This will trigger a
   }
 );
 ```
@@ -226,7 +225,7 @@ const {
 import { usePagination } from '@resourge/react-fetch';
 
 const MyComponent = () => {
-  const { 
+  const {
     data,
     isLoading,
     error,
@@ -241,7 +240,7 @@ const MyComponent = () => {
       // Implement your logic to fetch data based on metadata
       const response = await Http.get("url");
       return { data: response.data, totalItems: response.totalItems };
-    }, 
+    },
     {
       initialState: [],
     }
@@ -292,88 +291,92 @@ export default MyComponent;
 
 1. `method`: A function that performs the data fetching. It should return a Promise that resolves with the fetched data.
 2. `config`: An configuration object with the following properties:
-	- `...config` (object): Same [`useFetch` Parameters](#parameters).
-	- `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
-	- `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
-	- `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
+   - `...config` (object): Same [`useFetch` Parameters](#parameters).
+   - `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
+   - `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
+   - `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
 
 ### Properties
 
-- `filter`: Holds the current filter criteria used to query the data. 
-	```typescript
-	const filter: UserFilter = {
-	  name: "John",
-	  age: 30
-	};
-	```
+- `filter`: Holds the current filter criteria used to query the data.
+  ```typescript
+  const filter: UserFilter = {
+    name: "John",
+    age: 30,
+  };
+  ```
 - `setFilter`: A method to update the filter criteria
-	```typescript
-    setFilter({
-      page: 1,
-      perPage: 10,
-      sort: [{ orderBy: OrderByEnum.ASC, orderColumn: "name" }],
-      customFilter: "example"
-    });
-	```
+  ```typescript
+  setFilter({
+    page: 1,
+    perPage: 10,
+    sort: [{ orderBy: OrderByEnum.ASC, orderColumn: "name" }],
+    customFilter: "example",
+  });
+  ```
 - `sortTable`: Method to change the sorting of the table.
-	```typescript
-	// Using full sorting criteria
-	sortTable([{ orderBy: OrderByEnum.DESC, orderColumn: "date" }]);
 
-	// Using individual column sorting parameters
-	sortTable(OrderByEnum.ASC, "name");
-	```
+  ```typescript
+  // Using full sorting criteria
+  sortTable([{ orderBy: OrderByEnum.DESC, orderColumn: "date" }]);
+
+  // Using individual column sorting parameters
+  sortTable(OrderByEnum.ASC, "name");
+  ```
+
 - `sort`: Holds the current sorting criteria.
-	```typescript
-	sort: [
-		{ orderBy: OrderByEnum.ASC, orderColumn: "name" },
-		{ orderBy: OrderByEnum.DESC, orderColumn: "date" }
-	]
-	```
+  ```typescript
+  sort: [
+    { orderBy: OrderByEnum.ASC, orderColumn: "name" },
+    { orderBy: OrderByEnum.DESC, orderColumn: "date" },
+  ];
+  ```
 - `changeItemsPerPage`: Method to change the number of items displayed per page.
-	```typescript
-    changeItemsPerPage(20)
-	```
+  ```typescript
+  changeItemsPerPage(20);
+  ```
 - `changePage`: Method to change the current page. Optionally accepts the total number of items.
-	```typescript
-    changePage(2)
-	```
+  ```typescript
+  changePage(2);
+  ```
 - `changePagination`: Method to change both the current page and the number of items per page.
-	```typescript
-    changePagination(1, 50)
-	```
+  ```typescript
+  changePagination(1, 50);
+  ```
 - `changeTotalPages`: Method to change the total number of pages based on the total number of items.
-	```typescript
-    changeTotalPages(200);
-	```
+  ```typescript
+  changeTotalPages(200);
+  ```
 - `data`: The fetched data.
 - `error`: Error state from the fetch operation.
 - `fetch`: Method to refetch the data.
-	```typescript
-    fetch().then(data => {
-      console.log("Fetched data:", data);
-	})
-	```
+  ```typescript
+  fetch().then((data) => {
+    console.log("Fetched data:", data);
+  });
+  ```
 - `getPaginationHref`: Method to build an href for pagination navigation.
-	```typescript
-    getPaginationHref(3)
-	```
+  ```typescript
+  getPaginationHref(3);
+  ```
 - `isLoading`: Loading state of the fetch operation.
 - `pagination`: Current pagination parameters including page, items per page, total items, and total pages.
 - `reset`: Method to reset the pagination, sort, and/or filter to their initial or provided values.
-	```typescript
-    reset()
 
-	reset({ filter: { name: "John" } });
-	```
+  ```typescript
+  reset();
+
+  reset({ filter: { name: "John" } });
+  ```
+
 - `resetPagination`: Method to reset the pagination to initial/default values.
-	```typescript
-	resetPagination();
-	```
+  ```typescript
+  resetPagination();
+  ```
 - `setPaginationState`: Method to manually set the fetch state.
-	```typescript
-    setPaginationState([])
-	```
+  ```typescript
+  setPaginationState([]);
+  ```
 
 # useInfiniteLoading
 
@@ -390,7 +393,7 @@ const MyComponent = () => {
       // Implement your logic to fetch data based on metadata
       const response = await Http.get("url");
       return { data: response.data, totalItems: response.totalItems };
-    }, 
+    },
     {
       initialState: [],
     }
@@ -424,10 +427,10 @@ export default MyComponent;
 
 1. `method`: A function that performs the data fetching. It should return a Promise that resolves with the fetched data.
 2. `config`: An configuration object with the following properties:
-	- `...config` (object): Same [`useFetch` Parameters](#parameters).
-	- `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
-	- `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
-	- `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
+   - `...config` (object): Same [`useFetch` Parameters](#parameters).
+   - `pagination` (object): Specifies the default pagination settings. This includes the initial page number and the number of items per page.
+   - `filter` (object): Specifies the default filter settings. This can include properties like filter criteria or initial filter values.
+   - `sort` (object): Specifies the default sorting settings. This can include properties like the initial sort order and column.
 
 ### Properties
 
@@ -440,11 +443,11 @@ export default MyComponent;
 ## Usage
 
 ```javascript
-import { useScrollRestoration } from '@resourge/react-fetch';
+import { useScrollRestoration } from "@resourge/react-fetch";
 
 const MyComponent = () => {
   // 'action' must be 'pop' for restoration to work;
-  const [scrollRestore, ref, onScroll] = useScrollRestoration('pop');
+  const [scrollRestore, ref, onScroll] = useScrollRestoration("pop");
 
   // Use scrollRestore, ref, and onScroll as needed
 
@@ -500,7 +503,6 @@ In this example, `useScrollRestoration` is used to manage scroll restoration bas
 
 _Note: If you choose not to use the `ref` returned by `useScrollRestoration`, the system will use the global `window` `onScroll` event to handle scroll restoration._
 
-
 # useInfiniteScrollRestoration
 
 `useInfiniteScrollRestoration` is a custom react hook designed for restoring scroll positions in infinite scroll components within a react application. It enables seamless restoration of scroll positions when navigating back and forth between pages or components, enhancing the user experience.
@@ -508,11 +510,11 @@ _Note: If you choose not to use the `ref` returned by `useScrollRestoration`, th
 ## Usage
 
 ```javascript
-import { useInfiniteScrollRestoration } from '@resourge/react-fetch';
+import { useInfiniteScrollRestoration } from "@resourge/react-fetch";
 
 const MyComponent = () => {
   // 'action' must be 'pop' for restoration to work;
-  const [scrollRestore, ref, onScroll] = useInfiniteScrollRestoration('pop');
+  const [scrollRestore, ref, onScroll] = useInfiniteScrollRestoration("pop");
 
   // Use scrollRestore, ref, and onScroll as needed
 
@@ -550,7 +552,7 @@ const MyComponent = () => {
       // Implement your logic to fetch data based on metadata
       const response = await Http.get("url");
       return { data: response.data, totalItems: response.totalItems };
-    }, 
+    },
     {
       initialState: [],
       scrollRestoration // Pass scrollRestoration to useFetch for scroll restoration
@@ -570,64 +572,14 @@ In this example, `useInfiniteScrollRestoration` is used to manage scroll restora
 
 _Note: If you choose not to use the `ref` returned by `useScrollRestoration`, the system will use the global `window` `onScroll` event to handle scroll restoration._
 
-# useFetchOnDependencyUpdate
-
-`useFetchOnDependencyUpdate` is a custom react hook designed to trigger all `useFetch` requests in mounted components when specified dependencies change. It helps remove the need to manually update dependencies for each `useFetch` call, providing a centralized way to manage fetch requests based on common dependencies.
-
-## Usage
-
-```javascript
-import { useFetchOnDependencyUpdate } from '@resourge/react-fetch';
-
-const MyComponent = ({ someDependency }) => {
-  // Call useFetchOnDependencyUpdate with the dependency array
-  useFetchOnDependencyUpdate([someDependency]);
-
-  // Other component logic
-
-  return (
-    <div>
-      {/* Your JSX */}
-    </div>
-  );
-};
-```
-
-### Parameters
-
-`useFetchOnDependencyUpdate` accepts two parameters:
-
-1. `deps`: An array of dependencies that will trigger all `useFetch` requests in mounted components when they change.
-1. `filterRequest`: An optional function to filter out requests not needed by the specified dependencies. The `id` parameter in the function is equal to the `id` used in the `useFetch` config.
-
-
-### Example
-
-```javascript
-import { useFetchOnDependencyUpdate } from '@resourge/react-fetch';
-
-const MyComponent = ({ userId }) => {
-  // Trigger all useFetch requests when 'userId' changes
-  useFetchOnDependencyUpdate([userId]);
-
-  // Other component logic
-
-  return (
-    <div>
-      {/* Your JSX */}
-    </div>
-  );
-};
-```
-
 # useIsOnline
 
-`useIsOnline` is a custom react hook designed to monitor the online status of the application. 
+`useIsOnline` is a custom react hook designed to monitor the online status of the application.
 
 ### Example
 
 ```javascript
-import { useIsOnline } from 'path/to/useIsOnline';
+import { useIsOnline } from "path/to/useIsOnline";
 
 const MyComponent = () => {
   const isOnline = useIsOnline();
@@ -635,11 +587,10 @@ const MyComponent = () => {
   return (
     <div>
       <h1>Application Status</h1>
-      <p>{isOnline ? 'Online' : 'Offline'}</p>
+      <p>{isOnline ? "Online" : "Offline"}</p>
     </div>
   );
 };
-
 ```
 
 In this example, `useIsOnline` is used to monitor the online status of the application. The `isOnline` variable will be `true` when the application is online and `false` when offline. This can be useful for showing different UI components or handling network-related behavior accordingly.
@@ -651,11 +602,13 @@ The `Loader` component is a react component designed to handle loading states wi
 ## Props
 
 `loaderId`
+
 - Type: `string`
 - Default: ''
-- Description: Unique id to distinguish the Loader from other loaders. When not specified, it is treated as a global loader. 
+- Description: Unique id to distinguish the Loader from other loaders. When not specified, it is treated as a global loader.
 
 `loadingElement` or `children`
+
 - Type: `react.ReactNode`
 - Default: `globalLoading`
 - Description: The loading element to display when the `Loader` is in a loading state. This element will be shown instead of the `children` when `loading` is `true`. <br/>
@@ -665,14 +618,14 @@ The `Loader` component is a react component designed to handle loading states wi
 To use the `Loader` component, simply include it in your JSX with the desired `loaderId` and `loadingElement`:
 
 ```javascript
-import react from 'react';
-import { Loader } from '@resourge/react-fetch';
+import react from "react";
+import { Loader } from "@resourge/react-fetch";
 
 const MyComponent = () => {
   return (
     <div>
       <h1>My Component</h1>
-	  {/* Omitting loaderId */}
+      {/* Omitting loaderId */}
       <Loader loaderId="myLoaderId">
         <p>This content will be displayed when loading</p>
       </Loader>
@@ -686,8 +639,8 @@ In this example, the `Loader` component is used with a specific `loaderId` ("myL
 If you want to use the `Loader` component as the default loader (without a specific `loaderId`), simply omit the `loaderId` prop:
 
 ```javascript
-import react from 'react';
-import { Loader } from '@resourge/react-fetch';
+import react from "react";
+import { Loader } from "@resourge/react-fetch";
 
 const MyComponent = () => {
   return (
@@ -710,21 +663,25 @@ The `GlobalLoader` component is a react component designed to display a global l
 ## Props
 
 `loaderId`
+
 - Type: `string`
 - Default: `''`
 - Description: Unique id to distinguish the GlobalLoader from other loaders. - When not specified, it functions as a global loader covering the entire page.
 
 `style`
+
 - Type: `react.CSSProperties`
 - Default: `{}`
 - Description: Custom styles to apply to the global loading overlay.
 
 `children`
+
 - Type: `react.ReactNode`
 - Default: `<GlobalLoading color={globalColor} />`
 - Description: The content to display within the global loading overlay. If not - provided, a default loading indicator will be used.
 
 `color`
+
 - Type: `string`
 - Default: `globalColor`
 - Description: The color of the loading indicator. Default is `globalColor`.
@@ -732,8 +689,8 @@ The `GlobalLoader` component is a react component designed to display a global l
 ## Usage
 
 ```javascript
-import react from 'react';
-import { GlobalLoader } from '@resourge/react-fetch';
+import react from "react";
+import { GlobalLoader } from "@resourge/react-fetch";
 
 const MyComponent = () => {
   return (
@@ -751,9 +708,9 @@ const MyComponent = () => {
 You can also provide custom loading content to the `GlobalLoader`:
 
 ```javascript
-import react from 'react';
-import { GlobalLoader } from '@resourge/react-fetch';
-import CustomLoadingComponent from 'path/to/CustomLoadingComponent';
+import react from "react";
+import { GlobalLoader } from "@resourge/react-fetch";
+import CustomLoadingComponent from "path/to/CustomLoadingComponent";
 
 const MyComponent = () => {
   return (
@@ -775,8 +732,8 @@ The `LoadingFallback` component is a react component designed to show a loading 
 ## Usage
 
 ```javascript
-import react from 'react';
-import { LoadingFallback } from '@resourge/react-fetch';
+import react from "react";
+import { LoadingFallback } from "@resourge/react-fetch";
 
 const MyComponent = () => {
   return (
@@ -798,10 +755,10 @@ The `LoadingSuspense` component is a react component designed to show a loading 
 ## Usage
 
 ```javascript
-import react from 'react';
-import { LoadingSuspense } from '@resourge/react-fetch';
+import react from "react";
+import { LoadingSuspense } from "@resourge/react-fetch";
 
-const MyLazyComponent = react.lazy(() => import('./MyLazyComponent'));
+const MyLazyComponent = react.lazy(() => import("./MyLazyComponent"));
 
 const MyComponent = () => {
   return (
@@ -825,7 +782,7 @@ In this example, the `LoadingSuspense` component will display the `LoadingFallba
 ## Usage
 
 ```tsx
-import { RefreshControl } from '@resourge/react-fetch';
+import { RefreshControl } from "@resourge/react-fetch";
 
 const MyComponent = ({ context }: { context: InfiniteLoadingReturn }) => {
   return (
@@ -850,14 +807,17 @@ export default MyComponent;
 ## Props
 
 `context`
+
 - Type: `object`
 - Description: Containing the context data provided by the `useInfiniteLoading` hook.
 
 `renderComponent`
+
 - Type: `function`
 - Description: Renders the custom refresh control component. It receives props indicating whether the last page is incomplete and a function to trigger loading more data.
 
 `detectionMargin`
+
 - Type: `function`
 - Description: By default, it is set to '100%'. Specifies the detection margin for intersection observer. Can be adjusted to fine-tune scroll detection behavior.
 
@@ -876,4 +836,5 @@ Fetch is licensed under the [MIT License](LICENSE).
 ## Contact
 
 For questions or support, please contact the maintainers:
+
 - GitHub: [Resourge](https://github.com/resourge)

@@ -171,7 +171,6 @@ export function useFetch<Result, A extends any[]>(
 		error: false,
 		loading: false
 	});
-	const fetchRef = useRef<() => any>(() => {});
 
 	const isOnline = useIsOnline();
 
@@ -256,7 +255,7 @@ export function useFetch<Result, A extends any[]>(
 			isEqual
 		} 
 	} = useRefMemo(() => ({
-		subscribe: NotificationService.subscribe(id, () => fetchRef.current()),
+		subscribe: NotificationService.subscribe(id),
 		getSnapshot: () => ({
 			data: currentDataRef.current.data,
 			isLoading: currentDataRef.current.isLoading,
@@ -319,8 +318,6 @@ export function useFetch<Result, A extends any[]>(
 	const deps = [isOnline, _config.enable, ...(_config.deps ?? [])];
 
 	if ( isFetchEffect ) {
-		fetchRef.current = result.fetch;
-
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
 			if ( _config.enable !== false && isOnline ) {
