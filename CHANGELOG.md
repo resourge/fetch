@@ -1,3 +1,10 @@
+## [1.43.1](https://github.com/resourge/fetch/compare/v1.43.0...v1.43.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **refreshcontroll:** fix loadMore or preload not using the latest information ([6936b73](https://github.com/resourge/fetch/commit/6936b73f8b244cc09d3f74f0e66ec5db1d079448))
+
 # [1.43.0](https://github.com/resourge/fetch/compare/v1.42.2...v1.43.0) (2025-11-26)
 
 
