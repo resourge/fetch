@@ -185,7 +185,7 @@ export const useInfiniteLoading = <
 
 			const inInComplete = newData.length !== (internalDataRef.current.data.length * pagination.perPage)
 
-			internalDataRef.current.isLast = newData.length === totalItems;
+			internalDataRef.current.isLast = newData.length >= (totalItems ?? 0);
 
 			internalDataRef.current.isLastIncomplete = internalDataRef.current.isLast && inInComplete;
 
