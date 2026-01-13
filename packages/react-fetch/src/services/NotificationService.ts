@@ -12,9 +12,16 @@ type NotificationType = {
 	notification: () => void
 }
 
+const requestNotification = new Set<string>();
 const notifications = new Map<string, NotificationType>();
 
 const NotificationService = {
+	startRequest(id: string) {
+		requestNotification.add(id);
+	},
+	finishRequest(id: string) {
+		requestNotification.delete(id);
+	},
 	subscribe(id: string) {
 		return (notification: () => void) => {
 			notifications.set(id, {
@@ -26,9 +33,12 @@ const NotificationService = {
 		};
 	},
 	notifyAll() {
-		notifications.forEach(({ notification }) => {
-			notification();
-		})
+		console.log('requestNotification', requestNotification.size)
+		if ( requestNotification.size === 0 ) {
+			notifications.forEach(({ notification }) => {
+				notification();
+			})
+		}
 	},
 	notifyById(id: string) {
 		const notification = notifications.get(id);

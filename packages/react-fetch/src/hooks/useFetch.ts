@@ -73,10 +73,6 @@ export type FetchEffectConfig = FetchConfig & {
 	 */
 	deps?: readonly any[]
 	/**
-	* Fetch id
-	*/
-	id?: string
-	/**
 	* Default data values.
 	*/
 	initialState?: never
@@ -179,8 +175,7 @@ export function useFetch<Result, A extends any[]>(
 
 	const _config: FetchStateConfig<Result> = config as FetchStateConfig<Result>;
 
-	// eslint-disable-next-line react-hooks/rules-of-hooks
-	const id = _config.id ?? useId();
+	const id = useId();
 
 	const currentDataRef = useRefMemo<State<Result>>(() => ({
 		data: (
@@ -223,6 +218,7 @@ export function useFetch<Result, A extends any[]>(
 					(controller) => controllers.current.add(controller),
 					(controller) => controllers.current.delete(controller)
 				);
+				NotificationService.startRequest(id);
 						
 				return method
 				.apply(currentDataRef.current, (args ?? []) as A)
@@ -244,6 +240,9 @@ export function useFetch<Result, A extends any[]>(
 				currentDataRef.current.error = e;
 			}
 			return await Promise.reject(e);
+		}
+		finally {
+			NotificationService.finishRequest(id);
 		}
 	}
 
@@ -369,6 +368,7 @@ export function useFetch<Result, A extends any[]>(
 
 	useEffect(() => {
 		return () => {
+			NotificationService.finishRequest(id); 
 			if ( controllers.current.size ) {
 				controllers.current
 				.forEach((controller) => {
