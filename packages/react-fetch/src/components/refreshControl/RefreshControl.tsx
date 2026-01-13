@@ -21,7 +21,7 @@ type RefreshControlProps<
 	 */
 	preload?: boolean
 	renderComponent?: (props: {
-		isLastIncomplete: boolean
+		canLoadMore: boolean
 		onClick: () => void
 	}) => ReactNode
 	/**
@@ -122,7 +122,7 @@ function RefreshControl<
 			{
 				renderComponent &&
 				renderComponent({
-					isLastIncomplete: context.isLastIncomplete,
+					canLoadMore: context.canLoadMore,
 					onClick: () => {
 						contextLoadMore();
 					}

@@ -789,10 +789,10 @@ const MyComponent = ({ context }: { context: InfiniteLoadingReturn }) => {
     <RefreshControl
       context={context}
       detectionMargin="100%" // Optional: Set detection margin
-      renderComponent={({ isLastIncomplete, onClick }) => (
+      renderComponent={({ canLoadMore, onClick }) => (
         // Render your custom refresh control component here
         <div>
-          <button onClick={onClick} disabled={!isLastIncomplete}>
+          <button onClick={onClick} disabled={!canLoadMore}>
             Load More
           </button>
         </div>

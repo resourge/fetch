@@ -21,15 +21,15 @@ export type InfiniteLoadingReturn<
 > = FilterSearchParamsReturn<FilterSearchParams> 
 & PaginationFunctionsType<Data, FilterSearchParams>
 & {
+	/**
+	 * If can load more pages
+	 */
+	canLoadMore: boolean
 	readonly context: InfiniteLoadingReturn<Data, FilterSearchParams>
 	/**
 	 * If is last "page"
 	 */
 	isLast: boolean
-	/**
-	 * If last page is incomplete (itemPerPage 10 but the last page got less than 10)
-	 */
-	isLastIncomplete: boolean
 	loadMore: () => Promise<void>
 	/**
 	 * Preload method.
@@ -38,10 +38,10 @@ export type InfiniteLoadingReturn<
 };
 
 type InternalDataRef<Data extends any[]> = {
+	canLoadMore: boolean
 	data: Data[]
 	isFirstTime: boolean
 	isLast: boolean
-	isLastIncomplete: boolean
 	isLoading: boolean
 };
 
@@ -80,7 +80,7 @@ export const useInfiniteLoading = <
 		isLoading: false,
 		data: [],
 		isLast: false,
-		isLastIncomplete: false
+		canLoadMore: false
 	});
 
 	const {
@@ -183,11 +183,11 @@ export const useInfiniteLoading = <
 				);
 			}
 
-			const inInComplete = newData.length !== (internalDataRef.current.data.length * pagination.perPage)
+			const isAFullPage = ((newData.length / pagination.perPage) % 1) === 0
 
 			internalDataRef.current.isLast = newData.length >= (totalItems ?? 0);
 
-			internalDataRef.current.isLastIncomplete = internalDataRef.current.isLast && inInComplete;
+			internalDataRef.current.canLoadMore = !internalDataRef.current.isLast && Boolean(isAFullPage);
 
 			internalDataRef.current.isLoading = false;
 
@@ -261,13 +261,13 @@ export const useInfiniteLoading = <
 			})
 		},
 		isLast: internalDataRef.current.isLast,
-		isLastIncomplete: internalDataRef.current.isLastIncomplete,
+		canLoadMore: internalDataRef.current.canLoadMore,
 		loadMore: async () => {
 			if ( enable === false || internalDataRef.current.isLoading ) {
 				return;
 			}
 
-			if ( !internalDataRef.current.isLastIncomplete ) {
+			if ( internalDataRef.current.canLoadMore ) {
 				changePage(pagination.page + 1);
 				return;
 			}
