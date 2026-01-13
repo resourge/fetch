@@ -12,6 +12,7 @@ import {
 import NotificationService, { type State, type UseFetchError } from '../services/NotificationService';
 import { useId } from '../utils/useIdShim';
 
+import { useEffectEvent } from './useEffectEvent';
 import { useIsOnline } from './useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
 import { useRefMemo } from './useRefMemo';
@@ -176,6 +177,7 @@ export function useFetch<Result, A extends any[]>(
 	const _config: FetchStateConfig<Result> = config as FetchStateConfig<Result>;
 
 	const id = useId();
+	const onDataChange = useEffectEvent(_config.onDataChange);
 
 	const currentDataRef = useRefMemo<State<Result>>(() => ({
 		data: (
@@ -359,7 +361,7 @@ export function useFetch<Result, A extends any[]>(
 			result.setFetchState = (data: Result) => {
 				currentDataRef.current.data = data;
 
-				_config.onDataChange && _config.onDataChange(data)
+				onDataChange && onDataChange(data)
 
 				NotificationService.notifyAll();
 			};
