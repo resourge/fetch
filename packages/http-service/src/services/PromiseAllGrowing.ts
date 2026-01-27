@@ -1,4 +1,4 @@
-type PromisePoolType = 'useEffect' | 'request' | 'fetch'
+type PromisePoolType = 'chain' | 'no-chain'
 
 type PromisePoolValueType = {
 	p: Promise<any>
@@ -7,63 +7,54 @@ type PromisePoolValueType = {
 }
 
 export class PromiseAllGrowing {
-	private readonly pools: Record<PromisePoolType, PromisePoolValueType> = {
-		useEffect: {
-			pending: new Set<Promise<any>>(),
-			waiters: [],
-			p: Promise.resolve()
-		},
-		request: {
-			pending: new Set<Promise<any>>(),
-			waiters: [],
-			p: Promise.resolve()
-		},
-		fetch: {
-			pending: new Set<Promise<any>>(),
-			waiters: [],
-			p: Promise.resolve()
-		}
+	private readonly pool: PromisePoolValueType = {
+		pending: new Set<Promise<any>>(),
+		waiters: [],
+		p: Promise.resolve()
 	} 
 
 	async promise<T>(key: PromisePoolType, p: () => Promise<T>): Promise<T> {
 		const tracked = p()
 
-		const pool = this.pools[key];
-		pool.pending.add(tracked);
+		if ( key === 'no-chain' ) {
+			return await tracked
+		}
 
-		pool.p = Promise.all([
+		this.pool.pending.add(tracked);
+
+		this.pool.p = Promise.all([
 			tracked
 			.finally(() => {
-				pool.pending.delete(tracked);
-				this.check(pool);
+				this.pool.pending.delete(tracked);
+				this.check();
 			}),
-			this.waitAll(pool)
+			this.waitAll()
 		])
 
-		const [re] = await pool.p;
+		const [re] = await this.pool.p;
 
 		return re;
 	}
 
-	public waitAll(pool: PromisePoolValueType) {
-		const oldP = pool.p;
+	public waitAll() {
+		const oldP = this.pool.p;
 		return new Promise<void>((resolve) => {
-			pool.waiters.push(async () => {
+			this.pool.waiters.push(async () => {
 				await oldP;
 				resolve();
 			});
-			this.check(pool);
+			this.check();
 		});
 	}
 
-	private check(pool: PromisePoolValueType) {
-		if (pool.pending.size === 0 && pool.waiters.length > 0) {
+	private check() {
+		if (this.pool.pending.size === 0 && this.pool.waiters.length > 0) {
 			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			pool.waiters.forEach(async (resolve) => {
+			this.pool.waiters.forEach(async (resolve) => {
 				await resolve(); 
 			});
-			pool.p = Promise.resolve()
-			pool.waiters = [];
+			this.pool.p = Promise.resolve()
+			this.pool.waiters = [];
 		}
 	}
 };

@@ -33,7 +33,6 @@ const NotificationService = {
 		};
 	},
 	notifyAll() {
-		console.log('requestNotification', requestNotification.size)
 		if ( requestNotification.size === 0 ) {
 			notifications.forEach(({ notification }) => {
 				notification();

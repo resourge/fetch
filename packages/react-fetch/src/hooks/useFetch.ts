@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
 
 import {
-	LoadingService,
-	QueueKingSystem,
 	isAbortedError,
-	PromiseAllGrowing
-} from '../../../http-service/src'
+	LoadingService,
+	PromiseAllGrowing,
+	QueueKingSystem
+} from '../../../http-service/src';
 import NotificationService, { type State, type UseFetchError } from '../services/NotificationService';
 import { useId } from '../utils/useIdShim';
 
-import { useEffectEvent } from './useEffectEvent';
 import { useIsOnline } from './useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
 import { useRefMemo } from './useRefMemo';
@@ -177,7 +176,6 @@ export function useFetch<Result, A extends any[]>(
 	const _config: FetchStateConfig<Result> = config as FetchStateConfig<Result>;
 
 	const id = useId();
-	const onDataChange = useEffectEvent(_config.onDataChange);
 
 	const currentDataRef = useRefMemo<State<Result>>(() => ({
 		data: (
@@ -215,7 +213,7 @@ export function useFetch<Result, A extends any[]>(
 
 	const noLoadingFetch = async (...args: Partial<A>) => {
 		try {
-			const data = await FetchPromises.promise(args.length ? 'fetch' : 'useEffect', () => {
+			const data = await FetchPromises.promise(isFetchEffect ? 'chain' : 'no-chain', () => {
 				const remove = QueueKingSystem.add(
 					(controller) => controllers.current.add(controller),
 					(controller) => controllers.current.delete(controller)
@@ -361,7 +359,7 @@ export function useFetch<Result, A extends any[]>(
 			result.setFetchState = (data: Result) => {
 				currentDataRef.current.data = data;
 
-				onDataChange && onDataChange(data)
+				_config.onDataChange && _config.onDataChange(data)
 
 				NotificationService.notifyAll();
 			};
