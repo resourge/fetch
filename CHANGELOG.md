@@ -1,3 +1,19 @@
+# [1.44.0](https://github.com/resourge/fetch/compare/v1.43.1...v1.44.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* **promiseallgrowing:** fix Promises not being finished at the same order they started ([eb0669d](https://github.com/resourge/fetch/commit/eb0669db296c1dd7be26145ba2d015eeb1a0097e))
+* **usefetch:** fix stuck when using fetch inside another useFetch ([ba7389e](https://github.com/resourge/fetch/commit/ba7389e1bb66d8ac2a5e8130848f6b66333e2df7))
+* **usefetch:** onDataChange to not have reference again ([2b412a8](https://github.com/resourge/fetch/commit/2b412a8569747c31ef568a29116d22b86a939367))
+* **useinfiniteloading:** fix checking if is last page wrong condition ([a0d2695](https://github.com/resourge/fetch/commit/a0d26958c8d5478ad19cd68c1812755d1c5ea863))
+* **useinfiniteloading:** improve conditions for loading more ([4f8ad26](https://github.com/resourge/fetch/commit/4f8ad265bdc47870b1ac7339dd6c50f697fc962d))
+
+
+### Features
+
+* **usefetch:** prevent multiple request at the same from rendering also multiple times ([2203262](https://github.com/resourge/fetch/commit/2203262300bb8b6adc6f10d6705716922d8c9b86))
+
 ## [1.43.1](https://github.com/resourge/fetch/compare/v1.43.0...v1.43.1) (2025-11-26)
 
 
