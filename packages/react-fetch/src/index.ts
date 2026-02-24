@@ -23,8 +23,6 @@ export {
 	useScrollRestoration
 } from './hooks'
 
-export { NotificationService } from './services';
-
 export {
 	type FilterType,
 	OrderByEnum,
@@ -35,3 +33,5 @@ export {
 	type SortSearchParamsType,
 	type PaginationConfig
 } from './types'
+
+export { NotificationService } from './services';

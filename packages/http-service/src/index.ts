@@ -10,7 +10,8 @@ export type { RequestConfig } from './types';
 
 export {
 	getCacheKey, 
-	isAbortedError, isBrowser,
+	isAbortedError, 
+	isBrowser,
 	HttpResponse, HttpResponseError, 
 	Interceptor, type InterceptorOnRequest, 
 	type InterceptorOnRequestError, 
