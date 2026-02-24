@@ -1,3 +1,17 @@
+# [1.47.0](https://github.com/resourge/fetch/compare/v1.46.0...v1.47.0) (2026-02-24)
+
+
+### Bug Fixes
+
+* **package:** fix repository URL ([0c52ec8](https://github.com/resourge/fetch/commit/0c52ec881554b7007a168317cb7f1a7012aebdd7))
+
+
+### Features
+
+* **package:** new semantic-release configs ([602d833](https://github.com/resourge/fetch/commit/602d83372903764ec1040e84bfff089b297ef370))
+* **semantic-release:** update configs ([9082a38](https://github.com/resourge/fetch/commit/9082a38ed8e1958122cfbb239134b811bea2b9cb))
+* **semantic-release:** update yml ([c510c63](https://github.com/resourge/fetch/commit/c510c639a08872ab8e5c2bed6a13d1d6e732c55f))
+
 ### Bug Fixes
 
 - **basehttpservice:** remove PromiseAllGrowing ([1ea3a98](https://github.com/resourge/fetch/commit/1ea3a98cd5678eb7f27cd85ad1d07add0df383ef))
