@@ -23,12 +23,14 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24.10.0
-          cache: "npm"
+          node-version: "lts/*"
       - name: Install dependencies
         run: npm ci
       - name: Eslint
@@ -54,9 +56,10 @@ jobs:
         with:
           node-version: "lts/*"
       - name: Install dependencies
-        run: npm ci
-      - name: Publish
-        run: npm run semantic-release
+        run: npm clean-install
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+      - name: Release
         env:
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
