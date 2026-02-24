@@ -1,3 +1,10 @@
+# [1.45.0](https://github.com/resourge/fetch/compare/v1.44.1...v1.45.0) (2026-02-24)
+
+
+### Features
+
+* **index:** to force new version ([4100b16](https://github.com/resourge/fetch/commit/4100b16792b9bb9dcf3254649d447abba2e8cec8))
+
 ## [1.44.1](https://github.com/resourge/fetch/compare/v1.44.0...v1.44.1) (2026-02-24)
 
 
