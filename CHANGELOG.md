@@ -1,3 +1,10 @@
+## [1.44.1](https://github.com/resourge/fetch/compare/v1.44.0...v1.44.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* **basehttpservice:** remove PromiseAllGrowing ([1ea3a98](https://github.com/resourge/fetch/commit/1ea3a98cd5678eb7f27cd85ad1d07add0df383ef))
+
 # [1.44.0](https://github.com/resourge/fetch/compare/v1.43.1...v1.44.0) (2026-02-24)
 
 
