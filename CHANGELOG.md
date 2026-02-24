@@ -1,3 +1,10 @@
+# [1.48.0](https://github.com/resourge/fetch/compare/v1.47.0...v1.48.0) (2026-02-24)
+
+
+### Features
+
+* **semantic-release:** update yml ([779fbcb](https://github.com/resourge/fetch/commit/779fbcb93830e2562068b34256fcd76f9f6d1686))
+
 # [1.47.0](https://github.com/resourge/fetch/compare/v1.46.0...v1.47.0) (2026-02-24)
 
 
