@@ -17,10 +17,10 @@ export {
 	type FetchStateConfig,
 	useFetch,
 	useInfiniteLoading,
+	useInfiniteScrollRestoration,
 	useIsOnline,
 	usePagination,
-	useScrollRestoration,
-	useInfiniteScrollRestoration
+	useScrollRestoration
 } from './hooks'
 
 export { NotificationService } from './services';
