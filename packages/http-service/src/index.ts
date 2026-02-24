@@ -9,5 +9,10 @@ export {
 export type { RequestConfig } from './types';
 
 export {
-	HttpResponse, HttpResponseError, Interceptor, type InterceptorOnRequest, type InterceptorOnRequestError, type InterceptorOnResponse, type InterceptorOnResponseError, getCacheKey, isAbortedError, isBrowser 
+	getCacheKey, isAbortedError, isBrowser,
+	HttpResponse, HttpResponseError, 
+	Interceptor, type InterceptorOnRequest, 
+	type InterceptorOnRequestError, 
+	type InterceptorOnResponse, 
+	type InterceptorOnResponseError
 } from './utils';

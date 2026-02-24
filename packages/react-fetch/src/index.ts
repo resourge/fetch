@@ -2,9 +2,9 @@ export {
 	GlobalLoader,
 	Loader,
 	type LoaderProps,
-	LoadingFallback, 
-	RefreshControl,
-	LoadingSuspense
+	LoadingFallback,
+	LoadingSuspense,
+	RefreshControl
 } from './components'
 
 export {

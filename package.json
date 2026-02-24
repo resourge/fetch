@@ -23,7 +23,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/resourge/fetch.git"
+		"url": "git+https://github.com/resourge/fetch.git"
 	},
 	"scripts": {
 		"commit": "git pull && git add . && git-cz",
