@@ -1,3 +1,10 @@
+# [1.46.0](https://github.com/resourge/fetch/compare/v1.45.0...v1.46.0) (2026-02-24)
+
+
+### Features
+
+* **project:** force a new version ([a5f0e45](https://github.com/resourge/fetch/commit/a5f0e45074d42ab40f9a8fe1e29d07ed331e7cb1))
+
 # [1.45.0](https://github.com/resourge/fetch/compare/v1.44.1...v1.45.0) (2026-02-24)
 
 
