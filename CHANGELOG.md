@@ -1,3 +1,17 @@
+# [1.49.0](https://github.com/resourge/fetch/compare/v1.48.0...v1.49.0) (2026-04-27)
+
+
+### Bug Fixes
+
+* **promiseallgrowing:** fix waitAll not finishing in case promise gets error ([9c69adb](https://github.com/resourge/fetch/commit/9c69adbf267966612f7508afba5ca92c53f172d6))
+* **useinfiniteloading and usepagination:** fix reset not resetting filters ([0d8f47c](https://github.com/resourge/fetch/commit/0d8f47c49c82b62ff3a041e13eda9edb8dff440f))
+* **usememorystate:** fix disabled comment ([06671d1](https://github.com/resourge/fetch/commit/06671d177a6339cc09fe3357ce08a1936d53507f))
+
+
+### Features
+
+* **usefilterparams:** add hability to save filter, pagination and sort in memory instead of URL ([fa6d7f9](https://github.com/resourge/fetch/commit/fa6d7f90cdc9fcb06062d1a68395e9602225cc43))
+
 # [1.48.0](https://github.com/resourge/fetch/compare/v1.47.0...v1.48.0) (2026-02-24)
 
 
