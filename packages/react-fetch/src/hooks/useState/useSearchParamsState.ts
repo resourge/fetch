@@ -6,7 +6,7 @@ import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourg
 
 import { type FilterParamsProps, type State } from '../../types/FilterParamsTypes';
 import { type ParamsType } from '../../types/ParamsType';
-import { deepCompare } from '../../utils/comparationUtils';
+import { deepCompare } from '../../utils/comparisonUtils';
 
 export const useSearchParamsState = <
 	Data,
