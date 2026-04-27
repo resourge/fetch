@@ -105,11 +105,6 @@ export const useMemoryState = <
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	function getPaginationHref(_page: number) {
-		if (process.env.NODE_ENV === 'development') {
-			console.warn(
-				'getPaginationHref is not supported in "state" paramsMode. Returning "#".'
-			);
-		}
 		return '#';
 	}
 
