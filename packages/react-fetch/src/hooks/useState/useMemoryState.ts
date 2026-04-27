@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
+import { useEffectEvent } from 'react';
 
 import { type FilterParamsProps, type State } from '../../types/FilterParamsTypes';
 import { type ParamsType } from '../../types/ParamsType';
-import { deepCompare } from '../../utils/comparationUtils';
-import { useEffectEvent } from '../useEffectEvent';
+import { deepCompare } from '../../utils/comparisonUtils';
 
 export const useMemoryState = <
 	TData,

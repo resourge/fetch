@@ -3,11 +3,11 @@ import {
 	type ReactNode,
 	type RefObject,
 	useEffect,
+	useEffectEvent,
 	useRef
 } from 'react';
 
 import { type InfiniteLoadingReturn } from '../../hooks';
-import { useEffectEvent } from '../../hooks/useEffectEvent';
 
 type RefreshControlProps<
 	Data extends any[],

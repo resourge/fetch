@@ -2,10 +2,9 @@ import {
 	type RefObject,
 	type UIEvent,
 	useEffect,
+	useEffectEvent,
 	useRef
 } from 'react';
-
-import { useEffectEvent } from '../useEffectEvent';
 
 import { type ScrollPos } from './types';
 

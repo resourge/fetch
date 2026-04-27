@@ -1,6 +1,7 @@
+import { useEffectEvent } from 'react';
+
 import { throttleMethod } from '../utils/throttleMethod';
 
-import { useEffectEvent } from './useEffectEvent';
 import { useOnFocus } from './useOnFocus/useOnFocus';
 
 const threshold = 10 * 60 * 1000;

@@ -1,8 +1,8 @@
 import { type RefObject, useEffect, useRef } from 'react';
+import { useEffectEvent } from 'react';
 import { type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import { IS_DEV } from '../../utils/constants';
-import { useEffectEvent } from '../useEffectEvent';
 
 import { type ScrollPos } from './types';
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useEffectEvent } from 'react';
 
 import { HistoryStore } from '@resourge/history-store';
 import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourge/history-store/utils';
@@ -6,7 +7,6 @@ import { createNewUrlWithSearch, parseParams, parseSearchParams } from '@resourg
 import { type FilterParamsProps, type State } from '../../types/FilterParamsTypes';
 import { type ParamsType } from '../../types/ParamsType';
 import { deepCompare } from '../../utils/comparationUtils';
-import { useEffectEvent } from '../useEffectEvent';
 
 export const useSearchParamsState = <
 	Data,
