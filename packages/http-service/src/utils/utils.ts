@@ -6,50 +6,56 @@ export const isBrowser = (): boolean => {
 	return typeof navigator === 'undefined'
 		? false
 		: !(
-			navigator.product === 'ReactNative' ||
-			navigator.product === 'NativeScript' ||
-			navigator.product === 'NS'
-		) && typeof window !== 'undefined' && typeof document !== 'undefined';
-}
+			navigator.product === 'ReactNative'
+			|| navigator.product === 'NativeScript'
+			|| navigator.product === 'NS'
+		) && globalThis.window !== undefined && typeof document !== 'undefined';
+};
 
 /**
  * Get's cookie part regarding name
  */
 export function readCookie(name: string) {
-	const match = document.cookie.match(new RegExp(`(^|;\\s*)(${name})=([^;]*)`));
-	return (match ? decodeURIComponent(match[3]) : null);
+	const match = document.cookie.match(new RegExp(String.raw`(^|;\s*)(${name})=([^;]*)`));
+	return (
+		match
+			? decodeURIComponent(match[3])
+			: null
+	);
 }
 
 /**
  * Checks if URL has the same origin as requestUrl
  */
 export const isURLSameOrigin = ((): (url: string | URL) => boolean => {
-	if ( isBrowser() ) {
-		const originURL = new URL(window.location.href)
+	if (isBrowser()) {
+		const originURL = new URL(globalThis.location.href);
 
 		return (url: string | URL) => {
-			const parsedUrl = new URL(url as string);
+			const parsedUrl = new URL(url);
 			return (
-				parsedUrl.protocol === originURL.protocol &&
-				parsedUrl.host === originURL.host
-			)
-		}
+				parsedUrl.protocol === originURL.protocol
+				&& parsedUrl.host === originURL.host
+			);
+		};
 	}
 
-	return () => true
-})()
+	return () => true;
+})();
 
-const URL_PATTERN = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+const URL_PATTERN = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
 /**
  * Return an url. In case it doesn't have origin/domain/host it will use baseUrl.
  */
-export function createUrl(url: URL | string, baseUrl: string): URL {
-	if ( typeof url === 'string' ) {
-		if ( URL_PATTERN.test(url) ) {
+export function createUrl(url: string | URL, baseUrl: string): URL {
+	if (typeof url === 'string') {
+		if (URL_PATTERN.test(url)) {
 			return new URL(url);
 		}
 
-		return new URL(`${baseUrl}${!baseUrl.endsWith('/') && !url.startsWith('/') ? '/' : ''}${url}`);
+		return new URL(`${baseUrl}${!baseUrl.endsWith('/') && !url.startsWith('/')
+			? '/'
+			: ''}${url}`);
 	}
 	return url;
 }
@@ -59,16 +65,16 @@ export function createUrl(url: URL | string, baseUrl: string): URL {
  */
 export function isAbortedError(e: any): boolean {
 	return (
-		e &&
-		typeof e === 'object' &&
-		(
+		e
+		&& typeof e === 'object'
+		&& (
 			(
-				(e as { data: { name: string } }).data &&
-				typeof (e as { data: { name: string } }).data === 'object' &&
-				(e as { data: { name: string } }).data.name === 'AbortError'
+				(e as { data: { name: string } }).data
+				&& typeof (e as { data: { name: string } }).data === 'object'
+				&& (e as { data: { name: string } }).data.name === 'AbortError'
 			) || (
 				(e as { name: string }).name === 'AbortError'
 			)
 		)
-	)
+	);
 }

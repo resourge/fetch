@@ -5,7 +5,8 @@ export const useEffectEvent = <const T extends ((...args: any[]) => any) | undef
 	const methodRef = useRef(method);
 
 	methodRef.current = method;
-
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	return (method ? (...args) => methodRef.current!(...args) : undefined) as T
-}
+	
+	return (method
+		? (...args) => methodRef.current!(...args)
+		: undefined) as T;
+};

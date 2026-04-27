@@ -1,20 +1,20 @@
 import {
 	type CSSProperties,
-	type MutableRefObject,
 	type ReactNode,
+	type RefObject,
 	useEffect,
 	useRef
-} from 'react'
+} from 'react';
 
 import { type InfiniteLoadingReturn } from '../../hooks';
 import { useEffectEvent } from '../../hooks/useEffectEvent';
 
 type RefreshControlProps<
 	Data extends any[],
-	FilterSearchParams extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
 > = {
-	context: InfiniteLoadingReturn<Data, FilterSearchParams>
 	containerStyle?: CSSProperties
+	context: InfiniteLoadingReturn<Data, FilterSearchParams>
 	detectionMargin?: string
 	/**
 	 * By default is false
@@ -29,21 +29,21 @@ type RefreshControlProps<
 	 * If no `root` is provided, it searches for the closest overflow parent, otherwise, it defaults to the `window`.
 	 */
 	root?: IntersectionObserverInit['root']
-	| MutableRefObject<IntersectionObserverInit['root']>
+		| RefObject<IntersectionObserverInit['root']>
 };
 
 function getOverflowParent(element: HTMLElement | null) {
 	while (element && element !== document.body) {
-		const overflowY = window.getComputedStyle(element).overflowY;
-		const overflowX = window.getComputedStyle(element).overflowX;
+		const overflowY = globalThis.getComputedStyle(element).overflowY;
+		const overflowX = globalThis.getComputedStyle(element).overflowX;
 
 		if (
 			(
-				(overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'hidden') && 
-				element.scrollHeight > element.clientHeight
+				(overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'hidden') 
+				&& element.scrollHeight > element.clientHeight
 			) || (
-				(overflowX === 'auto' || overflowX === 'scroll' || overflowX === 'hidden') && 
-				element.scrollWidth > element.clientWidth
+				(overflowX === 'auto' || overflowX === 'scroll' || overflowX === 'hidden') 
+				&& element.scrollWidth > element.clientWidth
 			)
 		) {
 			return element;
@@ -60,14 +60,14 @@ function getOverflowParent(element: HTMLElement | null) {
  */
 function RefreshControl<
 	Data extends any[],
-	FilterSearchParams extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
 >({
+	containerStyle,
 	context,
-	root = null,
 	detectionMargin,
-	renderComponent,
 	preload,
-	containerStyle
+	renderComponent,
+	root = null
 }: RefreshControlProps<Data, FilterSearchParams>) {
 	const ref = useRef<HTMLDivElement | null>(null);
 
@@ -77,9 +77,9 @@ function RefreshControl<
 	useEffect(() => {
 		if (ref.current) {
 			const _root = (
-				root &&
-				(root as MutableRefObject<IntersectionObserverInit['root']>).current
-					? (root as MutableRefObject<IntersectionObserverInit['root']>).current
+				root
+				&& (root as RefObject<IntersectionObserverInit['root']>).current
+					? (root as RefObject<IntersectionObserverInit['root']>).current
 					: (root as IntersectionObserverInit['root'])
 			) ?? getOverflowParent(ref.current);
 
@@ -107,7 +107,6 @@ function RefreshControl<
 				observer.disconnect();
 			};
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [detectionMargin, context.data.length]);
 
 	return (
@@ -120,13 +119,15 @@ function RefreshControl<
 			}}
 		>
 			{
-				renderComponent &&
-				renderComponent({
-					canLoadMore: context.canLoadMore,
-					onClick: () => {
-						contextLoadMore();
-					}
-				})
+				renderComponent
+					? renderComponent({
+						canLoadMore: context.canLoadMore,
+						onClick: () => {
+							// eslint-disable-next-line react-hooks/rules-of-hooks
+							contextLoadMore();
+						}
+					})
+					: null
 			}
 		</div>
 	);

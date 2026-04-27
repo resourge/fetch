@@ -1,9 +1,9 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
-import tsconfigPaths from 'vite-tsconfig-paths'
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,7 +18,7 @@ export default defineConfig({
 	plugins: [
 		react(),
 		tsconfigPaths(),
-		checker({ 
+		checker({
 			typescript: true,
 			enableBuild: true,
 			eslint: {
@@ -29,4 +29,4 @@ export default defineConfig({
 			}
 		})
 	]
-})
+});

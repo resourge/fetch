@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import { useEffect, useRef } from 'react';
 
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
@@ -16,37 +15,52 @@ import { useIsOnline } from './useIsOnline';
 import { useOnFocusFetch } from './useOnFocusFetch';
 import { useRefMemo } from './useRefMemo';
 
+/**
+ * Hook to fetch and set data.
+ * It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
+ * * Note: When initialState is set, it will also trigger an useEffect, otherwise it's just a method
+ * @param method - method to set fetch data
+ * @param config {@link FetchConfig} - fetch config's. They override default HttpProvider config's.
+ * @example
+ * ```Typescript
+  // Fetch with useState 
+  // const {
+  //	data,
+  //    error,
+  //    fetch,
+  //    isLoading,
+  //    setFetchState
+  // } = useFetch(
+	  async (Http) => {
+		  return Http.get("url")
+	  }, 
+	  {
+		  initialState: []
+	  }
+  );
+  // Fetch without useEffect
+  // const {
+  //    error,
+  //    fetch,
+  //    isLoading
+  // } = useFetch(
+	  async (Http) => {
+		  return Http.get("url")
+	  }
+  );
+```
+ */
+type NoUndefinedField<A> = { [P in keyof A]-?: NoUndefinedField<NonNullable<A[P]>> };
+
 export type BaseFetch = {
 	error: UseFetchError
 	/**
 	 * True for when is request something
 	 */
 	isLoading: boolean
-}
-
-export type FetchMethod<Result, A extends any[]> = BaseFetch & {
-	/**
-	 * Fetch Method with loading
-	 */
-	fetch: (...args: A) => Promise<Result>
 };
 
-export type FetchEffect<Result, A extends any[]> = BaseFetch & {
-	/**
-	 * Fetch Method with loading
-	 */
-	fetch: (...args: Partial<A>) => Promise<Result>
-};
-
-export type FetchState<Result, A extends any[]> = FetchEffect<Result, A> & {
-	data: Result
-	/**
-	 * To set fetch state manually
-	 */
-	setFetchState: (data: Result) => void
-};
-
-export type FetchConfig = {	
+export type FetchConfig = {
 	/**
 	 * When false useEffect will not trigger fetch
 	 * * Note: It is not included in the deps.
@@ -63,7 +77,14 @@ export type FetchConfig = {
 	 * @default false
 	 */
 	silent?: boolean
-}
+};
+
+export type FetchEffect<Result, A extends any[]> = BaseFetch & {
+	/**
+	 * Fetch Method with loading
+	 */
+	fetch: (...args: Partial<A>) => Promise<Result>
+};
 
 export type FetchEffectConfig = FetchConfig & {
 	/**
@@ -84,13 +105,28 @@ export type FetchEffectConfig = FetchConfig & {
 	 * Serves to restore scroll position
 	 */
 	scrollRestoration?: ((behavior?: ScrollBehavior) => void) | Array<(behavior?: ScrollBehavior) => void>
-}
+};
+
+export type FetchMethod<Result, A extends any[]> = BaseFetch & {
+	/**
+	 * Fetch Method with loading
+	 */
+	fetch: (...args: A) => Promise<Result>
+};
+
+export type FetchState<Result, A extends any[]> = FetchEffect<Result, A> & {
+	data: Result
+	/**
+	 * To set fetch state manually
+	 */
+	setFetchState: (data: Result) => void
+};
 
 export type FetchStateConfig<A> = Omit<FetchEffectConfig, 'initialState'> & {
 	/**
 	* Default data values.
 	*/
-	initialState: A | (() => A)
+	initialState: (() => A) | A
 	/**
 	* On Data Change
 	*/
@@ -100,64 +136,27 @@ export type FetchStateConfig<A> = Omit<FetchEffectConfig, 'initialState'> & {
 	 * @default true when initialState is defined.
 	 */
 	onWindowFocus?: boolean
-}
+};
 
-/**
- * Hook to fetch and set data.
- * It will do the loading, error, set data, manually abort request if component is unmounted, and/or triggering other useFetch/useFetchCallback's
- * * Note: When initialState is set, it will also trigger an useEffect, otherwise it's just a method
- * @param method - method to set fetch data
- * @param config {@link FetchConfig} - fetch config's. They override default HttpProvider config's.
- * @example
- * ```Typescript
-  // Fetch with useState 
-  // const {
-  //	data,
-  //    error,
-  //    fetch,
-  //    isLoading,
-  //    setFetchState
-  // } = useFetch(
-      async (Http) => {
-          return Http.get("url")
-      }, 
-      {
-          initialState: []
-      }
-  );
-  // Fetch without useEffect
-  // const {
-  //    error,
-  //    fetch,
-  //    isLoading
-  // } = useFetch(
-      async (Http) => {
-          return Http.get("url")
-      }
-  );
-```
- */
-type NoUndefinedField<A> = { [P in keyof A]-?: NoUndefinedField<NonNullable<A[P]>> };
-
-const FetchPromises = new PromiseAllGrowing()
+const FetchPromises = new PromiseAllGrowing();
 
 export function useFetch<Result, A extends any[]>(
 	method: (this: NoUndefinedField<State<Result>>, ...args: Partial<A>) => Promise<Result>,
 	config: FetchStateConfig<Result>
-): FetchState<Result, A>
+): FetchState<Result, A>;
 export function useFetch<Result, A extends any[]>(
 	method: (this: State<Result>, ...args: Partial<A>) => Promise<Result>,
 	config: FetchEffectConfig
-): FetchEffect<Result, A>
+): FetchEffect<Result, A>;
 export function useFetch<Result, A extends any[]>(
 	method: (this: State<Result>, ...args: A) => Promise<Result>,
 	config?: FetchConfig
-): FetchMethod<Result, A> 
+): FetchMethod<Result, A>;
 export function useFetch<Result, A extends any[]>(
 	method: ((this: State<Result>, ...args: A) => Promise<Result>) | ((this: State<Result>, ...args: Partial<A>) => Promise<Result>),
 	config: FetchConfig | FetchEffectConfig | FetchStateConfig<Result> = {}
-): FetchMethod<Result, A> | FetchEffect<Result, A> | FetchState<Result, A> {
-	const controllers = useRef<Set<AbortController>>(new Set())
+): FetchEffect<Result, A> | FetchMethod<Result, A> | FetchState<Result, A> {
+	const controllers = useRef<Set<AbortController>>(new Set());
 	const isUsedRef = useRef<{
 		data: boolean
 		error: boolean
@@ -179,98 +178,101 @@ export function useFetch<Result, A extends any[]>(
 
 	const currentDataRef = useRefMemo<State<Result>>(() => ({
 		data: (
-			typeof _config.initialState === 'function' 
+			typeof _config.initialState === 'function'
 				? (_config.initialState as () => Result)()
 				: _config.initialState
 		),
-		isLoading: _config.enable !== false && 
-		!_config.silent &&
-		(isFetchEffect || isFetchEffectWithData),
-		error: null
+		error: null,
+		isLoading: _config.enable !== false
+			&& !_config.silent
+			&& (isFetchEffect || isFetchEffectWithData)
 	}));
 
-	const setLoading = (isLoading: boolean) => { 
-		if ( !_config.silent ) {
-			if ( isUsedRef.current.loading ) {
-				const shouldUpdate = isLoading && currentDataRef.current.isLoading !== isLoading
-				
+	const setLoading = (isLoading: boolean) => {
+		if (!_config.silent) {
+			if (isUsedRef.current.loading) {
+				const shouldUpdate = isLoading && currentDataRef.current.isLoading !== isLoading;
+
 				currentDataRef.current.isLoading = isLoading;
-				
-				if ( shouldUpdate ) {
+
+				if (shouldUpdate) {
 					NotificationService.notifyById(id);
 				}
 			}
 			else {
 				// @ts-expect-error Its protected because I don't want it to be visible to others
-				LoadingService.setLoading(_config.loadingService, isLoading)
+				LoadingService.setLoading(_config.loadingService, isLoading);
 			}
 		}
 
-		if ( !isLoading ) {
+		if (!isLoading) {
 			NotificationService.notifyAll();
 		}
-	}
+	};
 
 	const noLoadingFetch = async (...args: Partial<A>) => {
 		try {
-			const data = await FetchPromises.promise(isFetchEffect ? 'chain' : 'no-chain', () => {
+			const data = await FetchPromises.promise(isFetchEffect
+				? 'chain'
+				: 'no-chain', () => {
 				const remove = QueueKingSystem.add(
 					(controller) => controllers.current.add(controller),
 					(controller) => controllers.current.delete(controller)
 				);
 				NotificationService.startRequest(id);
-						
+
 				return method
 				.apply(currentDataRef.current, (args ?? []) as A)
-				.finally(remove)
-			})
+				.finally(remove);
+			});
 
-			if ( isFetchEffectWithData ) {
+			if (isFetchEffectWithData) {
 				currentDataRef.current.data = data;
 
-				_config.onDataChange && _config.onDataChange(data); 
+				_config.onDataChange && _config.onDataChange(data);
 			}
 
 			return data;
 		}
-		catch (e) {
-			if ( 
-				!isAbortedError(e)
+		catch (error) {
+			if (
+				!isAbortedError(error)
 			) {
-				currentDataRef.current.error = e;
+				currentDataRef.current.error = error;
 			}
-			return await Promise.reject(e);
+			// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+			return await Promise.reject(error);
 		}
 		finally {
 			NotificationService.finishRequest(id);
 		}
-	}
+	};
 
-	const { 
+	const {
 		current: {
-			subscribe,
 			getSnapshot,
+			isEqual,
 			selector,
-			isEqual
-		} 
+			subscribe
+		}
 	} = useRefMemo(() => ({
-		subscribe: NotificationService.subscribe(id),
 		getSnapshot: () => ({
 			data: currentDataRef.current.data,
-			isLoading: currentDataRef.current.isLoading,
-			error: currentDataRef.current.error
+			error: currentDataRef.current.error,
+			isLoading: currentDataRef.current.isLoading
 		}),
-		selector: (selection: State<Result>) => selection,
 		isEqual: (previousState: State<Result>, newState: State<Result>) => (
-			previousState.isLoading === newState.isLoading &&
-			(
-				!isUsedRef.current.data ||
-				previousState.data === newState.data
+			previousState.isLoading === newState.isLoading
+			&& (
+				!isUsedRef.current.data
+				|| previousState.data === newState.data
 			) && (
-				!isUsedRef.current.error ||
-				previousState.error === newState.error
+				!isUsedRef.current.error
+				|| previousState.error === newState.error
 			)
-		)
+		),
+		selector: (selection: State<Result>) => selection,
+		subscribe: NotificationService.subscribe(id)
 	}));
 
 	useSyncExternalStoreWithSelector(
@@ -282,27 +284,23 @@ export function useFetch<Result, A extends any[]>(
 	);
 
 	const result: any = {
-		get isLoading() {
-			isUsedRef.current.loading = true;
-			return currentDataRef.current.isLoading
+		get data() {
+			isUsedRef.current.data = true;
+			return currentDataRef.current.data;
 		},
 		get error() {
 			isUsedRef.current.error = true;
-			return currentDataRef.current.error
-		},
-		get data() {
-			isUsedRef.current.data = true;
-			return currentDataRef.current.data
+			return currentDataRef.current.error;
 		},
 		fetch: async function (...args: A) {
-			if ( !isOnline ) {
-				return await Promise.reject(new Error('No internet'))
+			if (!isOnline) {
+				return await Promise.reject(new Error('No internet'));
 			}
 
-			if ( currentDataRef.current.error ) {
+			if (currentDataRef.current.error) {
 				currentDataRef.current.error = null;
 			}
-		
+
 			setLoading(true);
 
 			try {
@@ -311,55 +309,61 @@ export function useFetch<Result, A extends any[]>(
 			finally {
 				setLoading(false);
 			}
+		},
+		get isLoading() {
+			isUsedRef.current.loading = true;
+			return currentDataRef.current.isLoading;
 		}
 	};
 
 	const deps = [isOnline, _config.enable, ...(_config.deps ?? [])];
 
-	if ( isFetchEffect ) {
+	if (isFetchEffect) {
 		// eslint-disable-next-line react-hooks/rules-of-hooks
 		useEffect(() => {
-			if ( _config.enable !== false && isOnline ) {
+			if (_config.enable !== false && isOnline) {
 				QueueKingSystem.isThresholdEnabled = true;
-				
+
 				result.fetch()
 				.finally(() => {
-					if ( _config.scrollRestoration ) {
+					if (_config.scrollRestoration) {
 						(
-							Array.isArray(_config.scrollRestoration) 
-								? _config.scrollRestoration 
+							Array.isArray(_config.scrollRestoration)
+								? _config.scrollRestoration
 								: [_config.scrollRestoration]
 						)
 						.forEach((method) => {
-							method?.(); 
+							method?.();
 						});
 					}
 					_config.onEffectEnd?.();
 				});
 			}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, deps)
+		}, deps);
 
 		// This is to make sure onFocus will only trigger if the hook commands the data,
 		// Otherwise it can lead to errors
-		if ( isFetchEffectWithData ) {
+		if (isFetchEffectWithData) {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			useOnFocusFetch(
 				async () => {
-					if ( currentDataRef.current.error ) {
+					if (currentDataRef.current.error) {
 						currentDataRef.current.error = null;
 						NotificationService.notifyById(id);
 					}
 					await (noLoadingFetch as () => Promise<any>)();
 					NotificationService.notifyAll();
 				},
-				_config.enable !== false ? (_config.onWindowFocus ?? true) : false
+				_config.enable === false
+					? false
+					: (_config.onWindowFocus ?? true)
 			);
 
+			// eslint-disable-next-line react-hooks/immutability
 			result.setFetchState = (data: Result) => {
 				currentDataRef.current.data = data;
 
-				_config.onDataChange && _config.onDataChange(data)
+				_config.onDataChange && _config.onDataChange(data);
 
 				NotificationService.notifyAll();
 			};
@@ -368,18 +372,17 @@ export function useFetch<Result, A extends any[]>(
 
 	useEffect(() => {
 		return () => {
-			NotificationService.finishRequest(id); 
-			if ( controllers.current.size ) {
+			NotificationService.finishRequest(id);
+			if (controllers.current.size > 0) {
 				controllers.current
 				.forEach((controller) => {
 					controller.abort();
-				})
-				// eslint-disable-next-line react-hooks/exhaustive-deps
+				});
+				
 				controllers.current.clear();
 			}
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, deps)
+		};
+	}, deps);
 
-	return result
+	return result;
 }

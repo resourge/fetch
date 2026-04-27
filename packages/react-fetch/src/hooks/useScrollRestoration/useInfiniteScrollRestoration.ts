@@ -22,13 +22,13 @@ export interface InfiniteScrollRestoration {
   // 'action' must be 'pop' for restoration to work;
   const [scrollRestoration, ref] = useInfiniteScrollRestoration(action);
   const {} = useInfiniteLoading(
-      async () => {
-          return HttpService.get("url")
-      }, 
-      {
-          initialState: [],
-          scrollRestoration
-      }
+	  async () => {
+		  return HttpService.get("url")
+	  }, 
+	  {
+		  initialState: [],
+		  scrollRestoration
+	  }
   );
 ```
  */
@@ -37,28 +37,29 @@ export const useInfiniteScrollRestoration = <T extends ElementWithScrollTo | nul
 	 * Action defines if scroll restoration can be executed.
 	 * Only on 'pop' will the scroll be restored.
 	 */
-	action: 'pop' | string,
+	action: string,
 	/**
 	 * Unique id categorizing current component. Must be the same between render or component changes for scroll restoration to work.
 	 */
-	scrollRestorationId: string = window?.location?.pathname
+	scrollRestorationId: string = globalThis?.location?.pathname
 ) => {
-	const [scrollRestoration, ref, onScroll] = useBaseScrollRestoration<T>(visitedUrl, action, scrollRestorationId) as [InfiniteScrollRestoration, React.MutableRefObject<T>, (event: React.UIEvent<T, UIEvent>) => void]
+	const [scrollRestoration, ref, onScroll] = useBaseScrollRestoration<T>(visitedUrl, action, scrollRestorationId) as [InfiniteScrollRestoration, React.RefObject<T>, (event: React.UIEvent<T, UIEvent>) => void];
 
+	// eslint-disable-next-line react-hooks/immutability
 	scrollRestoration.getPage = () => {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return visitedUrl.get(scrollRestorationId)!;
 	};
 
+	// eslint-disable-next-line react-hooks/immutability
 	scrollRestoration.setPage = (page: number, perPage: number) => {
 		const existingRecord = visitedUrl.get(scrollRestorationId);
 
 		visitedUrl.set(
-			scrollRestorationId, 
+			scrollRestorationId,
 			{
-				pos: existingRecord?.pos,
-				page, 
-				perPage
+				page,
+				perPage,
+				pos: existingRecord?.pos
 			}
 		);
 	};

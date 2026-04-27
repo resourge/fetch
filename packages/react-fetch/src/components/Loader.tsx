@@ -19,20 +19,20 @@ export type LoaderProps = {
 	 * * for every Loader
 	 */
 	loadingElement?: React.ReactNode
-}
+};
 
 /**
  * Component with loaderId to trigger loading at the useFetch or LoadingService command.
  */
 const Loader: React.FC<LoaderProps> = ({ 
-	loaderId, 
-	children,
+	children, 
+	loaderId,
 	loadingElement = globalLoading
 }) => {
 	const loading = useSyncExternalStore(
 		useCallback((notify) => LoadingService.addListener(loaderId, notify), [loaderId]),
 		() => LoadingService.getLoading(loaderId)
-	)
+	);
 
 	return (
 		<>
@@ -42,7 +42,7 @@ const Loader: React.FC<LoaderProps> = ({
 					: children 
 			}
 		</>
-	)
+	);
 };
 
 export default Loader;

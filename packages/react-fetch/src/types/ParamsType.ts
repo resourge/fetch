@@ -3,24 +3,24 @@ export enum OrderByEnum {
 	DESC = 2
 }
 
-export type SortCriteria = Array<{
-	orderBy: OrderByEnum
-	orderColumn: string
-}>
-
-export type SortSearchParamsType = {
-	sort?: SortCriteria
-}
-
-export type PaginationSearchParamsType = { 
+export type PaginationSearchParamsType = {
 	page: number
-	perPage: number 
-}
+	perPage: number
+};
 
 export type ParamsType<
 	FilterSearchParams extends Record<string, any>
-> = Partial<PaginationSearchParamsType> 
-& SortSearchParamsType 
-& {
-	f?: Partial<FilterSearchParams>
-}
+> = Partial<PaginationSearchParamsType>
+	& SortSearchParamsType
+	& {
+		f?: Partial<FilterSearchParams>
+	};
+
+export type SortCriteria = Array<{
+	orderBy: OrderByEnum
+	orderColumn: string
+}>;
+
+export type SortSearchParamsType = {
+	sort?: SortCriteria
+};

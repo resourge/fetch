@@ -1,9 +1,8 @@
 import { type RequestConfig } from '../types';
 
-export type HttpResponseConfig = Omit<RequestConfig, 'url' | 'headers' | 'controller'> & {
+export type HttpResponseConfig = Omit<RequestConfig, 'controller' | 'headers' | 'url'> & Pick<RequestInit, 'signal'> & Required<Pick<RequestConfig, 'headers'>> & {
 	url: URL
-} & Required<Pick<RequestConfig, 'headers'>>
-& Pick<RequestInit, 'signal'>
+};
 
 export class HttpResponse<T = any> {
 	public status: number;
@@ -23,14 +22,15 @@ export class HttpResponseError<T = any> extends Error {
 		public request: Request,
 		public config: HttpResponseConfig,
 		public data: T,
-		public response?: Response,
-		public status?: number
+		public response?: Response
 	) {
 		super();
-		this.name = 'HttpResponseError'
+		this.name = 'HttpResponseError';
 
-		Error.captureStackTrace(this, HttpResponseError);
-
-		this.message = `[${response ? 'RESPONSE' : 'REQUEST'}] ${status !== undefined ? `[${status}] ` : ''}${JSON.stringify(this)}`
+		this.message = `[${response
+			? 'RESPONSE'
+			: 'REQUEST'}] ${response?.status === undefined
+			? ''
+			: `[${response?.status}] `}${JSON.stringify(this)}`;
 	}
 }

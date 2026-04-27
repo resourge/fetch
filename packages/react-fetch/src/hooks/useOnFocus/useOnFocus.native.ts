@@ -10,28 +10,27 @@ export const useOnFocus = (
 	onWindowFocus?: boolean
 ) => {
 	useEffect(() => {
-		if ( onWindowFocus ) {
+		if (onWindowFocus) {
 			const {
-				focus, blur, clear 
+				blur, clear, focus
 			} = cb();
 
 			const onAppStateChange = (status: AppStateStatus) => {
 				if (Platform.OS !== 'web') {
-					if ( status === 'active' ) {
+					if (status === 'active') {
 						focus();
 						return;
 					}
 					blur();
 				}
-			}
+			};
 
-			const subscription = AppState.addEventListener('change', onAppStateChange)
+			const subscription = AppState.addEventListener('change', onAppStateChange);
 
 			return () => {
 				clear();
-				subscription.remove()
-			}
+				subscription.remove();
+			};
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [onWindowFocus])
-}
+	}, [onWindowFocus]);
+};

@@ -18,28 +18,29 @@ export const useOnFocusFetch = (
 		() => {
 			let dateNow = Date.now();
 			const fetchOnWindowFocus = throttleMethod(() => {
+				// eslint-disable-next-line react-hooks/rules-of-hooks
 				_fetch()
 				.finally(() => {
-					dateNow = Date.now()
-				})
+					dateNow = Date.now();
+				});
 			}, 1000);
-		
+
 			return {
+				blur: () => {
+					dateNow = Date.now();
+				},
+				clear: fetchOnWindowFocus.clear,
 				focus: () => {
 					const now = Date.now();
 
-					if (now - dateNow <= threshold ) {
+					if (now - dateNow <= threshold) {
 						return;
 					}
 
 					fetchOnWindowFocus();
-				},
-				blur: () => {
-					dateNow = Date.now();
-				},
-				clear: fetchOnWindowFocus.clear
-			}
+				}
+			};
 		},
 		onWindowFocus
 	);
-}
+};

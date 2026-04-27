@@ -1,9 +1,9 @@
 import {
-	type MutableRefObject,
+	type RefObject,
 	type UIEvent,
 	useEffect,
 	useRef
-} from 'react'
+} from 'react';
 
 import { useEffectEvent } from '../useEffectEvent';
 
@@ -17,51 +17,51 @@ export const getScrollPage = (): ScrollPos => {
 		docScrollLeft = document.documentElement.scrollLeft;
 	}
 	return {
-		top: window.pageYOffset || docScrollTop,
-		left: window.pageXOffset || docScrollLeft
+		left: window.pageXOffset || docScrollLeft,
+		top: window.pageYOffset || docScrollTop
 	};
 };
 
-export type ElementWithScrollTo = HTMLElement
+export type ElementWithScrollTo = HTMLElement;
 
 export const useOnScroll = <T extends ElementWithScrollTo | null>(
 	scrollMethod: (position: ScrollPos) => void
 ): [
-	ref: MutableRefObject<T>, 
-	onScroll: (event: UIEvent<T>) => void
+		ref: RefObject<T>,
+		onScroll: (event: UIEvent<T>) => void
 ] => {
-	const ref = useRef<T | Window>(window);
+	const ref = useRef<T | Window>(globalThis as unknown as Window);
 	const onScrollRef = useEffectEvent<(position: ScrollPos) => void>(scrollMethod);
 
 	const onScroll = (event: UIEvent<T>) => {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
 		onScrollRef({
 			left: event.currentTarget.scrollLeft,
 			top: event.currentTarget.scrollTop
 		});
-	}
+	};
 
 	useEffect(() => {
 		const element = ref.current;
-		if ( element ) {
+		if (element) {
 			const onScroll = () => {
 				onScrollRef(
-					element instanceof Window 
+					element instanceof Window
 						? getScrollPage()
 						: {
-							top: element.scrollTop,
-							left: element.scrollLeft
+							left: element.scrollLeft,
+							top: element.scrollTop
 						}
 				);
-			}
-			
-			element.addEventListener('scroll', onScroll, true)
-		
-			return () => {
-				element.removeEventListener('scroll', onScroll, true)
-			}
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ref.current])
+			};
 
-	return [ref as MutableRefObject<T>, onScroll];
-}
+			element.addEventListener('scroll', onScroll, true);
+
+			return () => {
+				element.removeEventListener('scroll', onScroll, true);
+			};
+		}
+	}, [ref.current]);
+
+	return [ref as RefObject<T>, onScroll];
+};

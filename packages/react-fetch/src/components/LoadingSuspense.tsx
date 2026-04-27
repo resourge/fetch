@@ -5,7 +5,7 @@ import LoadingFallback from './LoadingFallback';
 
 type Props = {
 	children?: ReactNode
-}
+};
 
 /**
  * Component that show loading on lazy components.

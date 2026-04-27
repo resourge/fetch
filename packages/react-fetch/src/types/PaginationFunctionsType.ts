@@ -1,18 +1,11 @@
-import { type FetchState } from '../hooks/useFetch'
-import { type UseFetchError } from '../services/NotificationService'
+import { type FetchState } from '../hooks/useFetch';
+import { type UseFetchError } from '../services/NotificationService';
 
-import { type PaginationMetadata, type ResetPaginationMetadataType } from './PaginationConfig'
-
-export type PaginationMethod<
-	Data,
-	FilterSearchParams extends Record<string, any> = Record<string, any>,
-> = (
-	metadata: PaginationMetadata<FilterSearchParams>
-) => Promise<{ data: Data, totalItems?: number }>
+import { type PaginationMetadata, type ResetPaginationMetadataType } from './PaginationConfig';
 
 export type PaginationFunctionsType<
 	Data,
-	FilterSearchParams extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
 > = {
 	/**
 	 * Changes items per page
@@ -31,4 +24,14 @@ export type PaginationFunctionsType<
 	reset: (newSearchParams?: ResetPaginationMetadataType<FilterSearchParams>) => void
 
 	setPaginationState: FetchState<Data, any>['setFetchState']
-}
+};
+
+export type PaginationMethod<
+	Data,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
+> = (
+	metadata: PaginationMetadata<FilterSearchParams>
+) => Promise<{
+	data: Data
+	totalItems?: number
+}>;

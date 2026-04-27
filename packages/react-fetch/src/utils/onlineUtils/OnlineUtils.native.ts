@@ -5,9 +5,10 @@ const globalState = {
 };
 
 NetInfo.fetch()
+// eslint-disable-next-line unicorn/prefer-top-level-await
 .then((state) => {
 	globalState.current = Boolean(state.isConnected);
-})
+});
 
 /**
  * Returns the current network connectivity status.
@@ -16,6 +17,7 @@ NetInfo.fetch()
 export function OnlineGetSnapshot() {
 	return globalState.current;
 }
+
 /**
  * Subscribes to network connectivity changes.
  * @param {Function} callback - Function to call when network status changes.
@@ -25,8 +27,8 @@ export function OnlineSubscribe(callback: () => void) {
 	const remove = NetInfo.addEventListener((state) => {
 		globalState.current = state.isConnected === true;
 		callback();
-	})
+	});
 	return () => {
-		remove()
+		remove();
 	};
 }

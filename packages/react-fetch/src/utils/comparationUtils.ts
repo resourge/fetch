@@ -1,31 +1,32 @@
+/* eslint-disable unicorn/no-object-as-default-parameter */
 import { type FilterKeysState } from './createProxy';
 
 export function deepCompare(
 	obj1?: any,
 	obj2?: any,
 	keysToCheck: FilterKeysState = {
-		keys: new Set() 
+		keys: new Set()
 	}
 ): boolean {
 	if (obj1 === obj2) {
 		return true;
 	}
 
-	if ( obj1 instanceof Date && obj2 instanceof Date ) {
-		return obj1.getTime() === obj2.getTime()
+	if (obj1 instanceof Date && obj2 instanceof Date) {
+		return obj1.getTime() === obj2.getTime();
 	}
 
-	if ( !obj1 || !obj2 || typeof obj1 !== 'object' || typeof obj2 !== 'object' ) {
+	if (!obj1 || !obj2 || typeof obj1 !== 'object' || typeof obj2 !== 'object') {
 		// Handles cases where one is an object and the other is not, or one of them is null
 		return false;
 	}
 
-	const shouldFilter = keysToCheck.keys.size && !keysToCheck.all;
+	const shouldFilter = keysToCheck.keys.size > 0 && !keysToCheck.all;
 
 	// Handle arrays comparison
 	if (Array.isArray(obj1) && Array.isArray(obj2)) {
-		if ( obj1.length !== obj2.length ) {
-			return false
+		if (obj1.length !== obj2.length) {
+			return false;
 		}
 		const filteredObj1 = shouldFilter
 			? obj1.filter((_, i) => keysToCheck.keys.has(String(i)))
@@ -34,8 +35,8 @@ export function deepCompare(
 			? obj2.filter((_, i) => keysToCheck.keys.has(String(i)))
 			: obj2;
 
-		return filteredObj1.length === filteredObj2.length && 
-			filteredObj1.every((item, i) => deepCompare(item, filteredObj2[i], keysToCheck.state));
+		return filteredObj1.length === filteredObj2.length
+			&& filteredObj1.every((item, i) => deepCompare(item, filteredObj2[i], keysToCheck.state));
 	}
 
 	// Get the keys of each object
@@ -48,7 +49,9 @@ export function deepCompare(
 		: Object.keys(obj2);
 
 	// Check if both objects have the same number of keys
-	if (keys1.length !== keys2.length) return false;
+	if (keys1.length !== keys2.length) {
+		return false; 
+	}
 
-	return keys1.every((key) => keys2.includes(key) && deepCompare(obj1[key], obj2[key], keysToCheck.state))
+	return keys1.every((key) => keys2.includes(key) && deepCompare(obj1[key], obj2[key], keysToCheck.state));
 }

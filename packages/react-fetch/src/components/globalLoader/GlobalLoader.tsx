@@ -1,37 +1,36 @@
 import React, { useState } from 'react';
-
 import { createPortal } from 'react-dom';
 
 import Loader from '../Loader';
 
+import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants';
 import { GlobalLoading } from './GlobalLoading';
-import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
 
-export type GlobalLoaderProps = BaseGlobalLoaderProps<React.CSSProperties>
+export type GlobalLoaderProps = BaseGlobalLoaderProps<React.CSSProperties>;
 
 /**
  * Component with loaderId to trigger loading at the useFetch or LoadingService command.
  * Serves as the global type, where it shows the loading on the entire page.
  * By default loaderId is ''.
  */
-// eslint-disable-next-line react/no-multi-comp
+ 
 const GlobalLoader: React.FC<GlobalLoaderProps> = ({
-	loaderId, style, children, color = globalColor
+	children, color = globalColor, loaderId, style
 }) => {
 	const [portalContainer] = useState(() => {
-		let portalContainer = document.getElementById('global-loader');
+		let portalContainer = document.querySelector('#global-loader');
 
 		if ( !portalContainer ) {
 			portalContainer = document.createElement('div');
 
 			portalContainer.id = 'global-loader';
 
-			document.body.appendChild(portalContainer)
+			document.body.append(portalContainer);
 		}
 
-		return portalContainer
-	})
-	const globalLoading = setGlobalLoading(children ?? <GlobalLoading color={color} />)
+		return portalContainer;
+	});
+	const globalLoading = setGlobalLoading(children ?? <GlobalLoading color={color} />);
 
 	return (
 		<Loader 
@@ -40,18 +39,18 @@ const GlobalLoader: React.FC<GlobalLoaderProps> = ({
 				createPortal(
 					<div 
 						style={{
-							position: 'fixed',
-							top: 0,
-							left: 0,
-							right: 0,
+							alignItems: 'center',
+							backdropFilter: 'blur(3px)',
+							backgroundColor: 'rgba(0,0,0,0.25)',
 							bottom: 0,
 							display: 'flex',
 							justifyContent: 'center',
-							alignItems: 'center',
-							backgroundColor: 'rgba(0,0,0,0.25)',
-							zIndex: 10000,
+							left: 0,
+							position: 'fixed',
+							right: 0,
+							top: 0,
 							WebkitBackdropFilter: 'blur(3px)',
-							backdropFilter: 'blur(3px)',
+							zIndex: 10_000,
 							...style
 						}}
 					>
@@ -61,7 +60,7 @@ const GlobalLoader: React.FC<GlobalLoaderProps> = ({
 				)
 			)}
 		/>
-	)
+	);
 };
 
 export default GlobalLoader;

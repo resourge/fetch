@@ -1,10 +1,17 @@
-export {
-	type ParamsType as FilterType, OrderByEnum, 
-	type SortCriteria, type PaginationSearchParamsType, type SortSearchParamsType
-} from './ParamsType';
+export type {
+	FilterParamsProps,
+	FilterParamsReturn,
+	Pagination,
+	SearchParamsMetadata
+} from './FilterParamsTypes';
 
 export type {
 	PaginationConfig,
 	PaginationMetadata,
 	ResetPaginationMetadataType
 } from './PaginationConfig';
+
+export {
+	type ParamsType as FilterType, OrderByEnum,
+	type PaginationSearchParamsType, type SortCriteria, type SortSearchParamsType
+} from './ParamsType';

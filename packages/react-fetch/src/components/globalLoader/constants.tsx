@@ -1,10 +1,10 @@
-import { type LoaderProps } from '../Loader'
+import { type LoaderProps } from '../Loader';
 
 import { GlobalLoading } from './GlobalLoading';
 
 export const globalColor = '#00BFFF';
 
-export type BaseGlobalLoaderProps<Style> = Pick<Partial<LoaderProps>, 'loaderId' | 'children'> & {
+export type BaseGlobalLoaderProps<Style> = Pick<Partial<LoaderProps>, 'children' | 'loaderId'> & {
 	/**
 	 * Changes default color
 	 */
@@ -13,16 +13,16 @@ export type BaseGlobalLoaderProps<Style> = Pick<Partial<LoaderProps>, 'loaderId'
 	 * Styles for the Loader container
 	 */
 	style?: Style
-}
+};
 
 export type GlobalLoadingProps = {
 	color: string
-} 
+}; 
 
-export let globalLoading: React.ReactNode = <GlobalLoading color={globalColor} />
+export let globalLoading: React.ReactNode = <GlobalLoading color={globalColor} />;
 
 export function setGlobalLoading(_globalLoading: React.ReactNode) {
-	globalLoading = _globalLoading
+	globalLoading = _globalLoading;
 
 	return globalLoading;
 }

@@ -5,33 +5,36 @@ export {
 	LoadingFallback,
 	LoadingSuspense,
 	RefreshControl
-} from './components'
+} from './components';
 
 export {
-	type InfiniteLoadingReturn,
-	type Pagination,
-	type PaginationReturn,
 	type FetchConfig,
 	type FetchEffect,
 	type FetchEffectConfig,
 	type FetchStateConfig,
+	type InfiniteLoadingReturn,
+	type PaginationReturn,
 	useFetch,
 	useInfiniteLoading,
 	useInfiniteScrollRestoration,
 	useIsOnline,
 	usePagination,
 	useScrollRestoration
-} from './hooks'
-
-export {
-	type FilterType,
-	OrderByEnum,
-	type PaginationMetadata,
-	type SortCriteria,
-	type PaginationSearchParamsType,
-	type ResetPaginationMetadataType,
-	type SortSearchParamsType,
-	type PaginationConfig
-} from './types'
+} from './hooks';
 
 export { NotificationService } from './services';
+
+export {
+	type FilterParamsProps,
+	type FilterParamsReturn,
+	type FilterType,
+	OrderByEnum,
+	type Pagination,
+	type PaginationConfig,
+	type PaginationMetadata,
+	type PaginationSearchParamsType,
+	type ResetPaginationMetadataType,
+	type SearchParamsMetadata,
+	type SortCriteria,
+	type SortSearchParamsType
+} from './types';

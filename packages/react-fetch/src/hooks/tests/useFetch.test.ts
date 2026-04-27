@@ -1,21 +1,22 @@
 import {
-	renderHook,
 	act,
 	fireEvent,
+	renderHook,
 	waitFor
-} from '@testing-library/react'
+} from '@testing-library/react';
 import {
-	vi,
-	it,
+	beforeEach,
 	describe,
 	expect,
-	beforeEach
-} from 'vitest'
+	it,
+	vi
+} from 'vitest';
 
 import { useFetch } from '../useFetch';
 
 vi.mock('../services/NotificationService');
 vi.mock('../../../http-service/src', () => ({
+	isAbortedError: vi.fn().mockReturnValue(false),
 	QueueKingSystem: {
 		add: vi.fn().mockImplementation((addCallback, removeCallback) => {
 			const controller = new AbortController();
@@ -23,14 +24,13 @@ vi.mock('../../../http-service/src', () => ({
 			return () => removeCallback(controller);
 		}),
 		isThresholdEnabled: true
-	},
-	isAbortedError: vi.fn().mockReturnValue(false)
+	}
 }));
 
 const fetchData = async () => {
 	await (new Promise((resolve) => setTimeout(resolve, 10)));
 	return 'fetched data';
-}
+};
 
 describe('useFetch', () => {
 	beforeEach(() => {
@@ -40,7 +40,7 @@ describe('useFetch', () => {
 	it('should fetch data and set it correctly', async () => {
 		const { result } = renderHook(() =>
 			useFetch(fetchData, {
-				initialState: '' 
+				initialState: ''
 			})
 		);
 
@@ -57,8 +57,8 @@ describe('useFetch', () => {
 	it('should not fetch data when enable is false', () => {
 		const { result } = renderHook(() =>
 			useFetch(fetchData, {
-				initialState: '',
-				enable: false 
+				enable: false,
+				initialState: ''
 			})
 		);
 
@@ -69,7 +69,7 @@ describe('useFetch', () => {
 	it('should set fetch state manually', async () => {
 		const { result } = renderHook(() =>
 			useFetch(fetchData, {
-				initialState: '' 
+				initialState: ''
 			})
 		);
 
@@ -103,15 +103,15 @@ describe('useFetch', () => {
 	});
 
 	it('should fetch data with dependencies', async () => {
-		const { result, rerender } = renderHook(
+		const { rerender, result } = renderHook(
 			({ deps }) =>
 				useFetch(fetchData, {
-					initialState: '',
-					deps
+					deps,
+					initialState: ''
 				}),
 			{
 				initialProps: {
-					deps: [1] 
+					deps: [1]
 				}
 			}
 		);
@@ -125,7 +125,7 @@ describe('useFetch', () => {
 		expect(result.current.data).toBe('fetched data');
 
 		rerender({
-			deps: [2] 
+			deps: [2]
 		});
 
 		expect(result.current.isLoading).toBe(true);
@@ -192,11 +192,13 @@ describe('useFetch', () => {
 		value = 'On Window focus Fetch';
 
 		vi.useFakeTimers();
-		fireEvent.blur(window);
-		
+		// @ts-expect-error Unitary test
+		fireEvent.blur(globalThis);
+
 		vi.advanceTimersByTime(10 * 60 * 1100);
 
-		fireEvent.focus(window);
+		// @ts-expect-error Unitary test
+		fireEvent.focus(globalThis);
 		vi.useRealTimers();
 
 		await waitFor(() => {

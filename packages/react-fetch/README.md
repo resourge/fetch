@@ -101,6 +101,7 @@ const MyComponent = () => {
    - `initialState` (any): Default data values.
    - `onEffectEnd` (function): A function that executes only after `useEffect` completes.
    - `scrollRestoration` (function or array of functions): Functions to restore scroll position.
+   - `paramsMode` ('url' | 'state', default: 'url'): Controls where filter/sort/pagination state is stored.
    - `silent` (boolean, default: false): When `false`, no loading will be triggered.
 
 #### Examples

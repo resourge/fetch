@@ -10,6 +10,6 @@ describe('utils', () => {
 
 		// expect(createUrl('api', origin).href).toBe('http://localhost/api')
 
-		expect(createUrl(newUrl.href, origin).href).toBe('http://localhost/api')
-	})
-})
+		expect(createUrl(newUrl.href, origin).href).toBe('http://localhost/api');
+	});
+});

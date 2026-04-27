@@ -1,21 +1,24 @@
 export function OnlineGetSnapshot() {
-	return typeof globalThis.navigator !== 'undefined' ? globalThis.navigator.onLine : true;
+	return globalThis.navigator === undefined
+		? true
+		: globalThis.navigator.onLine;
 }
 /**
  * Subscribes to network connectivity changes.
  * @param {Function} callback - Function to call when network status changes.
  * @returns {Function} A function to unsubscribe from the network status updates.
  */
-export const OnlineSubscribe = typeof globalThis.window !== 'undefined' && typeof globalThis.window.addEventListener !== 'undefined'
+export const OnlineSubscribe = globalThis.window !== undefined && globalThis.window.addEventListener !== undefined
 	? (callback: () => void) => {
-		window.addEventListener('online', callback);
-		window.addEventListener('offline', callback);
+		globalThis.addEventListener('online', callback);
+		globalThis.addEventListener('offline', callback);
 		return () => {
-			window.removeEventListener('online', callback);
-			window.removeEventListener('offline', callback);
+			globalThis.removeEventListener('online', callback);
+			globalThis.removeEventListener('offline', callback);
 		};
-	} : () => {
+	}
+	: () => {
 		return () => {
 
-		}
-	}
+		};
+	};

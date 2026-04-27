@@ -1,18 +1,17 @@
 import React from 'react';
-import { type StyleProp, View, type ViewStyle } from 'react-native'
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 
 import Loader from '../Loader';
 
+import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants';
 import { GlobalLoading } from './GlobalLoading.native';
-import { type BaseGlobalLoaderProps, globalColor, setGlobalLoading } from './constants'
 
-export type GlobalLoaderProps = BaseGlobalLoaderProps<StyleProp<ViewStyle>>
-
-// eslint-disable-next-line react/no-multi-comp
+export type GlobalLoaderProps = BaseGlobalLoaderProps<StyleProp<ViewStyle>>;
+ 
 const GlobalLoader: React.FC<GlobalLoaderProps> = ({
-	loaderId, style, children, color = globalColor
+	children, color = globalColor, loaderId, style
 }) => {
-	const globalLoading = setGlobalLoading(children ?? <GlobalLoading color={color} />)
+	const globalLoading = setGlobalLoading(children ?? <GlobalLoading color={color} />);
 
 	return (
 		<Loader 
@@ -21,14 +20,14 @@ const GlobalLoader: React.FC<GlobalLoaderProps> = ({
 				<View
 					style={[
 						{
-							flex: 1,
-							position: 'absolute',
-							width: '100%',
-							height: '100%',
-							justifyContent: 'center',
 							alignItems: 'center',
 							backgroundColor: 'rgba(0,0,0,0.5)',
-							elevation: 1000
+							elevation: 1000,
+							flex: 1,
+							height: '100%',
+							justifyContent: 'center',
+							position: 'absolute',
+							width: '100%'
 						}, 
 						style
 					]}
@@ -37,7 +36,7 @@ const GlobalLoader: React.FC<GlobalLoaderProps> = ({
 				</View>
 			)}
 		/>
-	)
+	);
 };
 
 export default GlobalLoader;

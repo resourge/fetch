@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
-import { type PaginationMetadata } from '../types'
-import { type PaginationSearchParamsType } from '../types/ParamsType'
-import { IS_DEV } from '../utils/constants'
-import { calculateTotalPages } from '../utils/utils'
+import { type PaginationMetadata } from '../types';
+import { type PaginationSearchParamsType } from '../types/ParamsType';
+import { IS_DEV } from '../utils/constants';
+import { calculateTotalPages } from '../utils/utils';
 
 export type PreloadConfig = false | {
 	maxPerPage?: number
@@ -13,113 +13,118 @@ export type PreloadConfig = false | {
 	 * @default 60000 miliseconds (1minute)
 	 */
 	timeout?: number
-}
+};
 
-export type PreloadMethodResult<Data extends any[]> = { data: Data, totalItems?: number }
-
-export type PreloadRef<Data> = Record<
-	number, 
-	{ 
-		data: { data: Data, totalItems?: number }
-		date: number 
-	}
->
+export type PreloadMethodResult<Data extends any[]> = {
+	data: Data
+	totalItems?: number
+};
 
 export type PreloadProps<
 	Data extends any[],
-	FilterSearchParams extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
 > = {
 	deps: readonly any[]
 	initialPage: number
 	method: (metadata: PaginationMetadata<FilterSearchParams>) => Promise<PreloadMethodResult<Data>>
 	preload?: PreloadConfig
-}
+};
+
+export type PreloadRef<Data> = Record<
+	number,
+	{
+		data: {
+			data: Data
+			totalItems?: number
+		}
+		date: number
+	}
+>;
 
 const ONE_MINUTE_IN_MILLISECOND = (1 * 60 * 1000);
 
 export const usePreload = <
 	Data extends any[],
-	FilterSearchParams extends Record<string, any> = Record<string, any>,
+	FilterSearchParams extends Record<string, any> = Record<string, any>
 >(
 	{
-		method,
-		preload = {},
+		deps,
 		initialPage,
-		deps
+		method,
+		preload = {}
 	}: PreloadProps<Data, FilterSearchParams>
 ) => {
-	if ( IS_DEV ) {
-		if ( typeof preload === 'object' && preload.maxPerPage && !Number.isInteger(preload.maxPerPage) ) {
-			throw new Error('`maxPerPage` needs to be integer');
-		}
+	if (IS_DEV && typeof preload === 'object' && preload.maxPerPage && !Number.isInteger(preload.maxPerPage)) {
+		throw new Error('`maxPerPage` needs to be integer');
 	}
-		
+
 	const preloadRef = useRef<PreloadRef<Data>>({});
 
 	useEffect(() => {
 		preloadRef.current = {};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, deps)
+	}, deps);
 
 	function willPreload(page: number) {
 		return (
-			preload !== false && 
-			preloadRef.current[page] &&
-			Date.now() - preloadRef.current[page].date <= (preload.timeout ?? ONE_MINUTE_IN_MILLISECOND)
-		)
+			preload !== false
+			&& preloadRef.current[page]
+			&& Date.now() - preloadRef.current[page].date <= (preload.timeout ?? ONE_MINUTE_IN_MILLISECOND)
+		);
 	}
 
 	async function _getMethod(metadata: PaginationMetadata<FilterSearchParams>): Promise<PreloadMethodResult<Data>> {
 		const page = metadata.pagination.page;
 
-		if ( willPreload(page) ) {
+		if (willPreload(page)) {
 			return preloadRef.current[page].data;
 		}
 
 		const data = await method(metadata);
 
 		preloadRef.current[page] = {
-			date: Date.now(),
-			data
-		}
+			data,
+			date: Date.now()
+		};
 
 		return preloadRef.current[page].data;
 	}
 
 	function preloadMethod(metadata: PaginationMetadata<FilterSearchParams>, res: PreloadMethodResult<Data>) {
-		if ( preload === false ) {
+		if (preload === false) {
 			return;
 		}
 
-		if ( preload.previous !== false ) {
+		if (preload.previous !== false) {
 			const previousPage = metadata.pagination.page - 1;
 
-			if ( previousPage >= initialPage ) {
+			if (previousPage >= initialPage) {
 				_getMethod(
 					{
 						...metadata,
 						pagination: {
 							...metadata.pagination,
-							page: previousPage 
+							page: previousPage
 						}
 					}
-				)
+				);
 			}
 		}
 
-		if ( preload.next !== false ) {
+		if (preload.next !== false) {
 			const nextPage = metadata.pagination.page + 1;
 			const totalPages = calculateTotalPages(metadata.pagination.perPage, res.totalItems);
-			if ( initialPage ? nextPage <= totalPages : nextPage < totalPages ) {
+			if (initialPage
+				? nextPage <= totalPages
+				: nextPage < totalPages) {
 				_getMethod(
 					{
 						...metadata,
 						pagination: {
 							...metadata.pagination,
-							page: nextPage 
+							page: nextPage
 						}
 					}
-				)
+				);
 			}
 		}
 	}
@@ -133,7 +138,7 @@ export const usePreload = <
 	}
 
 	async function getMultipleMethod(
-		metadata: PaginationMetadata<FilterSearchParams>, 
+		metadata: PaginationMetadata<FilterSearchParams>,
 		maxPerPage: number
 	): Promise<PreloadMethodResult<Data>> {
 		const results = await Promise.all(
@@ -150,19 +155,19 @@ export const usePreload = <
 					}
 				})
 			)
-		)
+		);
 
 		const totalItems = results[0].totalItems;
 		const data = results.flatMap(({ data }) => data) as Data;
 
 		return {
-			totalItems,
-			data
-		}
+			data,
+			totalItems
+		};
 	}
 
 	async function getRestoreMethod(
-		metadata: PaginationMetadata<FilterSearchParams>, 
+		metadata: PaginationMetadata<FilterSearchParams>,
 		pagination: PaginationSearchParamsType,
 		onData?: (index: number, data: Data) => void
 	) {
@@ -177,12 +182,14 @@ export const usePreload = <
 
 		preloadRef.current = {};
 
-		const maxPerPage = typeof preload === 'object' ? preload.maxPerPage : undefined;
+		const maxPerPage = typeof preload === 'object'
+			? preload.maxPerPage
+			: undefined;
 
 		const { data, totalItems } = await (
-			!maxPerPage 
-				? _getMethod(_metadata) 
-				: getMultipleMethod(_metadata, Math.min(maxPerPage, _metadata.pagination.perPage))
+			maxPerPage
+				? getMultipleMethod(_metadata, Math.min(maxPerPage, _metadata.pagination.perPage))
+				: _getMethod(_metadata)
 		);
 
 		const date = Date.now();
@@ -197,7 +204,7 @@ export const usePreload = <
 				const newIndex = index + initialPage;
 				lastPage = newIndex;
 				const newData = data.splice(index, metadata.pagination.perPage) as Data;
-				onData && onData(newIndex, newData)
+				onData && onData(newIndex, newData);
 
 				const page = index + initialPage;
 				preloadRef.current[page] = {
@@ -207,9 +214,9 @@ export const usePreload = <
 					},
 					date
 				};
-				return undefined;
+				return;
 			}
-		)
+		);
 
 		preloadMethod(
 			{
@@ -221,19 +228,19 @@ export const usePreload = <
 			},
 			{
 				data,
-				totalItems 
+				totalItems
 			}
 		);
 
 		return {
-			totalItems 
+			totalItems
 		};
 	}
 
 	return {
-		willPreload,
 		getMethod,
 		getRestoreMethod,
-		preloadRef
-	}
-}
+		preloadRef,
+		willPreload
+	};
+};

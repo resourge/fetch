@@ -9,31 +9,30 @@ export const useOnFocus = (
 	onWindowFocus?: boolean
 ) => {
 	useEffect(() => {
-		if ( onWindowFocus ) {
+		if (onWindowFocus) {
 			const {
-				focus, blur, clear 
+				blur, clear, focus
 			} = cb();
 
 			const visibilitychange = () => {
-				if ( document.visibilityState === 'visible' ) {
+				if (document.visibilityState === 'visible') {
 					focus();
 				}
 				else {
 					blur();
 				}
-			}
+			};
 
-			window.addEventListener('focus', focus); 
+			window.addEventListener('focus', focus);
 			window.addEventListener('blur', blur);
-			window.addEventListener('visibilitychange', visibilitychange);
+			globalThis.addEventListener('visibilitychange', visibilitychange);
 
 			return () => {
 				clear();
-				window.removeEventListener('focus', focus); 
+				window.removeEventListener('focus', focus);
 				window.removeEventListener('blur', blur);
-				window.removeEventListener('visibilitychange', visibilitychange);
-			}
+				globalThis.removeEventListener('visibilitychange', visibilitychange);
+			};
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [onWindowFocus])
-}
+	}, [onWindowFocus]);
+};

@@ -16,13 +16,13 @@ const visitedUrl = new Map<string, VisitedUrl>();
   // 'action' must be 'pop' for restoration to work;
   const [scrollRestoration, ref] = useScrollRestoration(action);
   const [data, fetch, error] = useFetch(
-      async () => {
-          return HttpService.get("url")
-      }, 
-      {
-          initialState: [],
-          scrollRestoration
-      }
+	  async () => {
+		  return HttpService.get("url")
+	  }, 
+	  {
+		  initialState: [],
+		  scrollRestoration
+	  }
   );
 ```
  */
@@ -32,9 +32,9 @@ export const useScrollRestoration = <T extends ElementWithScrollTo | null>(
 	 * Action defines if scroll restoration can be executed.
 	 * Only on 'pop' will the scroll be restored.
 	 */
-	action: 'pop' | string,
+	action: string,
 	/**
 	 * Unique id categorizing current component. Must be the same between render or component changes for scroll restoration to work.
 	 */
-	scrollRestorationId: string = window?.location?.pathname
+	scrollRestorationId: string = globalThis?.location?.pathname
 ) => useBaseScrollRestoration<T>(visitedUrl, action, scrollRestorationId);

@@ -18,13 +18,13 @@ import { type ElementWithScrollTo, useOnScroll } from './useOnScroll/useOnScroll
   // 'action' must be 'pop' for restoration to work;
   const [scrollRestoration, ref] = useScrollRestoration(action);
   const [data, fetch, error] = useFetch(
-      async () => {
-          return HttpService.get("url")
-      }, 
-      {
-          initialState: [],
-          scrollRestoration
-      }
+	  async () => {
+		  return HttpService.get("url")
+	  }, 
+	  {
+		  initialState: [],
+		  scrollRestoration
+	  }
   );
 ```
  */
@@ -35,16 +35,14 @@ export const useBaseScrollRestoration = <T extends ElementWithScrollTo | null>(
 	 * Action defines if scroll restoration can be executed.
 	 * Only on 'pop' will the scroll be restored.
 	 */
-	action: 'pop' | string,
+	action: string,
 	/**
 	 * Unique id categorizing current component. Must be the same between render or component changes for scroll restoration to work.
 	 */
-	scrollRestorationId: string = window?.location?.pathname
+	scrollRestorationId: string = globalThis?.location?.pathname
 ) => {
-	if ( IS_DEV ) {
-		if ( !scrollRestorationId ) {
-			throw new ScrollRestorationIdIsUndefined();
-		}
+	if (IS_DEV && !scrollRestorationId) {
+		throw new ScrollRestorationIdIsUndefined();
 	}
 
 	const canRestore = useRef(false);
@@ -52,7 +50,7 @@ export const useBaseScrollRestoration = <T extends ElementWithScrollTo | null>(
 		const existingRecord = visitedUrl.get(scrollRestorationId);
 
 		visitedUrl.set(
-			scrollRestorationId, 
+			scrollRestorationId,
 			{
 				...existingRecord,
 				pos
@@ -62,33 +60,32 @@ export const useBaseScrollRestoration = <T extends ElementWithScrollTo | null>(
 
 	useEffect(() => {
 		canRestore.current = action === 'pop';
-	}, [action])
+	}, [action]);
 
 	useEffect(() => {
-		if ( action !== 'pop' ) {
+		if (action !== 'pop') {
 			visitedUrl.delete(scrollRestorationId);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const scrollRestore = (behavior: ScrollBehavior = 'auto') => {
-		if ( canRestore.current ) {
+		if (canRestore.current) {
 			const existingRecord = visitedUrl.get(scrollRestorationId);
 
-			if ( existingRecord !== undefined ) {
+			if (existingRecord !== undefined) {
 				globalThis.requestAnimationFrame(() => {
-					if ( ref.current ) {
+					if (ref.current) {
 						ref.current.scrollTo({
 							...existingRecord,
-							behavior,
-							animated: behavior === 'smooth'
+							animated: behavior === 'smooth',
+							behavior
 						} as any);
 					}
 				});
 				visitedUrl.delete(scrollRestorationId);
 			}
 		}
-	}
+	};
 
 	return [scrollRestore, ref, onScroll] as const;
 };

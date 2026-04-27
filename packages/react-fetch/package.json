@@ -22,7 +22,7 @@
     "url": "https://github.com/resourge/fetch.git"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
+    "react": ">=19.2.0",
     "@react-native-community/netinfo": "*"
   },
   "peerDependenciesMeta": {

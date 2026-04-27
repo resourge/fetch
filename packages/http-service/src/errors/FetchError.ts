@@ -1,4 +1,9 @@
 export class FetchError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'FetchError';
+	}
+
 	static setFromError(error: Error) {
 		const f = new FetchError(error.message);
 
@@ -6,12 +11,5 @@ export class FetchError extends Error {
 		f.stack = error.stack;
 
 		return f;
-	}
-	
-	constructor(message: string) {
-		super(message)
-		this.name = 'FetchError';
-
-		Error.captureStackTrace(this, FetchError);
 	}
 }
